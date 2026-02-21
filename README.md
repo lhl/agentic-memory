@@ -12,6 +12,22 @@ Research collection on agent memory architectures, persistence patterns, and out
 | [drag88-agent-output-degradation](references/drag88-agent-output-degradation.md) | @drag88 (Aswin) | **"Why Your Agent's Output Gets Worse Over Time"** — multi-agent convergence problem. 4-tier memory (working → episodic → semantic → procedural). 3-layer enforcement pipeline (YAML regex → Gemini LLM judge → self-learning loop). Core insight: convert expensive runtime LLM checks into free static regex rules over time. |
 | [versatly-clawvault](references/versatly-clawvault.md) | Versatly (@drag88) | **ClawVault** npm CLI tool — structured markdown memory vault with observation pipeline, knowledge graph, session lifecycle (wake/sleep/checkpoint), task/project primitives, Obsidian integration, OpenClaw hooks. 449+ tests. v2.6.1. |
 
+## Deep Dive Analyses
+
+Root-level critical analyses intended for synthesis work. These reference the summaries above, but focus on coherence, evidence quality, risks, and synthesis-ready claim framing.
+
+| Synthesis | Based on | Focus |
+|----------|----------|-------|
+| [ANALYSIS](ANALYSIS.md) | `ANALYSIS-*.md` + shisad docs + Mem0/Letta baselines | Cross-system comparison (techniques + memory types), plus mapping to shisad and “traditional” RAG-ish memory |
+
+| Analysis | Based on | Focus |
+|----------|----------|-------|
+| [ANALYSIS-jumperz-agent-memory-stack](ANALYSIS-jumperz-agent-memory-stack.md) | `references/jumperz-agent-memory-stack.md` | Checklist critique (semantics, failure modes, missing evaluation), synthesis-ready takeaways + claims table |
+| [ANALYSIS-joelhooks-adr-0077-memory-system-next-phase](ANALYSIS-joelhooks-adr-0077-memory-system-next-phase.md) | `references/joelhooks-adr-0077-memory-system-next-phase.md` | Increment plan critique (decay, rewrite, dedup, echo/fizzle), validation plan + claims |
+| [ANALYSIS-coolmanns-openclaw-memory-architecture](ANALYSIS-coolmanns-openclaw-memory-architecture.md) | `references/coolmanns-openclaw-memory-architecture.md` + `vendor/openclaw-memory-architecture/` | Layered stack critique with benchmark-method verification, operational risks, doc drift notes |
+| [ANALYSIS-drag88-agent-output-degradation](ANALYSIS-drag88-agent-output-degradation.md) | `references/drag88-agent-output-degradation.md` | Convergence + enforcement pattern critique (judge→rule distillation), measurement gaps, risks |
+| [ANALYSIS-versatly-clawvault](ANALYSIS-versatly-clawvault.md) | `references/versatly-clawvault.md` + `vendor/clawvault/` | Product/tooling critique (surface area, hooks, qmd dependency), security posture, missing benchmarks |
+
 ## Source Threads & Links
 
 | Source | URL |
@@ -26,6 +42,12 @@ Research collection on agent memory architectures, persistence patterns, and out
 ```
 agentic-memory/
 ├── README.md                          ← this file
+├── ANALYSIS.md                         ← synthesis + comparison
+├── ANALYSIS-jumperz-agent-memory-stack.md
+├── ANALYSIS-joelhooks-adr-0077-memory-system-next-phase.md
+├── ANALYSIS-coolmanns-openclaw-memory-architecture.md
+├── ANALYSIS-drag88-agent-output-degradation.md
+├── ANALYSIS-versatly-clawvault.md
 │
 ├── references/                        ← summarized reference docs (markdown w/ frontmatter)
 │   ├── 1-full-agent-memory-build.jpg  ← jumperz card 1: memory storage
