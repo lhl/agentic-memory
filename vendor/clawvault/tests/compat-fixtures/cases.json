@@ -1,0 +1,204 @@
+{
+  "schemaVersion": 2,
+  "expectedCheckLabels": [
+    "openclaw CLI available",
+    "package hook registration",
+    "hook manifest events",
+    "hook manifest requirements",
+    "hook handler safety",
+    "skill metadata"
+  ],
+  "cases": [
+  {
+    "name": "healthy",
+    "description": "expected strict pass.",
+    "expectedExitCode": 0,
+    "expectedWarnings": 0,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "openclaw CLI available": "ok",
+      "package hook registration": "ok",
+      "hook manifest events": "ok",
+      "hook manifest requirements": "ok",
+      "hook handler safety": "ok",
+      "skill metadata": "ok"
+    }
+  },
+  {
+    "name": "broken-openclaw-cli",
+    "description": "warning when openclaw CLI exists but is not runnable.",
+    "openclawExitCode": 2,
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "openclaw CLI available": "warn"
+    },
+    "expectedDetailIncludes": {
+      "openclaw CLI available": "exited with code 2"
+    },
+    "expectedHintIncludes": {
+      "openclaw CLI available": "runnable in PATH"
+    }
+  },
+  {
+    "name": "broken-openclaw-signal",
+    "description": "warning when openclaw CLI invocation is terminated by signal.",
+    "openclawSignal": "SIGTERM",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "openclaw CLI available": "warn"
+    },
+    "expectedDetailIncludes": {
+      "openclaw CLI available": "terminated by signal SIGTERM"
+    },
+    "expectedHintIncludes": {
+      "openclaw CLI available": "execute normally in PATH"
+    }
+  },
+  {
+    "name": "missing-openclaw-cli",
+    "description": "warning when openclaw CLI is missing from PATH.",
+    "openclawMissing": true,
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "openclaw CLI available": "warn"
+    },
+    "expectedDetailIncludes": {
+      "openclaw CLI available": "binary not found"
+    },
+    "expectedHintIncludes": {
+      "openclaw CLI available": "Install OpenClaw CLI"
+    }
+  },
+  {
+    "name": "missing-requires-bin",
+    "description": "warning for missing metadata.openclaw.requires.bins.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "hook manifest requirements": "warn"
+    },
+    "expectedDetailIncludes": {
+      "hook manifest requirements": "Missing required hook bin"
+    },
+    "expectedHintIncludes": {
+      "hook manifest requirements": "requires.bins"
+    }
+  },
+  {
+    "name": "non-auto-profile",
+    "description": "warning for missing --profile auto delegation.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "hook handler safety": "warn"
+    },
+    "expectedDetailIncludes": {
+      "hook handler safety": "--profile auto"
+    },
+    "expectedHintIncludes": {
+      "hook handler safety": "--profile auto"
+    }
+  },
+  {
+    "name": "missing-events",
+    "description": "error for missing required hook events.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 0,
+    "expectedErrors": 1,
+    "expectedCheckStatuses": {
+      "hook manifest events": "error"
+    },
+    "expectedDetailIncludes": {
+      "hook manifest events": "Missing events"
+    }
+  },
+  {
+    "name": "missing-package-hook",
+    "description": "error for missing openclaw.hooks registration.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 0,
+    "expectedErrors": 1,
+    "expectedCheckStatuses": {
+      "package hook registration": "error"
+    },
+    "expectedDetailIncludes": {
+      "package hook registration": "Missing ./hooks/clawvault"
+    }
+  },
+  {
+    "name": "missing-skill-openclaw",
+    "description": "warning for missing metadata.openclaw in SKILL.md.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "skill metadata": "warn"
+    },
+    "expectedDetailIncludes": {
+      "skill metadata": "Missing metadata.openclaw"
+    },
+    "expectedHintIncludes": {
+      "skill metadata": "metadata.openclaw"
+    }
+  },
+  {
+    "name": "unsafe-hook-handler",
+    "description": "warning for unsafe hook execution conventions (execSync, missing shared profile delegation).",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "hook handler safety": "warn"
+    },
+    "expectedDetailIncludes": {
+      "hook handler safety": "execFileSync-only execution path"
+    },
+    "expectedHintIncludes": {
+      "hook handler safety": "execFileSync"
+    }
+  },
+  {
+    "name": "unsafe-shell-handler",
+    "description": "warning for shell-enabled hook execution options.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "hook handler safety": "warn"
+    },
+    "expectedDetailIncludes": {
+      "hook handler safety": "shell:false execution option"
+    },
+    "expectedHintIncludes": {
+      "hook handler safety": "no shell"
+    }
+  },
+  {
+    "name": "missing-skill-file",
+    "description": "warning for missing SKILL.md file entirely.",
+    "expectedExitCode": 1,
+    "expectedWarnings": 1,
+    "expectedErrors": 0,
+    "expectedCheckStatuses": {
+      "skill metadata": "warn"
+    },
+    "expectedDetailIncludes": {
+      "skill metadata": "SKILL.md not found"
+    },
+    "expectedHintIncludes": {
+      "skill metadata": "Ensure SKILL.md is present"
+    },
+    "allowMissingFiles": [
+      "SKILL.md"
+    ]
+  }
+  ]
+}

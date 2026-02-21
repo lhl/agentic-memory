@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ClawVault Graph Dashboard</title>
+    <link rel="stylesheet" href="/styles.css">
+  </head>
+  <body>
+    <header class="toolbar">
+      <div class="toolbar-title">
+        <h1>ClawVault Live Graph</h1>
+        <p id="stats">Loading graph...</p>
+      </div>
+      <div class="toolbar-controls">
+        <input id="search" type="search" placeholder="Search nodes, ids, tags..." autocomplete="off">
+        <select id="category-filter">
+          <option value="all">All categories</option>
+        </select>
+        <select id="tag-filter">
+          <option value="all">All tags</option>
+        </select>
+        <select id="node-type-filter">
+          <option value="all">All node types</option>
+          <option value="resolved">Resolved only</option>
+          <option value="missing">Missing only</option>
+        </select>
+        <button id="tv-mode" type="button" aria-pressed="false">TV Mode</button>
+        <button id="refresh" type="button">Refresh</button>
+        <div class="status-pill" id="realtime-status">Realtime: connecting...</div>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section id="graph" aria-label="Vault graph visualization"></section>
+      <aside class="details-panel">
+        <h2>Node Details</h2>
+        <div id="node-details">
+          <p>Select a node to inspect details and connections.</p>
+        </div>
+      </aside>
+    </main>
+
+    <script src="/vendor/force-graph.min.js"></script>
+    <script>
+      if (!window.ForceGraph) {
+        document.write('<script src="https://unpkg.com/force-graph"><\/script>');
+      }
+    </script>
+    <script type="module" src="/app.js"></script>
+  </body>
+</html>

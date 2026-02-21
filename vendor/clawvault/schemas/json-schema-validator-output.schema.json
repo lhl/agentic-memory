@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawvault.dev/schemas/json-schema-validator-output.schema.json",
+  "title": "Generic JSON schema validator CLI output",
+  "description": "Structured output payload emitted by scripts/validate-json-schema.mjs in --json mode and/or via --out file output.",
+  "type": "object",
+  "properties": {
+    "outputSchemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error"]
+    },
+    "schemaPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "dataPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validationErrors": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "instancePath": { "type": "string" },
+          "schemaPath": { "type": "string" },
+          "keyword": { "type": "string", "minLength": 1 },
+          "message": { "type": "string", "minLength": 1 }
+        },
+        "required": ["instancePath", "schemaPath", "keyword", "message"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["outputSchemaVersion", "status"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "ok" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["schemaPath", "dataPath"]
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "error" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["error"]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

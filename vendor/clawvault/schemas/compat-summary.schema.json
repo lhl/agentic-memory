@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawvault.dev/schemas/compat-summary.schema.json",
+  "title": "Compatibility fixture summary artifact",
+  "description": "summary.json artifact emitted by scripts/check-compat-fixtures.mjs via runner writeSummaryReport.",
+  "type": "object",
+  "properties": {
+    "summarySchemaVersion": { "type": "integer", "const": 1 },
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "mode": { "type": "string", "enum": ["contract", "fixtures"] },
+    "schemaVersion": { "type": "integer", "const": 2 },
+    "selectedCases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "selectedTotal": { "type": "integer", "minimum": 0 },
+    "expectedCheckLabels": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "runtimeCheckLabels": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "total": { "type": "integer", "minimum": 0 },
+    "preflightDurationMs": { "type": "number", "minimum": 0 },
+    "totalDurationMs": { "type": "number", "minimum": 0 },
+    "averageDurationMs": { "type": "number", "minimum": 0 },
+    "overallDurationMs": { "type": "number", "minimum": 0 },
+    "failures": { "type": "integer", "minimum": 0 },
+    "passedCases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "failedCases": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "slowestCases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "durationMs": { "type": "number", "minimum": 0 }
+        },
+        "required": ["name", "durationMs"],
+        "additionalProperties": false
+      }
+    },
+    "results": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": { "type": "string", "minLength": 1 },
+          "expectedExitCode": { "type": "integer", "enum": [0, 1] },
+          "actualExitCode": { "type": "integer", "enum": [0, 1] },
+          "passed": { "type": "boolean" },
+          "durationMs": { "type": "number", "minimum": 0 },
+          "mismatches": {
+            "type": "array",
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "required": ["name", "expectedExitCode", "actualExitCode", "passed", "durationMs", "mismatches"],
+        "allOf": [
+          {
+            "if": {
+              "properties": { "passed": { "const": true } },
+              "required": ["passed"]
+            },
+            "then": {
+              "properties": { "mismatches": { "maxItems": 0 } }
+            }
+          },
+          {
+            "if": {
+              "properties": { "passed": { "const": false } },
+              "required": ["passed"]
+            },
+            "then": {
+              "properties": { "mismatches": { "minItems": 1 } }
+            }
+          }
+        ],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": [
+    "summarySchemaVersion",
+    "generatedAt",
+    "mode",
+    "schemaVersion",
+    "selectedCases",
+    "selectedTotal",
+    "expectedCheckLabels",
+    "runtimeCheckLabels",
+    "total",
+    "preflightDurationMs",
+    "totalDurationMs",
+    "averageDurationMs",
+    "overallDurationMs",
+    "failures",
+    "passedCases",
+    "failedCases",
+    "slowestCases",
+    "results"
+  ],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "mode": { "const": "contract" } },
+        "required": ["mode"]
+      },
+      "then": {
+        "properties": {
+          "total": { "const": 0 },
+          "failures": { "const": 0 },
+          "results": { "maxItems": 0 },
+          "passedCases": { "maxItems": 0 },
+          "failedCases": { "maxItems": 0 },
+          "slowestCases": { "maxItems": 0 }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,28 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawvault.dev/schemas/compat-case-report.schema.json",
+  "title": "Compatibility fixture case report artifact",
+  "description": "Per-case <case>.json report emitted by scripts/check-compat-fixtures.mjs via runner writeCaseReport.",
+  "type": "object",
+  "properties": {
+    "generatedAt": { "type": "string", "minLength": 1 },
+    "warnings": { "type": "integer", "minimum": 0 },
+    "errors": { "type": "integer", "minimum": 0 },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "label": { "type": "string", "minLength": 1 },
+          "status": { "type": "string", "enum": ["ok", "warn", "error"] },
+          "detail": { "type": "string", "minLength": 1 },
+          "hint": { "type": "string", "minLength": 1 }
+        },
+        "required": ["label", "status"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["generatedAt", "warnings", "errors", "checks"],
+  "additionalProperties": false
+}

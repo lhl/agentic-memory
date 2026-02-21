@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawvault.dev/schemas/compat-validator-result-verifier-output.schema.json",
+  "title": "Compatibility validator-result verifier CLI output",
+  "description": "Structured output payload emitted by scripts/validate-compat-validator-result.mjs in --json mode and/or via --out file output.",
+  "type": "object",
+  "properties": {
+    "outputSchemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error"]
+    },
+    "payloadPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "payloadStatus": {
+      "type": "string",
+      "enum": ["ok", "error"]
+    },
+    "validatorPayloadOutputSchemaVersion": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["outputSchemaVersion", "status"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "ok" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": [
+          "payloadPath",
+          "payloadStatus",
+          "validatorPayloadOutputSchemaVersion"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "error" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["error"]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

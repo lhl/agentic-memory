@@ -1,0 +1,79 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawvault.dev/schemas/compat-report-schema-validator-output.schema.json",
+  "title": "Compatibility report-schema validator CLI output",
+  "description": "Structured output payload emitted by scripts/validate-compat-report-schemas.mjs in --json mode and/or via --out file output.",
+  "type": "object",
+  "properties": {
+    "outputSchemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ok", "error"]
+    },
+    "mode": {
+      "type": "string",
+      "enum": ["contract", "fixtures"]
+    },
+    "summaryPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "reportDir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "summarySchemaPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "caseSchemaPath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "validatedCaseReports": {
+      "type": "integer",
+      "minimum": 0
+    },
+    "caseReportMode": {
+      "type": "string",
+      "enum": ["validated-case-reports", "skipped-case-reports"]
+    },
+    "error": {
+      "type": "string",
+      "minLength": 1
+    }
+  },
+  "required": ["outputSchemaVersion", "status"],
+  "allOf": [
+    {
+      "if": {
+        "properties": { "status": { "const": "ok" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": [
+          "mode",
+          "summaryPath",
+          "reportDir",
+          "summarySchemaPath",
+          "caseSchemaPath",
+          "validatedCaseReports",
+          "caseReportMode"
+        ]
+      }
+    },
+    {
+      "if": {
+        "properties": { "status": { "const": "error" } },
+        "required": ["status"]
+      },
+      "then": {
+        "required": ["error"]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

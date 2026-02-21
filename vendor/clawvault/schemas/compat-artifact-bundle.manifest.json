@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "artifacts": [
+    {
+      "artifactName": "summary.json",
+      "artifactFile": "summary.json",
+      "schemaPath": "schemas/compat-summary.schema.json",
+      "schemaId": "https://clawvault.dev/schemas/compat-summary.schema.json",
+      "versionField": "summarySchemaVersion"
+    },
+    {
+      "artifactName": "report-schema-validator-result.json",
+      "artifactFile": "report-schema-validator-result.json",
+      "schemaPath": "schemas/compat-report-schema-validator-output.schema.json",
+      "schemaId": "https://clawvault.dev/schemas/compat-report-schema-validator-output.schema.json",
+      "versionField": "outputSchemaVersion"
+    },
+    {
+      "artifactName": "validator-result.json",
+      "artifactFile": "validator-result.json",
+      "schemaPath": "schemas/compat-summary-validator-output.schema.json",
+      "schemaId": "https://clawvault.dev/schemas/compat-summary-validator-output.schema.json",
+      "versionField": "outputSchemaVersion"
+    },
+    {
+      "artifactName": "schema-validator-result.json",
+      "artifactFile": "schema-validator-result.json",
+      "schemaPath": "schemas/json-schema-validator-output.schema.json",
+      "schemaId": "https://clawvault.dev/schemas/json-schema-validator-output.schema.json",
+      "versionField": "outputSchemaVersion"
+    },
+    {
+      "artifactName": "validator-result-verifier-result.json",
+      "artifactFile": "validator-result-verifier-result.json",
+      "schemaPath": "schemas/compat-validator-result-verifier-output.schema.json",
+      "schemaId": "https://clawvault.dev/schemas/compat-validator-result-verifier-output.schema.json",
+      "versionField": "outputSchemaVersion"
+    },
+    {
+      "artifactName": "artifact-bundle-manifest-validator-result.json",
+      "artifactFile": "artifact-bundle-manifest-validator-result.json",
+      "schemaPath": "schemas/compat-artifact-bundle-manifest-validator-output.schema.json",
+      "schemaId": "https://clawvault.dev/schemas/compat-artifact-bundle-manifest-validator-output.schema.json",
+      "versionField": "outputSchemaVersion"
+    }
+  ]
+}

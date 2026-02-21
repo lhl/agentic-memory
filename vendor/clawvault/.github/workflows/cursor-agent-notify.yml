@@ -1,0 +1,36 @@
+name: Notify on Cursor Agent PR
+
+on:
+  pull_request:
+    types: [opened, ready_for_review]
+
+jobs:
+  notify:
+    if: contains(github.event.pull_request.body, 'cursor.com/background-agent') || contains(github.event.pull_request.head.ref, 'cursor/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Send Telegram notification
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: "5439689035"
+        run: |
+          PR_TITLE="${{ github.event.pull_request.title }}"
+          PR_URL="${{ github.event.pull_request.html_url }}"
+          PR_BRANCH="${{ github.event.pull_request.head.ref }}"
+          PR_ADDITIONS="${{ github.event.pull_request.additions }}"
+          PR_DELETIONS="${{ github.event.pull_request.deletions }}"
+          PR_FILES="${{ github.event.pull_request.changed_files }}"
+          
+          MESSAGE="🏗️ Cursor Agent PR Ready for Review
+
+${PR_TITLE}
+
+Branch: ${PR_BRANCH}
+Files: ${PR_FILES} changed (+${PR_ADDITIONS}/-${PR_DELETIONS})
+
+${PR_URL}"
+          
+          curl -s -X POST "https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage" \
+            -d chat_id="${TELEGRAM_CHAT_ID}" \
+            -d text="${MESSAGE}" \
+            -d parse_mode="HTML"

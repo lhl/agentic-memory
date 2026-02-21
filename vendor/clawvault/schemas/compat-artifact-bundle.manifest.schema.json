@@ -1,0 +1,196 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://clawvault.dev/schemas/compat-artifact-bundle.manifest.schema.json",
+  "title": "Compatibility artifact bundle manifest",
+  "description": "Declarative mapping of compatibility artifact files to schema contracts used by validate-compat-artifact-bundle.mjs.",
+  "type": "object",
+  "properties": {
+    "schemaVersion": {
+      "type": "integer",
+      "const": 1
+    },
+    "artifacts": {
+      "type": "array",
+      "minItems": 6,
+      "maxItems": 6,
+      "allOf": [
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "artifactName": { "const": "summary.json" },
+              "artifactFile": { "const": "summary.json" },
+              "schemaPath": { "const": "schemas/compat-summary.schema.json" },
+              "schemaId": { "const": "https://clawvault.dev/schemas/compat-summary.schema.json" },
+              "versionField": { "const": "summarySchemaVersion" }
+            },
+            "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "artifactName": { "const": "report-schema-validator-result.json" },
+              "artifactFile": { "const": "report-schema-validator-result.json" },
+              "schemaPath": { "const": "schemas/compat-report-schema-validator-output.schema.json" },
+              "schemaId": { "const": "https://clawvault.dev/schemas/compat-report-schema-validator-output.schema.json" },
+              "versionField": { "const": "outputSchemaVersion" }
+            },
+            "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "artifactName": { "const": "validator-result.json" },
+              "artifactFile": { "const": "validator-result.json" },
+              "schemaPath": { "const": "schemas/compat-summary-validator-output.schema.json" },
+              "schemaId": { "const": "https://clawvault.dev/schemas/compat-summary-validator-output.schema.json" },
+              "versionField": { "const": "outputSchemaVersion" }
+            },
+            "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "artifactName": { "const": "schema-validator-result.json" },
+              "artifactFile": { "const": "schema-validator-result.json" },
+              "schemaPath": { "const": "schemas/json-schema-validator-output.schema.json" },
+              "schemaId": { "const": "https://clawvault.dev/schemas/json-schema-validator-output.schema.json" },
+              "versionField": { "const": "outputSchemaVersion" }
+            },
+            "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "artifactName": { "const": "validator-result-verifier-result.json" },
+              "artifactFile": { "const": "validator-result-verifier-result.json" },
+              "schemaPath": { "const": "schemas/compat-validator-result-verifier-output.schema.json" },
+              "schemaId": { "const": "https://clawvault.dev/schemas/compat-validator-result-verifier-output.schema.json" },
+              "versionField": { "const": "outputSchemaVersion" }
+            },
+            "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+          }
+        },
+        {
+          "contains": {
+            "type": "object",
+            "properties": {
+              "artifactName": { "const": "artifact-bundle-manifest-validator-result.json" },
+              "artifactFile": { "const": "artifact-bundle-manifest-validator-result.json" },
+              "schemaPath": { "const": "schemas/compat-artifact-bundle-manifest-validator-output.schema.json" },
+              "schemaId": { "const": "https://clawvault.dev/schemas/compat-artifact-bundle-manifest-validator-output.schema.json" },
+              "versionField": { "const": "outputSchemaVersion" }
+            },
+            "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+          }
+        },
+        {
+          "prefixItems": [
+            {
+              "type": "object",
+              "properties": {
+                "artifactName": { "const": "summary.json" },
+                "artifactFile": { "const": "summary.json" },
+                "schemaPath": { "const": "schemas/compat-summary.schema.json" },
+                "schemaId": { "const": "https://clawvault.dev/schemas/compat-summary.schema.json" },
+                "versionField": { "const": "summarySchemaVersion" }
+              },
+              "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "artifactName": { "const": "report-schema-validator-result.json" },
+                "artifactFile": { "const": "report-schema-validator-result.json" },
+                "schemaPath": { "const": "schemas/compat-report-schema-validator-output.schema.json" },
+                "schemaId": { "const": "https://clawvault.dev/schemas/compat-report-schema-validator-output.schema.json" },
+                "versionField": { "const": "outputSchemaVersion" }
+              },
+              "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "artifactName": { "const": "validator-result.json" },
+                "artifactFile": { "const": "validator-result.json" },
+                "schemaPath": { "const": "schemas/compat-summary-validator-output.schema.json" },
+                "schemaId": { "const": "https://clawvault.dev/schemas/compat-summary-validator-output.schema.json" },
+                "versionField": { "const": "outputSchemaVersion" }
+              },
+              "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "artifactName": { "const": "schema-validator-result.json" },
+                "artifactFile": { "const": "schema-validator-result.json" },
+                "schemaPath": { "const": "schemas/json-schema-validator-output.schema.json" },
+                "schemaId": { "const": "https://clawvault.dev/schemas/json-schema-validator-output.schema.json" },
+                "versionField": { "const": "outputSchemaVersion" }
+              },
+              "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "artifactName": { "const": "validator-result-verifier-result.json" },
+                "artifactFile": { "const": "validator-result-verifier-result.json" },
+                "schemaPath": { "const": "schemas/compat-validator-result-verifier-output.schema.json" },
+                "schemaId": { "const": "https://clawvault.dev/schemas/compat-validator-result-verifier-output.schema.json" },
+                "versionField": { "const": "outputSchemaVersion" }
+              },
+              "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+            },
+            {
+              "type": "object",
+              "properties": {
+                "artifactName": { "const": "artifact-bundle-manifest-validator-result.json" },
+                "artifactFile": { "const": "artifact-bundle-manifest-validator-result.json" },
+                "schemaPath": { "const": "schemas/compat-artifact-bundle-manifest-validator-output.schema.json" },
+                "schemaId": { "const": "https://clawvault.dev/schemas/compat-artifact-bundle-manifest-validator-output.schema.json" },
+                "versionField": { "const": "outputSchemaVersion" }
+              },
+              "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"]
+            }
+          ],
+          "items": false
+        }
+      ],
+      "items": {
+        "type": "object",
+        "properties": {
+          "artifactName": {
+            "type": "string",
+            "enum": [
+              "summary.json",
+              "report-schema-validator-result.json",
+              "validator-result.json",
+              "schema-validator-result.json",
+              "validator-result-verifier-result.json",
+              "artifact-bundle-manifest-validator-result.json"
+            ]
+          },
+          "artifactFile": { "type": "string", "minLength": 1 },
+          "schemaPath": { "type": "string", "minLength": 1 },
+          "schemaId": { "type": "string", "minLength": 1 },
+          "versionField": {
+            "type": "string",
+            "enum": ["summarySchemaVersion", "outputSchemaVersion"]
+          }
+        },
+        "required": ["artifactName", "artifactFile", "schemaPath", "schemaId", "versionField"],
+        "additionalProperties": false
+      }
+    }
+  },
+  "required": ["schemaVersion", "artifacts"],
+  "additionalProperties": false
+}

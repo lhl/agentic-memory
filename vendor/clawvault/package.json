@@ -1,0 +1,94 @@
+{
+  "name": "clawvault",
+  "version": "2.6.1",
+  "description": "Structured memory system for AI agents — typed storage, knowledge graph, context profiles, canvas dashboards, neural graph themes, and Obsidian-native task views. An elephant never forgets. 🐘",
+  "type": "module",
+  "main": "dist/index.cjs",
+  "module": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "bin": {
+    "clawvault": "bin/clawvault.js"
+  },
+  "files": [
+    "dist",
+    "bin",
+    "dashboard",
+    "templates",
+    "hooks"
+  ],
+  "openclaw": {
+    "hooks": [
+      "./hooks/clawvault"
+    ]
+  },
+  "scripts": {
+    "build": "tsup src/commands/archive.ts src/commands/backlog.ts src/commands/blocked.ts src/commands/canvas.ts src/commands/checkpoint.ts src/commands/compat.ts src/commands/context.ts src/commands/doctor.ts src/commands/embed.ts src/commands/entities.ts src/commands/graph.ts src/commands/inject.ts src/commands/kanban.ts src/commands/link.ts src/commands/migrate-observations.ts src/commands/observe.ts src/commands/project.ts src/commands/rebuild.ts src/commands/recover.ts src/commands/reflect.ts src/commands/repair-session.ts src/commands/replay.ts src/commands/session-recap.ts src/commands/setup.ts src/commands/shell-init.ts src/commands/sleep.ts src/commands/status.ts src/commands/sync-bd.ts src/commands/tailscale.ts src/commands/task.ts src/commands/template.ts src/commands/wake.ts src/cli/index.ts src/index.ts src/lib/auto-linker.ts src/lib/canvas-layout.ts src/lib/config.ts src/lib/entity-index.ts src/lib/project-utils.ts src/lib/session-repair.ts src/lib/session-utils.ts src/lib/tailscale.ts src/lib/task-utils.ts src/lib/template-engine.ts src/lib/webdav.ts --format esm --dts --clean",
+    "dev": "tsup src/index.ts src/commands/*.ts src/lib/*.ts --format esm --dts --watch",
+    "lint": "eslint src",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "ci": "npm run typecheck && npm test && npm run build",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "ai-agent",
+    "memory",
+    "knowledge-graph",
+    "obsidian",
+    "markdown",
+    "task-management",
+    "context-death",
+    "openclaw",
+    "llm",
+    "agent-memory",
+    "canvas-dashboard",
+    "semantic-search"
+  ],
+  "author": "Versatly",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Versatly/clawvault.git"
+  },
+  "homepage": "https://clawvault.dev",
+  "bugs": {
+    "url": "https://github.com/Versatly/clawvault/issues"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0",
+    "chokidar": "^5.0.0",
+    "commander": "^12.0.0",
+    "express": "^5.2.1",
+    "force-graph": "^1.51.1",
+    "glob": "^10.3.10",
+    "gray-matter": "^4.0.3",
+    "natural": "^6.10.4",
+    "ws": "^8.19.0"
+  },
+  "peerDependencies": {
+    "qmd": "*"
+  },
+  "peerDependenciesMeta": {
+    "qmd": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "ajv": "^8.17.1",
+    "puppeteer": "^24.37.2",
+    "tsup": "^8.0.1",
+    "typescript": "^5.3.3",
+    "vitest": "^1.2.0"
+  }
+}
