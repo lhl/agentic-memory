@@ -388,7 +388,140 @@ The key lesson from the best systems here (OpenClaw + shisad) is:
 4) What’s the smallest set of features that gets us **80% utility** with **20% complexity**?
    - likely: transcripts + gated facts/preferences + hybrid retrieval + benchmark harness.
 
+## 9) Literature scan (SOTA as of 2026-02)
+
+This section is a **non-exhaustive literature scan** (mostly arXiv + adjacent repos) focused on long-term conversational memory and agentic memory systems.
+
+Two notes up front:
+- “SOTA” is benchmark-dependent; many papers report on **LoCoMo** and/or **LongMemEval**, but measure different things (factual recall vs cognitive consistency vs multi-hop reasoning at scale).
+- A lot of reported gains are from *systems design* (indexing, hierarchical retrieval, consolidation) rather than from “better embeddings”.
+
+### 9.1 Benchmarks & datasets (what people measure)
+
+| Benchmark | What it targets | Why it matters | Source |
+|---|---|---|---|
+| **LoCoMo** (2024) | Very long-term conversational memory across sessions; QA + event summaries + some multimodal generation | Forces temporal grounding and cross-session recall; makes “episodic memory” concrete | arXiv:2402.17753 https://arxiv.org/abs/2402.17753 |
+| **LongMemEval** (ICLR 2025) | 5 memory abilities (reasoning, updating, long-term, etc.) with 500 embedded questions in scalable histories | Highlights that long histories cause large accuracy drops; motivates better indexing/retrieval/reading pipelines | arXiv:2410.10813 https://arxiv.org/abs/2410.10813 · repo: https://github.com/xiaowu0162/LongMemEval |
+| **EverMemBench** (2026) | Multi-party conversations exceeding **1M tokens** with 1000+ QA pairs; focuses on scalable multi-hop memory reasoning | Pushes beyond “top-K retrieval” into “can you reason over huge memory graphs?”; exposes that even strong methods can be low-accuracy | arXiv:2602.01313 https://arxiv.org/abs/2602.01313 |
+| **LoCoMo-Plus** (2026) | “Cognitive memory” consistency: whether an agent preserves latent constraints and mental models, not just facts | Useful correction: factual recall ≠ coherent long-term behavior | arXiv:2602.10715 https://arxiv.org/abs/2602.10715 |
+| **MemBench** (2025) | Long-context utilization benchmark (retrieval + reasoning over long contexts) | More model-centric than agent-centric, but relevant when long context and “memory” get conflated | arXiv:2506.21605 https://arxiv.org/abs/2506.21605 |
+
+### 9.2 Recent “memory system” architectures (2025–2026)
+
+Below are representative systems and what they add to the design space; most are evaluated on LoCoMo/LongMemEval-family benchmarks.
+
+**Hierarchical / multi-tier memory management**
+- **TiMem** (2026): tree-structured memory; reports SOTA on LoCoMo and LongMemEval-S. arXiv:2601.02845 https://arxiv.org/abs/2601.02845
+- **HiMem** (2026): hierarchical “episode memory” + “note memory”, linking and conflict-aware reconsolidation. arXiv:2601.06377 https://arxiv.org/abs/2601.06377
+- **ENGRAM** (2025): long-term memory agent with hierarchical memory; reports SOTA LoCoMo and large LongMemEval gains with low token usage. arXiv:2511.12960 https://arxiv.org/abs/2511.12960
+- **Hindsight** (2025): biomimetic memory with multiple explicit memory types (facts, experiences, beliefs, etc.) and retain/recall/reflect operations; reports strong LongMemEval and LoCoMo performance. arXiv:2512.12818 https://arxiv.org/abs/2512.12818
+
+**Test-time memorization / “learn to memorize at inference”**
+- **Titans** (2025): “learning to memorize at test time” via a neural long-term memory module; reports scaling beyond 2M context windows and improved needle-in-haystack performance. arXiv:2501.00663 https://arxiv.org/abs/2501.00663
+
+**Paradigms: multi-level optimization + continuum memory**
+- **Nested Learning (NL)** (2025): frames learning algorithms as nested multi-level optimization problems; argues optimizers act as associative memories; introduces a “continuum memory system” and a continual-learning module (“Hope”). arXiv:2512.24695 https://arxiv.org/abs/2512.24695
+
+**“Memory OS” framing (memory as a managed substrate)**
+- **MemOS** (2025): proposes an OS-like memory layer unifying plaintext, activation-level, and parameter-level memories, with provenance/versioning units (“MemCube”). arXiv:2507.03724 https://arxiv.org/abs/2507.03724
+- **EverMemOS** (2026): memory OS emphasizing self-organizing memory units (“MemCell/MemScene”) and “foresight signals” for long-horizon planning. arXiv:2601.02163 https://arxiv.org/abs/2601.02163
+
+**Knowledge-graph / structured memory emphasis**
+- **Zep** (2025): “temporal knowledge graph” memory system; reports gains on DMR/LongMemEval-style evals and focuses on indexing + time-aware retrieval. arXiv:2501.13956 https://arxiv.org/abs/2501.13956
+- **Memoria** (2025): combines dynamic session summarization with a weighted knowledge graph user model. arXiv:2512.12686 https://arxiv.org/abs/2512.12686
+- **AriGraph** (2024): knowledge graph “world model” + episodic memory for LLM agents (in text-based environments). arXiv:2407.04363 https://arxiv.org/abs/2407.04363
+
+**Learning to manage memory operations**
+- **Memory-R1** (2025): RL for explicit memory operations (ADD/UPDATE/DELETE/NOOP); reports improvements across LoCoMo/LongMemEval-style tasks with small training sets. arXiv:2508.19828 https://arxiv.org/abs/2508.19828
+- **AgeMem (“Agentic Memory”)** (2026): learns unified long-term + short-term memory management with progressive RL (explicit memory ops). arXiv:2601.01885 https://arxiv.org/abs/2601.01885
+
+**Online/self-evolving memory (streaming tasks + continuous feedback)**
+- **Evo-Memory** (2025): a streaming benchmark for “self-evolving memory” and an evaluation framework that tests whether agents improve over continuous task streams (not static chat recall). arXiv:2511.20857 https://arxiv.org/abs/2511.20857
+- **Live-Evo** (2026): online evolution of agentic memory from continuous feedback; separates “experience bank” from “meta-guideline bank”, with reinforcement/decay weighting. arXiv:2602.02369 https://arxiv.org/abs/2602.02369
+
+**Local/edge and “practical memory” systems**
+- **Mnemosyne** (2025): edge-focused memory architecture with graph storage, commit/prune, probabilistic recall with decay, and a small core summary. arXiv:2510.08601 https://arxiv.org/abs/2510.08601
+- **HEMA** (2025): hippocampus-inspired system with a compact “one-sentence summary memory” plus vector-based episodic memory; focuses on efficiency. arXiv:2504.16754 https://arxiv.org/abs/2504.16754
+
+**Production-leaning memory layers**
+- **Mem0** (2025): “memory layer” for agents with extraction + retrieval + consolidation; reports LOCOMO improvements + latency/token reductions vs full-context and “OpenAI Memory” baselines. arXiv:2504.19413 https://arxiv.org/abs/2504.19413
+
+### 9.3 Security & poisoning (memory as a persistence surface)
+
+If the agent can take actions, persistent memory becomes an attacker’s best “durable channel”.
+
+- **MINJA** (2025): memory injection attack for RAG agents (query-only, multi-turn, progressive shortening). arXiv:2503.03704 https://arxiv.org/abs/2503.03704
+- **Memory poisoning attacks & defenses** (2026): survey-like system paper proposing composite trust scoring and sanitization mechanisms; evaluated on a medical agent setting (MIMIC-III). arXiv:2601.05504 https://arxiv.org/abs/2601.05504
+
+### 9.4 How this literature updates our synthesis
+
+1) The literature increasingly treats memory as **a pipeline** (indexing → retrieval → reading), not “a vector DB”. (LongMemEval is explicit about this.)
+2) There’s a clear trend toward **typed memory** (facts vs experiences vs beliefs vs tasks) with explicit operations (retain/recall/reflect; ADD/UPDATE/DELETE).
+3) “Episodic memory” is being operationalized as **event-structured data** plus temporal retrieval (not just daily logs).
+4) Benchmarks are moving beyond “did you recall the fact?” toward “did you maintain coherent constraints over time?” (LoCoMo-Plus).
+5) Security work is catching up: memory poisoning/injection is now a first-class concern. This aligns with shisad’s “instruction/data boundary + gated writes + capability-scoped retrieval” stance.
+
+## 10) Reality Check + “corrections over time” (memory as an epistemic ledger)
+
+Reality Check is not “agent memory” in the RAG sense, but it encodes a set of **correction-aware provenance semantics** that most memory stacks handwave. For our purposes, it’s a reference design for:
+- how to store *beliefs/facts/claims* with evidence and auditability, and
+- how to handle **corrections** without erasing history.
+
+Primary internal references:
+- `~/github/lhl/realitycheck/docs/PLAN-analysis-rigor-improvement.md` (layering + corrections + auditability)
+- `~/github/lhl/realitycheck/docs/RESEARCH-v0.3.0-review.md` (system review framing Reality Check as an “epistemic ledger”)
+
+### 10.1 What Reality Check adds to the memory design space
+
+Most agent memory systems optimize for *utility* (“did the agent recall the thing?”). Reality Check optimizes for **epistemic maintainability**:
+
+- **Atomic units + typed claims**: decompose prose into checkable units with IDs and types.
+- **Evidence links**: every belief can point to specific evidence, not just “somewhere in a doc”.
+- **Layer discipline**: separate what’s **ASSERTED** vs **LAWFUL** vs **PRACTICED** vs **EFFECT** (prevents “should→is” collapse).
+- **Actor/scope/quantifier discipline**: structured attribution and scope reduces silent overgeneralization.
+- **Auditable credence**: credence changes are constrained by linked evidence; “confidence theater” is treated as a failure mode.
+
+This maps cleanly onto agent memory:
+- “Memory entries” are **claims**.
+- “Sources/resources/logs” are evidence artifacts.
+- “Consolidation” is claim revision and synthesis.
+
+### 10.2 Corrections should be append-only, not overwrites
+
+Most memory systems treat corrections as “update the item in place”. Humans usually don’t: they keep a trace (“I used to believe X”) and integrate the correction into a richer history, especially for identity-tied beliefs.
+
+Reality Check’s plan explicitly pushes toward **append-only correction semantics**:
+- record corrections/updates as first-class artifacts (“supersedes/retracts” links),
+- keep a `Corrections & Updates` log for auditability and recency,
+- propagate impacts to affected claims (and record the change).
+
+Synthesis implication for agent memory:
+- Model durable memories as **versioned records**:
+  - keep the old value (with timestamps + provenance),
+  - add a new value that *supersedes* it,
+  - allow queries to retrieve “current best” by default, but preserve historical versions for explainability and safety.
+
+This is especially relevant for:
+- preferences that are contextual (“I prefer X when Y”),
+- time-varying facts (roles, plans),
+- strongly-held or identity-level beliefs (higher inertia; require stronger evidence or explicit user confirmation).
+
+### 10.3 Multi-timescale consolidation (link to “Nested Learning”)
+
+Reality Check treats “analysis over time” as a primary workflow problem: content gets revisited, updated, corrected, and re-synthesized.
+
+Nested Learning’s “continuum memory system” framing provides a useful conceptual bridge: consolidation should operate on **multiple time scales**, with different retention/overwrite rules.
+
+A synthesis-ready consolidation scheme (aligned with both):
+- **Fast (per-turn / per-session):** write transcripts and a small working summary (high fidelity, high risk).
+- **Medium (daily/weekly):** extract and dedupe “semantic facts”, promote stable items, and generate episodic event objects (versioned).
+- **Slow (monthly/quarterly):** reconcile conflicts, re-index/re-embed, and run “identity/core belief” audits (changes require higher justification; keep full revision history).
+
+Key design point: “memory consolidation” should mean **structure + provenance + revision**, not just “summarize and overwrite”.
+
 ## Corrections & Updates
 
 - This synthesis is grounded in the local deep dives (`ANALYSIS-*.md`) and vendored snapshots for OpenClaw/ClawVault.
 - External comparisons (Letta/Mem0) are based on their public READMEs and cited paper(s) as of 2026-02-21; treat product claims as “as stated by authors” unless reproduced.
+- 2026-02-21: Added an arXiv-focused literature scan (benchmarks + recent “memory systems” + poisoning/security papers). This is not exhaustive; it’s a starting bibliography for deeper per-paper reference summaries if needed.
+- 2026-02-21: Added Reality Check notes on correction-aware provenance (append-only correction semantics) and connected them to multi-timescale consolidation and Nested Learning’s continuum-memory framing.
