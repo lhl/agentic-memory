@@ -26,10 +26,10 @@ Research collection on agent memory architectures, persistence patterns, and out
 ```
 agentic-memory/
 ├── README.md                          ← this file
-├── 1-full-agent-memory-build.jpg      ← jumperz card 1: memory storage
-├── 2-feeds-into.jpg                   ← jumperz card 2: memory intelligence
 │
 ├── references/                        ← summarized reference docs (markdown w/ frontmatter)
+│   ├── 1-full-agent-memory-build.jpg  ← jumperz card 1: memory storage
+│   ├── 2-feeds-into.jpg               ← jumperz card 2: memory intelligence
 │   ├── jumperz-agent-memory-stack.md
 │   ├── joelhooks-adr-0077-memory-system-next-phase.md
 │   ├── coolmanns-openclaw-memory-architecture.md

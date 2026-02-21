@@ -12,8 +12,8 @@ phases:
   advanced: 14 pieces
   total: 31 pieces
 images:
-  - ../1-full-agent-memory-build.jpg
-  - ../2-feeds-into.jpg
+  - ./1-full-agent-memory-build.jpg
+  - ./2-feeds-into.jpg
 ---
 
 # Full Agent Memory Build — 31-Piece Memory Stack
