@@ -65,11 +65,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/chhikara-mem0.md`
 - [x] Analysis: `ANALYSIS-arxiv-2504.19413-mem0.md`
 
-### [ ] arXiv:2506.21605 — MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents — Tan et al.
-- [ ] PDF: `references/papers/arxiv-2506.21605.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2506.21605.md`
-- [ ] Reference summary: `references/tan-membench.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2506.21605-membench.md`
+### [x] arXiv:2506.21605 — MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents — Tan et al.
+- [x] PDF: `references/papers/arxiv-2506.21605.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2506.21605.md`
+- [x] Reference summary: `references/tan-membench.md`
+- [x] Analysis: `ANALYSIS-arxiv-2506.21605-membench.md`
 
 ### [ ] arXiv:2507.03724 — MemOS: A Memory OS for AI System — Li et al.
 - [ ] PDF: `references/papers/arxiv-2507.03724.pdf`

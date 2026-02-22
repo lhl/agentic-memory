@@ -27,6 +27,7 @@ Research collection on agent memory architectures, persistence patterns, and out
 | [anokhin-arigraph](references/anokhin-arigraph.md) | Anokhin et al. | **AriGraph**: knowledge-graph world model that links **episodic observation nodes** to extracted semantic triplets; two-stage retrieval (semantic→episodic) for planning/exploration in text-game environments. |
 | [behrouz-titans](references/behrouz-titans.md) | Behrouz et al. | **Titans**: long-context architecture with an online-updated **neural memory module** (test-time learning) plus persistent task memory; provides explicit primitives for surprise-based salience and forgetting. |
 | [ahn-hema](references/ahn-hema.md) | Ahn | **HEMA**: hippocampus-inspired dual memory for long conversations (running compact summary + FAISS episodic vector store) with explicit prompt budgeting, pruning (“semantic forgetting”), and summary-of-summaries consolidation. |
+| [tan-membench](references/tan-membench.md) | Tan et al. | **MemBench**: benchmark/dataset for agent memory covering **participation vs observation** scenarios and **factual vs reflective** memory, with metrics for accuracy/recall/capacity and read/write-time efficiency. |
 
 ## Deep Dive Analyses
 
@@ -60,6 +61,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-arxiv-2407.04363-arigraph](ANALYSIS-arxiv-2407.04363-arigraph.md) | `references/anokhin-arigraph.md` + `references/papers/arxiv-2407.04363.pdf` | System deep dive emphasizing episodic↔semantic memory linking, graph-structured retrieval for planning/exploration, and implications for shisad episode objects + provenance + correction semantics |
 | [ANALYSIS-arxiv-2501.00663-titans](ANALYSIS-arxiv-2501.00663-titans.md) | `references/behrouz-titans.md` + `references/papers/arxiv-2501.00663.pdf` | Architecture deep dive emphasizing test-time-learning neural memory (surprise/momentum/forgetting), Titans MAC/MAG/MAL variants, and how to translate salience/decay ideas into shisad’s external memory framework |
 | [ANALYSIS-arxiv-2504.16754-hema](ANALYSIS-arxiv-2504.16754-hema.md) | `references/ahn-hema.md` + `references/papers/arxiv-2504.16754.pdf` | System deep dive emphasizing dual memory (summary + vector store), explicit prompt budgeting, pruning/consolidation policies, and evaluation-rigor cautions for shisad adoption |
+| [ANALYSIS-arxiv-2506.21605-membench](ANALYSIS-arxiv-2506.21605-membench.md) | `references/tan-membench.md` + `references/papers/arxiv-2506.21605.pdf` | Benchmark deep dive emphasizing multi-scenario (participant vs observer) and multi-level (factual vs reflective) evaluation, plus latency/capacity metrics and implications for shisad eval harnesses |
 
 ## Source Threads & Links
 
