@@ -181,11 +181,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/liu-simplemem.md`
 - [x] Analysis: `ANALYSIS-arxiv-2601.02553-simplemem.md`
 
-### [ ] arXiv:2502.12110 — A-MEM: Agentic Memory for LLM Agents — Xu et al.
-- [ ] PDF: `references/papers/arxiv-2502.12110.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2502.12110.md`
-- [ ] Reference summary: `references/xu-a-mem.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2502.12110-a-mem.md`
+### [x] arXiv:2502.12110 — A-MEM: Agentic Memory for LLM Agents — Xu et al.
+- [x] PDF: `references/papers/arxiv-2502.12110.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2502.12110.md`
+- [x] Reference summary: `references/xu-a-mem.md`
+- [x] Analysis: `ANALYSIS-arxiv-2502.12110-a-mem.md`
 
 ### [ ] arXiv:2503.21760 — MemInsight: Autonomous Memory Augmentation for LLM Agents — Salama et al.
 - [ ] PDF: `references/papers/arxiv-2503.21760.pdf`
