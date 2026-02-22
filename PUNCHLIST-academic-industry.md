@@ -243,6 +243,6 @@ Conventions (see `templates/README.md`):
 
 ## Final deliverable
 
-### [ ] `ANALYSIS-academic-industry.md`
+### [x] `ANALYSIS-academic-industry.md`
 
 Goal: a synthesis/comparison across the academic + industry papers/systems (benchmarks, architectures, attacks), explicitly mapping to `shisad` as the implementation reference point (`/home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md`) and calling out what’s missing, what’s risky, and what’s ready to steal.
