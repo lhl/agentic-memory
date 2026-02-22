@@ -205,11 +205,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/yan-gam.md`
 - [x] Analysis: `ANALYSIS-arxiv-2511.18423-gam.md`
 
-### [ ] arXiv:2512.24601 — Recursive Language Models — Zhang et al.
-- [ ] PDF: `references/papers/arxiv-2512.24601.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2512.24601.md`
-- [ ] Reference summary: `references/zhang-recursive-language-models.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2512.24601-recursive-language-models.md`
+### [x] arXiv:2512.24601 — Recursive Language Models — Zhang et al.
+- [x] PDF: `references/papers/arxiv-2512.24601.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2512.24601.md`
+- [x] Reference summary: `references/zhang-recursive-language-models.md`
+- [x] Analysis: `ANALYSIS-arxiv-2512.24601-recursive-language-models.md`
 
 ### [ ] arXiv:2502.00592 — M+: Extending MemoryLLM with Scalable Long-Term Memory — Wang et al.
 - [ ] PDF: `references/papers/arxiv-2502.00592.pdf`
