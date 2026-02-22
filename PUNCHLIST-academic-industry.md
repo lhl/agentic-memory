@@ -101,11 +101,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/wei-evo-memory.md`
 - [x] Analysis: `ANALYSIS-arxiv-2511.20857-evo-memory.md`
 
-### [ ] arXiv:2512.12686 — Memoria: A Scalable Agentic Memory Framework for Personalized Conversational AI — Sarin et al.
-- [ ] PDF: `references/papers/arxiv-2512.12686.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2512.12686.md`
-- [ ] Reference summary: `references/sarin-memoria.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2512.12686-memoria.md`
+### [x] arXiv:2512.12686 — Memoria: A Scalable Agentic Memory Framework for Personalized Conversational AI — Sarin et al.
+- [x] PDF: `references/papers/arxiv-2512.12686.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2512.12686.md`
+- [x] Reference summary: `references/sarin-memoria.md`
+- [x] Analysis: `ANALYSIS-arxiv-2512.12686-memoria.md`
 
 ### [ ] arXiv:2512.12818 — Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects — Latimer et al.
 - [ ] PDF: `references/papers/arxiv-2512.12818.pdf`
