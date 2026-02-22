@@ -137,11 +137,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/li-timem.md`
 - [x] Analysis: `ANALYSIS-arxiv-2601.02845-timem.md`
 
-### [ ] arXiv:2601.05504 — Memory Poisoning Attack and Defense on Memory Based LLM-Agents — Sunil et al.
-- [ ] PDF: `references/papers/arxiv-2601.05504.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2601.05504.md`
-- [ ] Reference summary: `references/sunil-memory-poisoning-attack-defense.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2601.05504-memory-poisoning-attack-defense.md`
+### [x] arXiv:2601.05504 — Memory Poisoning Attack and Defense on Memory Based LLM-Agents — Sunil et al.
+- [x] PDF: `references/papers/arxiv-2601.05504.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2601.05504.md`
+- [x] Reference summary: `references/sunil-memory-poisoning-attack-defense.md`
+- [x] Analysis: `ANALYSIS-arxiv-2601.05504-memory-poisoning-attack-defense.md`
 
 ### [ ] arXiv:2601.06377 — HiMem: Hierarchical Long-Term Memory for LLM Long-Horizon Agents — Zhang et al.
 - [ ] PDF: `references/papers/arxiv-2601.06377.pdf`
