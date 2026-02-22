@@ -113,11 +113,11 @@ Conventions (see `templates/README.md`):
 - [ ] Reference summary: `references/latimer-hindsight.md`
 - [ ] Analysis: `ANALYSIS-arxiv-2512.12818-hindsight.md`
 
-### [ ] arXiv:2512.24695 — Nested Learning: The Illusion of Deep Learning Architectures — Behrouz et al.
-- [ ] PDF: `references/papers/arxiv-2512.24695.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2512.24695.md`
-- [ ] Reference summary: `references/behrouz-nested-learning.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2512.24695-nested-learning.md`
+### [x] arXiv:2512.24695 — Nested Learning: The Illusion of Deep Learning Architectures — Behrouz et al.
+- [x] PDF: `references/papers/arxiv-2512.24695.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2512.24695.md`
+- [x] Reference summary: `references/behrouz-nested-learning.md`
+- [x] Analysis: `ANALYSIS-arxiv-2512.24695-nested-learning.md`
 
 ### [ ] arXiv:2601.01885 — Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents (AgeMem) — Yu et al.
 - [ ] PDF: `references/papers/arxiv-2601.01885.pdf`
