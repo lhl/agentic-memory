@@ -17,11 +17,11 @@ Conventions (see `templates/README.md`):
 
 ## P0 — Papers already cited in `ANALYSIS.md` (must deep dive)
 
-### [ ] arXiv:2402.17753 — Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo) — Maharana et al.
-- [ ] PDF: `references/papers/arxiv-2402.17753.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2402.17753.md`
-- [ ] Reference summary: `references/maharana-locomo.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2402.17753-locomo.md`
+### [x] arXiv:2402.17753 — Evaluating Very Long-Term Conversational Memory of LLM Agents (LoCoMo) — Maharana et al.
+- [x] PDF: `references/papers/arxiv-2402.17753.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2402.17753.md`
+- [x] Reference summary: `references/maharana-locomo.md`
+- [x] Analysis: `ANALYSIS-arxiv-2402.17753-locomo.md`
 
 ### [ ] arXiv:2407.04363 — AriGraph: Learning Knowledge Graph World Models with Episodic Memory for LLM Agents — Anokhin et al.
 - [ ] PDF: `references/papers/arxiv-2407.04363.pdf`
@@ -29,11 +29,11 @@ Conventions (see `templates/README.md`):
 - [ ] Reference summary: `references/anokhin-arigraph.md`
 - [ ] Analysis: `ANALYSIS-arxiv-2407.04363-arigraph.md`
 
-### [ ] arXiv:2410.10813 — LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory — Wu et al.
-- [ ] PDF: `references/papers/arxiv-2410.10813.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2410.10813.md`
-- [ ] Reference summary: `references/wu-longmemeval.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2410.10813-longmemeval.md`
+### [x] arXiv:2410.10813 — LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory — Wu et al.
+- [x] PDF: `references/papers/arxiv-2410.10813.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2410.10813.md`
+- [x] Reference summary: `references/wu-longmemeval.md`
+- [x] Analysis: `ANALYSIS-arxiv-2410.10813-longmemeval.md`
 
 ### [ ] arXiv:2501.00663 — Titans: Learning to Memorize at Test Time — Behrouz et al.
 - [ ] PDF: `references/papers/arxiv-2501.00663.pdf`
@@ -149,11 +149,11 @@ Conventions (see `templates/README.md`):
 - [ ] Reference summary: `references/zhang-himem.md`
 - [ ] Analysis: `ANALYSIS-arxiv-2601.06377-himem.md`
 
-### [ ] arXiv:2602.01313 — EverMemBench: Benchmarking Long-Term Interactive Memory in Large Language Models — Hu et al.
-- [ ] PDF: `references/papers/arxiv-2602.01313.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2602.01313.md`
-- [ ] Reference summary: `references/hu-evermembench.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2602.01313-evermembench.md`
+### [x] arXiv:2602.01313 — EverMemBench: Benchmarking Long-Term Interactive Memory in Large Language Models — Hu et al.
+- [x] PDF: `references/papers/arxiv-2602.01313.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2602.01313.md`
+- [x] Reference summary: `references/hu-evermembench.md`
+- [x] Analysis: `ANALYSIS-arxiv-2602.01313-evermembench.md`
 
 ### [ ] arXiv:2602.02369 — Live-Evo: Online Evolution of Agentic Memory from Continuous Feedback — Zhang et al.
 - [ ] PDF: `references/papers/arxiv-2602.02369.pdf`
@@ -161,11 +161,11 @@ Conventions (see `templates/README.md`):
 - [ ] Reference summary: `references/zhang-live-evo.md`
 - [ ] Analysis: `ANALYSIS-arxiv-2602.02369-live-evo.md`
 
-### [ ] arXiv:2602.10715 — Locomo-Plus: Beyond-Factual Cognitive Memory Evaluation Framework for LLM Agents — Li et al.
-- [ ] PDF: `references/papers/arxiv-2602.10715.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2602.10715.md`
-- [ ] Reference summary: `references/li-locomoplus.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2602.10715-locomoplus.md`
+### [x] arXiv:2602.10715 — Locomo-Plus: Beyond-Factual Cognitive Memory Evaluation Framework for LLM Agents — Li et al.
+- [x] PDF: `references/papers/arxiv-2602.10715.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2602.10715.md`
+- [x] Reference summary: `references/li-locomoplus.md`
+- [x] Analysis: `ANALYSIS-arxiv-2602.10715-locomoplus.md`
 
 ## P1 — Additional papers to include (recommended for academic/industry synthesis)
 
