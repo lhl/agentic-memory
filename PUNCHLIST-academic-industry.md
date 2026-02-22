@@ -71,11 +71,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/tan-membench.md`
 - [x] Analysis: `ANALYSIS-arxiv-2506.21605-membench.md`
 
-### [ ] arXiv:2507.03724 — MemOS: A Memory OS for AI System — Li et al.
-- [ ] PDF: `references/papers/arxiv-2507.03724.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2507.03724.md`
-- [ ] Reference summary: `references/li-memos.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2507.03724-memos.md`
+### [x] arXiv:2507.03724 — MemOS: A Memory OS for AI System — Li et al.
+- [x] PDF: `references/papers/arxiv-2507.03724.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2507.03724.md`
+- [x] Reference summary: `references/li-memos.md`
+- [x] Analysis: `ANALYSIS-arxiv-2507.03724-memos.md`
 
 ### [ ] arXiv:2508.19828 — Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning — Yan et al.
 - [ ] PDF: `references/papers/arxiv-2508.19828.pdf`
