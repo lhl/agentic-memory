@@ -187,11 +187,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/xu-a-mem.md`
 - [x] Analysis: `ANALYSIS-arxiv-2502.12110-a-mem.md`
 
-### [ ] arXiv:2503.21760 — MemInsight: Autonomous Memory Augmentation for LLM Agents — Salama et al.
-- [ ] PDF: `references/papers/arxiv-2503.21760.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2503.21760.md`
-- [ ] Reference summary: `references/salama-meminsight.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2503.21760-meminsight.md`
+### [x] arXiv:2503.21760 — MemInsight: Autonomous Memory Augmentation for LLM Agents — Salama et al.
+- [x] PDF: `references/papers/arxiv-2503.21760.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2503.21760.md`
+- [x] Reference summary: `references/salama-meminsight.md`
+- [x] Analysis: `ANALYSIS-arxiv-2503.21760-meminsight.md`
 
 ### [ ] arXiv:2512.10696 — Remember Me, Refine Me: A Dynamic Procedural Memory Framework for Experience-Driven Agent Evolution (ReMe) — Cao et al.
 - [ ] PDF: `references/papers/arxiv-2512.10696.pdf`
