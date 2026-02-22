@@ -77,11 +77,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/li-memos.md`
 - [x] Analysis: `ANALYSIS-arxiv-2507.03724-memos.md`
 
-### [ ] arXiv:2508.19828 — Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning — Yan et al.
-- [ ] PDF: `references/papers/arxiv-2508.19828.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2508.19828.md`
-- [ ] Reference summary: `references/yan-memory-r1.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2508.19828-memory-r1.md`
+### [x] arXiv:2508.19828 — Memory-R1: Enhancing Large Language Model Agents to Manage and Utilize Memories via Reinforcement Learning — Yan et al.
+- [x] PDF: `references/papers/arxiv-2508.19828.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2508.19828.md`
+- [x] Reference summary: `references/yan-memory-r1.md`
+- [x] Analysis: `ANALYSIS-arxiv-2508.19828-memory-r1.md`
 
 ### [ ] arXiv:2510.08601 — Mnemosyne: An Unsupervised, Human-Inspired Long-Term Memory Architecture for Edge-Based LLMs — Jonelagadda et al.
 - [ ] PDF: `references/papers/arxiv-2510.08601.pdf`
