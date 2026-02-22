@@ -23,11 +23,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/maharana-locomo.md`
 - [x] Analysis: `ANALYSIS-arxiv-2402.17753-locomo.md`
 
-### [ ] arXiv:2407.04363 — AriGraph: Learning Knowledge Graph World Models with Episodic Memory for LLM Agents — Anokhin et al.
-- [ ] PDF: `references/papers/arxiv-2407.04363.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2407.04363.md`
-- [ ] Reference summary: `references/anokhin-arigraph.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2407.04363-arigraph.md`
+### [x] arXiv:2407.04363 — AriGraph: Learning Knowledge Graph World Models with Episodic Memory for LLM Agents — Anokhin et al.
+- [x] PDF: `references/papers/arxiv-2407.04363.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2407.04363.md`
+- [x] Reference summary: `references/anokhin-arigraph.md`
+- [x] Analysis: `ANALYSIS-arxiv-2407.04363-arigraph.md`
 
 ### [x] arXiv:2410.10813 — LongMemEval: Benchmarking Chat Assistants on Long-Term Interactive Memory — Wu et al.
 - [x] PDF: `references/papers/arxiv-2410.10813.pdf`
