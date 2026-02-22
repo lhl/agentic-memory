@@ -217,11 +217,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/wang-m-plus.md`
 - [x] Analysis: `ANALYSIS-arxiv-2502.00592-m-plus.md`
 
-### [ ] arXiv:2602.05665 — Graph-based Agent Memory: Taxonomy, Techniques, and Applications — Yang et al.
-- [ ] PDF: `references/papers/arxiv-2602.05665.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2602.05665.md`
-- [ ] Reference summary: `references/yang-graph-based-agent-memory-taxonomy.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2602.05665-graph-based-agent-memory-taxonomy.md`
+### [x] arXiv:2602.05665 — Graph-based Agent Memory: Taxonomy, Techniques, and Applications — Yang et al.
+- [x] PDF: `references/papers/arxiv-2602.05665.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2602.05665.md`
+- [x] Reference summary: `references/yang-graph-based-agent-memory-taxonomy.md`
+- [x] Analysis: `ANALYSIS-arxiv-2602.05665-graph-based-agent-memory-taxonomy.md`
 
 ### [ ] arXiv:2404.13501 — A Survey on the Memory Mechanism of Large Language Model based Agents — Zhang et al.
 - [ ] PDF: `references/papers/arxiv-2404.13501.pdf`
