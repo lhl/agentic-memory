@@ -107,11 +107,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/sarin-memoria.md`
 - [x] Analysis: `ANALYSIS-arxiv-2512.12686-memoria.md`
 
-### [ ] arXiv:2512.12818 — Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects — Latimer et al.
-- [ ] PDF: `references/papers/arxiv-2512.12818.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2512.12818.md`
-- [ ] Reference summary: `references/latimer-hindsight.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2512.12818-hindsight.md`
+### [x] arXiv:2512.12818 — Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects — Latimer et al.
+- [x] PDF: `references/papers/arxiv-2512.12818.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2512.12818.md`
+- [x] Reference summary: `references/latimer-hindsight.md`
+- [x] Analysis: `ANALYSIS-arxiv-2512.12818-hindsight.md`
 
 ### [x] arXiv:2512.24695 — Nested Learning: The Illusion of Deep Learning Architectures — Behrouz et al.
 - [x] PDF: `references/papers/arxiv-2512.24695.pdf`
