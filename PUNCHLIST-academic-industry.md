@@ -41,11 +41,11 @@ Conventions (see `templates/README.md`):
 - [ ] Reference summary: `references/behrouz-titans.md`
 - [ ] Analysis: `ANALYSIS-arxiv-2501.00663-titans.md`
 
-### [ ] arXiv:2501.13956 — Zep: A Temporal Knowledge Graph Architecture for Agent Memory — Rasmussen et al.
-- [ ] PDF: `references/papers/arxiv-2501.13956.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2501.13956.md`
-- [ ] Reference summary: `references/rasmussen-zep.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2501.13956-zep.md`
+### [x] arXiv:2501.13956 — Zep: A Temporal Knowledge Graph Architecture for Agent Memory — Rasmussen et al.
+- [x] PDF: `references/papers/arxiv-2501.13956.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2501.13956.md`
+- [x] Reference summary: `references/rasmussen-zep.md`
+- [x] Analysis: `ANALYSIS-arxiv-2501.13956-zep.md`
 
 ### [ ] arXiv:2503.03704 — Memory Injection Attacks on LLM Agents via Query-Only Interaction (MINJA) — Dong et al.
 - [ ] PDF: `references/papers/arxiv-2503.03704.pdf`
