@@ -35,11 +35,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/wu-longmemeval.md`
 - [x] Analysis: `ANALYSIS-arxiv-2410.10813-longmemeval.md`
 
-### [ ] arXiv:2501.00663 — Titans: Learning to Memorize at Test Time — Behrouz et al.
-- [ ] PDF: `references/papers/arxiv-2501.00663.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2501.00663.md`
-- [ ] Reference summary: `references/behrouz-titans.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2501.00663-titans.md`
+### [x] arXiv:2501.00663 — Titans: Learning to Memorize at Test Time — Behrouz et al.
+- [x] PDF: `references/papers/arxiv-2501.00663.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2501.00663.md`
+- [x] Reference summary: `references/behrouz-titans.md`
+- [x] Analysis: `ANALYSIS-arxiv-2501.00663-titans.md`
 
 ### [x] arXiv:2501.13956 — Zep: A Temporal Knowledge Graph Architecture for Agent Memory — Rasmussen et al.
 - [x] PDF: `references/papers/arxiv-2501.13956.pdf`
