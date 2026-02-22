@@ -95,11 +95,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/patel-engram.md`
 - [x] Analysis: `ANALYSIS-arxiv-2511.12960-engram.md`
 
-### [ ] arXiv:2511.20857 — Evo-Memory: Benchmarking LLM Agent Test-time Learning with Self-Evolving Memory — Wei et al.
-- [ ] PDF: `references/papers/arxiv-2511.20857.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2511.20857.md`
-- [ ] Reference summary: `references/wei-evo-memory.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2511.20857-evo-memory.md`
+### [x] arXiv:2511.20857 — Evo-Memory: Benchmarking LLM Agent Test-time Learning with Self-Evolving Memory — Wei et al.
+- [x] PDF: `references/papers/arxiv-2511.20857.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2511.20857.md`
+- [x] Reference summary: `references/wei-evo-memory.md`
+- [x] Analysis: `ANALYSIS-arxiv-2511.20857-evo-memory.md`
 
 ### [ ] arXiv:2512.12686 — Memoria: A Scalable Agentic Memory Framework for Personalized Conversational AI — Sarin et al.
 - [ ] PDF: `references/papers/arxiv-2512.12686.pdf`
