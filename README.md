@@ -23,6 +23,7 @@ Research collection on agent memory architectures, persistence patterns, and out
 | [chhikara-mem0](references/chhikara-mem0.md) | Chhikara et al. | **Mem0**: production-oriented long-term memory pipeline with explicit ops (**ADD/UPDATE/DELETE/NOOP**) and an optional **graph memory** variant; reports quality + token/latency tradeoffs on LoCoMo. |
 | [rasmussen-zep](references/rasmussen-zep.md) | Rasmussen et al. | **Zep**: production memory layer built on **Graphiti**, a **bi-temporal** knowledge graph (episodes → entities/facts → communities) with validity intervals and invalidation-based corrections; evaluated on DMR + LongMemEval. |
 | [behrouz-nested-learning](references/behrouz-nested-learning.md) | Behrouz et al. | **Nested Learning / CMS / Hope**: reframes memory as **multi-timescale update dynamics** (continuum memory blocks updated at different frequencies) with implications for consolidation and “corrections without forgetting”. |
+| [dong-minja](references/dong-minja.md) | Dong et al. | **MINJA**: practical **memory injection attack** on “memory-as-demonstrations” agents via query-only interaction (bridging steps + progressive shortening); motivates write-time gates, isolation, and safer memory representations. |
 
 ## Deep Dive Analyses
 
@@ -51,6 +52,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-arxiv-2504.19413-mem0](ANALYSIS-arxiv-2504.19413-mem0.md) | `references/chhikara-mem0.md` + `references/papers/arxiv-2504.19413.pdf` | System deep dive emphasizing explicit memory ops, graph-memory tradeoffs, deployment metrics (tokens/p95), and shisad mapping (versioned corrections vs delete) |
 | [ANALYSIS-arxiv-2501.13956-zep](ANALYSIS-arxiv-2501.13956-zep.md) | `references/rasmussen-zep.md` + `references/papers/arxiv-2501.13956.pdf` | System deep dive emphasizing bi-temporal validity semantics, episodic+semantic+community graph tiers, hybrid retrieval (BM25/embeddings/BFS), and implications for shisad versioned memory |
 | [ANALYSIS-arxiv-2512.24695-nested-learning](ANALYSIS-arxiv-2512.24695-nested-learning.md) | `references/behrouz-nested-learning.md` + `references/papers/arxiv-2512.24695.pdf` | Conceptual deep dive on multi-timescale “continuum memory” and consolidation dynamics; mapping to shisad tiered memory + versioned corrections |
+| [ANALYSIS-arxiv-2503.03704-minja](ANALYSIS-arxiv-2503.03704-minja.md) | `references/dong-minja.md` + `references/papers/arxiv-2503.03704.pdf` | Security deep dive on query-only memory injection attacks; implications for write-policy, provenance/taint, isolation, and “don’t store demonstrations” patterns |
 
 ## Source Threads & Links
 

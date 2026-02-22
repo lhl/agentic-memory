@@ -47,11 +47,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/rasmussen-zep.md`
 - [x] Analysis: `ANALYSIS-arxiv-2501.13956-zep.md`
 
-### [ ] arXiv:2503.03704 — Memory Injection Attacks on LLM Agents via Query-Only Interaction (MINJA) — Dong et al.
-- [ ] PDF: `references/papers/arxiv-2503.03704.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2503.03704.md`
-- [ ] Reference summary: `references/dong-minja.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2503.03704-minja.md`
+### [x] arXiv:2503.03704 — Memory Injection Attacks on LLM Agents via Query-Only Interaction (MINJA) — Dong et al.
+- [x] PDF: `references/papers/arxiv-2503.03704.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2503.03704.md`
+- [x] Reference summary: `references/dong-minja.md`
+- [x] Analysis: `ANALYSIS-arxiv-2503.03704-minja.md`
 
 ### [ ] arXiv:2504.16754 — HEMA: A Hippocampus-Inspired Extended Memory Architecture for Long-Context AI Conversations — Ahn et al.
 - [ ] PDF: `references/papers/arxiv-2504.16754.pdf`
