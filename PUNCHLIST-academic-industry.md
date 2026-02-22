@@ -199,11 +199,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/cao-remember-me-refine-me.md`
 - [x] Analysis: `ANALYSIS-arxiv-2512.10696-remember-me-refine-me.md`
 
-### [ ] arXiv:2511.18423 — General Agentic Memory Via Deep Research (GAM) — Yan et al.
-- [ ] PDF: `references/papers/arxiv-2511.18423.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2511.18423.md`
-- [ ] Reference summary: `references/yan-gam.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2511.18423-gam.md`
+### [x] arXiv:2511.18423 — General Agentic Memory Via Deep Research (GAM) — Yan et al.
+- [x] PDF: `references/papers/arxiv-2511.18423.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2511.18423.md`
+- [x] Reference summary: `references/yan-gam.md`
+- [x] Analysis: `ANALYSIS-arxiv-2511.18423-gam.md`
 
 ### [ ] arXiv:2512.24601 — Recursive Language Models — Zhang et al.
 - [ ] PDF: `references/papers/arxiv-2512.24601.pdf`
