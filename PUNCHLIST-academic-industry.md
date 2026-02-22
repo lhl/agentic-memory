@@ -169,11 +169,11 @@ Conventions (see `templates/README.md`):
 
 ## P1 — Additional papers to include (recommended for academic/industry synthesis)
 
-### [ ] arXiv:2602.11243 — Evaluating Memory Structure in LLM Agents (StructMemEval) — Shutova et al.
-- [ ] PDF: `references/papers/arxiv-2602.11243.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2602.11243.md`
-- [ ] Reference summary: `references/shutova-structmemeval.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2602.11243-structmemeval.md`
+### [x] arXiv:2602.11243 — Evaluating Memory Structure in LLM Agents (StructMemEval) — Shutova et al.
+- [x] PDF: `references/papers/arxiv-2602.11243.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2602.11243.md`
+- [x] Reference summary: `references/shutova-structmemeval.md`
+- [x] Analysis: `ANALYSIS-arxiv-2602.11243-structmemeval.md`
 
 ### [ ] arXiv:2601.02553 — SimpleMem: Efficient Lifelong Memory for LLM Agents — Liu et al.
 - [ ] PDF: `references/papers/arxiv-2601.02553.pdf`
