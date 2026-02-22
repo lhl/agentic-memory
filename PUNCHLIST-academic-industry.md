@@ -53,11 +53,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/dong-minja.md`
 - [x] Analysis: `ANALYSIS-arxiv-2503.03704-minja.md`
 
-### [ ] arXiv:2504.16754 — HEMA: A Hippocampus-Inspired Extended Memory Architecture for Long-Context AI Conversations — Ahn et al.
-- [ ] PDF: `references/papers/arxiv-2504.16754.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2504.16754.md`
-- [ ] Reference summary: `references/ahn-hema.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2504.16754-hema.md`
+### [x] arXiv:2504.16754 — HEMA: A Hippocampus-Inspired Extended Memory Architecture for Long-Context AI Conversations — Ahn et al.
+- [x] PDF: `references/papers/arxiv-2504.16754.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2504.16754.md`
+- [x] Reference summary: `references/ahn-hema.md`
+- [x] Analysis: `ANALYSIS-arxiv-2504.16754-hema.md`
 
 ### [x] arXiv:2504.19413 — Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory — Chhikara et al.
 - [x] PDF: `references/papers/arxiv-2504.19413.pdf`
