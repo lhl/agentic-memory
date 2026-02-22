@@ -83,11 +83,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/yan-memory-r1.md`
 - [x] Analysis: `ANALYSIS-arxiv-2508.19828-memory-r1.md`
 
-### [ ] arXiv:2510.08601 — Mnemosyne: An Unsupervised, Human-Inspired Long-Term Memory Architecture for Edge-Based LLMs — Jonelagadda et al.
-- [ ] PDF: `references/papers/arxiv-2510.08601.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2510.08601.md`
-- [ ] Reference summary: `references/jonelagadda-mnemosyne.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2510.08601-mnemosyne.md`
+### [x] arXiv:2510.08601 — Mnemosyne: An Unsupervised, Human-Inspired Long-Term Memory Architecture for Edge-Based LLMs — Jonelagadda et al.
+- [x] PDF: `references/papers/arxiv-2510.08601.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2510.08601.md`
+- [x] Reference summary: `references/jonelagadda-mnemosyne.md`
+- [x] Analysis: `ANALYSIS-arxiv-2510.08601-mnemosyne.md`
 
 ### [ ] arXiv:2511.12960 — ENGRAM: Effective, Lightweight Memory Orchestration for Conversational Agents — Patel et al.
 - [ ] PDF: `references/papers/arxiv-2511.12960.pdf`
