@@ -175,11 +175,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/shutova-structmemeval.md`
 - [x] Analysis: `ANALYSIS-arxiv-2602.11243-structmemeval.md`
 
-### [ ] arXiv:2601.02553 — SimpleMem: Efficient Lifelong Memory for LLM Agents — Liu et al.
-- [ ] PDF: `references/papers/arxiv-2601.02553.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2601.02553.md`
-- [ ] Reference summary: `references/liu-simplemem.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2601.02553-simplemem.md`
+### [x] arXiv:2601.02553 — SimpleMem: Efficient Lifelong Memory for LLM Agents — Liu et al.
+- [x] PDF: `references/papers/arxiv-2601.02553.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2601.02553.md`
+- [x] Reference summary: `references/liu-simplemem.md`
+- [x] Analysis: `ANALYSIS-arxiv-2601.02553-simplemem.md`
 
 ### [ ] arXiv:2502.12110 — A-MEM: Agentic Memory for LLM Agents — Xu et al.
 - [ ] PDF: `references/papers/arxiv-2502.12110.pdf`
