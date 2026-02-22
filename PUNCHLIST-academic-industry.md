@@ -211,11 +211,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/zhang-recursive-language-models.md`
 - [x] Analysis: `ANALYSIS-arxiv-2512.24601-recursive-language-models.md`
 
-### [ ] arXiv:2502.00592 — M+: Extending MemoryLLM with Scalable Long-Term Memory — Wang et al.
-- [ ] PDF: `references/papers/arxiv-2502.00592.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2502.00592.md`
-- [ ] Reference summary: `references/wang-m-plus.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2502.00592-m-plus.md`
+### [x] arXiv:2502.00592 — M+: Extending MemoryLLM with Scalable Long-Term Memory — Wang et al.
+- [x] PDF: `references/papers/arxiv-2502.00592.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2502.00592.md`
+- [x] Reference summary: `references/wang-m-plus.md`
+- [x] Analysis: `ANALYSIS-arxiv-2502.00592-m-plus.md`
 
 ### [ ] arXiv:2602.05665 — Graph-based Agent Memory: Taxonomy, Techniques, and Applications — Yang et al.
 - [ ] PDF: `references/papers/arxiv-2602.05665.pdf`
