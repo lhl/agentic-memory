@@ -125,11 +125,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/yu-agentic-memory.md`
 - [x] Analysis: `ANALYSIS-arxiv-2601.01885-agentic-memory.md`
 
-### [ ] arXiv:2601.02163 — EverMemOS: A Self-Organizing Memory Operating System for Structured Long-Horizon Reasoning — Hu et al.
-- [ ] PDF: `references/papers/arxiv-2601.02163.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2601.02163.md`
-- [ ] Reference summary: `references/hu-evermemos.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2601.02163-evermemos.md`
+### [x] arXiv:2601.02163 — EverMemOS: A Self-Organizing Memory Operating System for Structured Long-Horizon Reasoning — Hu et al.
+- [x] PDF: `references/papers/arxiv-2601.02163.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2601.02163.md`
+- [x] Reference summary: `references/hu-evermemos.md`
+- [x] Analysis: `ANALYSIS-arxiv-2601.02163-evermemos.md`
 
 ### [ ] arXiv:2601.02845 — TiMem: Temporal-Hierarchical Memory Consolidation for Long-Horizon Conversational Agents — Li et al.
 - [ ] PDF: `references/papers/arxiv-2601.02845.pdf`
