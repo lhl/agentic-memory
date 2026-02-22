@@ -20,6 +20,7 @@ Research collection on agent memory architectures, persistence patterns, and out
 | [li-locomoplus](references/li-locomoplus.md) | Li et al. | **LoCoMo-Plus**: evaluates beyond-factual “cognitive memory” (latent constraints like state/goals/values) under cue–trigger semantic disconnect, using constraint-consistency + LLM-judge evaluation. |
 | [maharana-locomo](references/maharana-locomo.md) | Maharana et al. | **LoCoMo** dataset + benchmark for very long-term multi-session conversations (300 turns, multimodal) grounded in personas + temporal event graphs; evaluates QA + event summarization + multimodal generation. |
 | [wu-longmemeval](references/wu-longmemeval.md) | Wu et al. | **LongMemEval** benchmark + design decomposition (**indexing → retrieval → reading**) and system optimizations (value granularity, key expansion, time-aware query expansion). |
+| [chhikara-mem0](references/chhikara-mem0.md) | Chhikara et al. | **Mem0**: production-oriented long-term memory pipeline with explicit ops (**ADD/UPDATE/DELETE/NOOP**) and an optional **graph memory** variant; reports quality + token/latency tradeoffs on LoCoMo. |
 
 ## Deep Dive Analyses
 
@@ -45,6 +46,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-arxiv-2402.17753-locomo](ANALYSIS-arxiv-2402.17753-locomo.md) | `references/maharana-locomo.md` + `references/papers/arxiv-2402.17753.pdf` | Dataset/benchmark critique with episodic-memory implications (event graphs, multimodal, RAG harm) and shisad mapping |
 | [ANALYSIS-arxiv-2410.10813-longmemeval](ANALYSIS-arxiv-2410.10813-longmemeval.md) | `references/wu-longmemeval.md` + `references/papers/arxiv-2410.10813.pdf` | Benchmark and system-design decomposition (indexing/retrieval/reading), with mapping to shisad primitives |
 | [ANALYSIS-arxiv-2602.10715-locomoplus](ANALYSIS-arxiv-2602.10715-locomoplus.md) | `references/li-locomoplus.md` + `references/papers/arxiv-2602.10715.pdf` | Beyond-factual “cognitive memory” benchmark critique (latent constraints) and implications for safe constraint/procedural memory |
+| [ANALYSIS-arxiv-2504.19413-mem0](ANALYSIS-arxiv-2504.19413-mem0.md) | `references/chhikara-mem0.md` + `references/papers/arxiv-2504.19413.pdf` | System deep dive emphasizing explicit memory ops, graph-memory tradeoffs, deployment metrics (tokens/p95), and shisad mapping (versioned corrections vs delete) |
 
 ## Source Threads & Links
 
@@ -66,6 +68,8 @@ agentic-memory/
 ├── ANALYSIS-coolmanns-openclaw-memory-architecture.md
 ├── ANALYSIS-drag88-agent-output-degradation.md
 ├── ANALYSIS-versatly-clawvault.md
+├── PUNCHLIST-academic-industry.md     ← tracking checklist for paper deep dives
+├── templates/                         ← templates for paper analyses/summaries
 │
 ├── references/                        ← summarized reference docs (markdown w/ frontmatter)
 │   ├── 1-full-agent-memory-build.jpg  ← jumperz card 1: memory storage
@@ -75,6 +79,15 @@ agentic-memory/
 │   ├── coolmanns-openclaw-memory-architecture.md
 │   ├── drag88-agent-output-degradation.md
 │   └── versatly-clawvault.md
+│   ├── hu-evermembench.md
+│   ├── li-locomoplus.md
+│   ├── maharana-locomo.md
+│   ├── wu-longmemeval.md
+│   ├── chhikara-mem0.md
+│   └── papers/                        ← archived PDFs + text snapshots
+│       ├── README.md
+│       ├── arxiv-*.pdf
+│       └── arxiv-*.md
 │
 └── vendor/                            ← cloned source repos
     ├── openclaw-memory-architecture/  ← github.com/coolmanns/openclaw-memory-architecture

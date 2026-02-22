@@ -59,11 +59,11 @@ Conventions (see `templates/README.md`):
 - [ ] Reference summary: `references/ahn-hema.md`
 - [ ] Analysis: `ANALYSIS-arxiv-2504.16754-hema.md`
 
-### [ ] arXiv:2504.19413 — Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory — Chhikara et al.
-- [ ] PDF: `references/papers/arxiv-2504.19413.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2504.19413.md`
-- [ ] Reference summary: `references/chhikara-mem0.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2504.19413-mem0.md`
+### [x] arXiv:2504.19413 — Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory — Chhikara et al.
+- [x] PDF: `references/papers/arxiv-2504.19413.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2504.19413.md`
+- [x] Reference summary: `references/chhikara-mem0.md`
+- [x] Analysis: `ANALYSIS-arxiv-2504.19413-mem0.md`
 
 ### [ ] arXiv:2506.21605 — MemBench: Towards More Comprehensive Evaluation on the Memory of LLM-based Agents — Tan et al.
 - [ ] PDF: `references/papers/arxiv-2506.21605.pdf`
