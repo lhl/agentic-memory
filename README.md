@@ -32,6 +32,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | Synthesis | Based on | Focus |
 |----------|----------|-------|
 | [ANALYSIS](ANALYSIS.md) | `ANALYSIS-*.md` + shisad docs + Mem0/Letta baselines | Cross-system comparison (techniques + memory types), plus mapping to shisad and “traditional” RAG-ish memory |
+| [ANALYSIS-academic-industry](ANALYSIS-academic-industry.md) | paper `ANALYSIS-arxiv-*.md` + shisad plan | Academic/industry synthesis: benchmarks vs systems vs attacks, with “what’s missing in shisad” framing |
 
 | Analysis | Based on | Focus |
 |----------|----------|-------|
@@ -69,6 +70,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 agentic-memory/
 ├── README.md                          ← this file
 ├── ANALYSIS.md                         ← synthesis + comparison
+├── ANALYSIS-academic-industry.md       ← academic/industry synthesis
 ├── ANALYSIS-jumperz-agent-memory-stack.md
 ├── ANALYSIS-joelhooks-adr-0077-memory-system-next-phase.md
 ├── ANALYSIS-coolmanns-openclaw-memory-architecture.md
