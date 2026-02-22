@@ -223,11 +223,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/yang-graph-based-agent-memory-taxonomy.md`
 - [x] Analysis: `ANALYSIS-arxiv-2602.05665-graph-based-agent-memory-taxonomy.md`
 
-### [ ] arXiv:2404.13501 — A Survey on the Memory Mechanism of Large Language Model based Agents — Zhang et al.
-- [ ] PDF: `references/papers/arxiv-2404.13501.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2404.13501.md`
-- [ ] Reference summary: `references/zhang-survey-memory-mechanism.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2404.13501-survey-memory-mechanism.md`
+### [x] arXiv:2404.13501 — A Survey on the Memory Mechanism of Large Language Model based Agents — Zhang et al.
+- [x] PDF: `references/papers/arxiv-2404.13501.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2404.13501.md`
+- [x] Reference summary: `references/zhang-survey-memory-mechanism.md`
+- [x] Analysis: `ANALYSIS-arxiv-2404.13501-survey-memory-mechanism.md`
 
 ### [ ] arXiv:2512.13564 — Memory in the Age of AI Agents — Hu et al.
 - [ ] PDF: `references/papers/arxiv-2512.13564.pdf`
