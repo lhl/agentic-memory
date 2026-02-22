@@ -193,11 +193,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/salama-meminsight.md`
 - [x] Analysis: `ANALYSIS-arxiv-2503.21760-meminsight.md`
 
-### [ ] arXiv:2512.10696 — Remember Me, Refine Me: A Dynamic Procedural Memory Framework for Experience-Driven Agent Evolution (ReMe) — Cao et al.
-- [ ] PDF: `references/papers/arxiv-2512.10696.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2512.10696.md`
-- [ ] Reference summary: `references/cao-remember-me-refine-me.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2512.10696-remember-me-refine-me.md`
+### [x] arXiv:2512.10696 — Remember Me, Refine Me: A Dynamic Procedural Memory Framework for Experience-Driven Agent Evolution (ReMe) — Cao et al.
+- [x] PDF: `references/papers/arxiv-2512.10696.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2512.10696.md`
+- [x] Reference summary: `references/cao-remember-me-refine-me.md`
+- [x] Analysis: `ANALYSIS-arxiv-2512.10696-remember-me-refine-me.md`
 
 ### [ ] arXiv:2511.18423 — General Agentic Memory Via Deep Research (GAM) — Yan et al.
 - [ ] PDF: `references/papers/arxiv-2511.18423.pdf`
