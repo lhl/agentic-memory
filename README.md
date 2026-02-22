@@ -2,6 +2,20 @@
 
 Research collection on agent memory architectures, persistence patterns, and output quality maintenance for LLM-based agent systems.
 
+## Citation
+
+If you reference this repo’s summaries/analyses in academic or professional work, please cite:
+
+```bibtex
+@misc{lin_agentic_memory_2026,
+  author       = {Leonard Lin},
+  title        = {agentic-memory: Agentic Memory Research Collection (Summaries and Analyses)},
+  year         = {2026},
+  howpublished = {GitHub repository},
+  url          = {https://github.com/lhl/agentic-memory},
+}
+```
+
 ## Reference Summaries
 
 | Document | Author | Description |
