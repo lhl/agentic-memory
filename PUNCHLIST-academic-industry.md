@@ -235,11 +235,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/hu-memory-age-ai-agents.md`
 - [x] Analysis: `ANALYSIS-arxiv-2512.13564-memory-age-ai-agents.md`
 
-### [ ] arXiv:2310.08560 — MemGPT: Towards LLMs as Operating Systems — Packer et al.
-- [ ] PDF: `references/papers/arxiv-2310.08560.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2310.08560.md`
-- [ ] Reference summary: `references/packer-memgpt.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2310.08560-memgpt.md`
+### [x] arXiv:2310.08560 — MemGPT: Towards LLMs as Operating Systems — Packer et al.
+- [x] PDF: `references/papers/arxiv-2310.08560.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2310.08560.md`
+- [x] Reference summary: `references/packer-memgpt.md`
+- [x] Analysis: `ANALYSIS-arxiv-2310.08560-memgpt.md`
 
 ## Final deliverable
 
