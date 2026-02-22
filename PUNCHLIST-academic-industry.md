@@ -229,11 +229,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/zhang-survey-memory-mechanism.md`
 - [x] Analysis: `ANALYSIS-arxiv-2404.13501-survey-memory-mechanism.md`
 
-### [ ] arXiv:2512.13564 — Memory in the Age of AI Agents — Hu et al.
-- [ ] PDF: `references/papers/arxiv-2512.13564.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2512.13564.md`
-- [ ] Reference summary: `references/hu-memory-age-ai-agents.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2512.13564-memory-age-ai-agents.md`
+### [x] arXiv:2512.13564 — Memory in the Age of AI Agents — Hu et al.
+- [x] PDF: `references/papers/arxiv-2512.13564.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2512.13564.md`
+- [x] Reference summary: `references/hu-memory-age-ai-agents.md`
+- [x] Analysis: `ANALYSIS-arxiv-2512.13564-memory-age-ai-agents.md`
 
 ### [ ] arXiv:2310.08560 — MemGPT: Towards LLMs as Operating Systems — Packer et al.
 - [ ] PDF: `references/papers/arxiv-2310.08560.pdf`
