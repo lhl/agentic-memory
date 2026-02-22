@@ -155,11 +155,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/hu-evermembench.md`
 - [x] Analysis: `ANALYSIS-arxiv-2602.01313-evermembench.md`
 
-### [ ] arXiv:2602.02369 — Live-Evo: Online Evolution of Agentic Memory from Continuous Feedback — Zhang et al.
-- [ ] PDF: `references/papers/arxiv-2602.02369.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2602.02369.md`
-- [ ] Reference summary: `references/zhang-live-evo.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2602.02369-live-evo.md`
+### [x] arXiv:2602.02369 — Live-Evo: Online Evolution of Agentic Memory from Continuous Feedback — Zhang et al.
+- [x] PDF: `references/papers/arxiv-2602.02369.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2602.02369.md`
+- [x] Reference summary: `references/zhang-live-evo.md`
+- [x] Analysis: `ANALYSIS-arxiv-2602.02369-live-evo.md`
 
 ### [x] arXiv:2602.10715 — Locomo-Plus: Beyond-Factual Cognitive Memory Evaluation Framework for LLM Agents — Li et al.
 - [x] PDF: `references/papers/arxiv-2602.10715.pdf`
