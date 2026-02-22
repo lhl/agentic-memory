@@ -143,11 +143,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/sunil-memory-poisoning-attack-defense.md`
 - [x] Analysis: `ANALYSIS-arxiv-2601.05504-memory-poisoning-attack-defense.md`
 
-### [ ] arXiv:2601.06377 — HiMem: Hierarchical Long-Term Memory for LLM Long-Horizon Agents — Zhang et al.
-- [ ] PDF: `references/papers/arxiv-2601.06377.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2601.06377.md`
-- [ ] Reference summary: `references/zhang-himem.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2601.06377-himem.md`
+### [x] arXiv:2601.06377 — HiMem: Hierarchical Long-Term Memory for LLM Long-Horizon Agents — Zhang et al.
+- [x] PDF: `references/papers/arxiv-2601.06377.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2601.06377.md`
+- [x] Reference summary: `references/zhang-himem.md`
+- [x] Analysis: `ANALYSIS-arxiv-2601.06377-himem.md`
 
 ### [x] arXiv:2602.01313 — EverMemBench: Benchmarking Long-Term Interactive Memory in Large Language Models — Hu et al.
 - [x] PDF: `references/papers/arxiv-2602.01313.pdf`
