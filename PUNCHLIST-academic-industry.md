@@ -119,11 +119,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/behrouz-nested-learning.md`
 - [x] Analysis: `ANALYSIS-arxiv-2512.24695-nested-learning.md`
 
-### [ ] arXiv:2601.01885 — Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents (AgeMem) — Yu et al.
-- [ ] PDF: `references/papers/arxiv-2601.01885.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2601.01885.md`
-- [ ] Reference summary: `references/yu-agentic-memory.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2601.01885-agentic-memory.md`
+### [x] arXiv:2601.01885 — Agentic Memory: Learning Unified Long-Term and Short-Term Memory Management for Large Language Model Agents (AgeMem) — Yu et al.
+- [x] PDF: `references/papers/arxiv-2601.01885.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2601.01885.md`
+- [x] Reference summary: `references/yu-agentic-memory.md`
+- [x] Analysis: `ANALYSIS-arxiv-2601.01885-agentic-memory.md`
 
 ### [ ] arXiv:2601.02163 — EverMemOS: A Self-Organizing Memory Operating System for Structured Long-Horizon Reasoning — Hu et al.
 - [ ] PDF: `references/papers/arxiv-2601.02163.pdf`
