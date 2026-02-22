@@ -89,11 +89,11 @@ Conventions (see `templates/README.md`):
 - [x] Reference summary: `references/jonelagadda-mnemosyne.md`
 - [x] Analysis: `ANALYSIS-arxiv-2510.08601-mnemosyne.md`
 
-### [ ] arXiv:2511.12960 — ENGRAM: Effective, Lightweight Memory Orchestration for Conversational Agents — Patel et al.
-- [ ] PDF: `references/papers/arxiv-2511.12960.pdf`
-- [ ] Text snapshot: `references/papers/arxiv-2511.12960.md`
-- [ ] Reference summary: `references/patel-engram.md`
-- [ ] Analysis: `ANALYSIS-arxiv-2511.12960-engram.md`
+### [x] arXiv:2511.12960 — ENGRAM: Effective, Lightweight Memory Orchestration for Conversational Agents — Patel et al.
+- [x] PDF: `references/papers/arxiv-2511.12960.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2511.12960.md`
+- [x] Reference summary: `references/patel-engram.md`
+- [x] Analysis: `ANALYSIS-arxiv-2511.12960-engram.md`
 
 ### [ ] arXiv:2511.20857 — Evo-Memory: Benchmarking LLM Agent Test-time Learning with Self-Evolving Memory — Wei et al.
 - [ ] PDF: `references/papers/arxiv-2511.20857.pdf`
