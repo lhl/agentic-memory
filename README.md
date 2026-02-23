@@ -25,6 +25,7 @@ If you reference this repo’s summaries/analyses in academic or professional wo
 | [coolmanns-openclaw-memory-architecture](references/coolmanns-openclaw-memory-architecture.md) | coolmanns | **12-layer production memory stack** for OpenClaw with 14 agents. SQLite+FTS5 knowledge graph (3,108 facts), llama.cpp GPU embeddings (768d, 7ms), three runtime plugins (continuity, stability, graph-memory). 100% recall on 60-query benchmark. Includes activation/decay system, domain RAG, session boot sequences. |
 | [drag88-agent-output-degradation](references/drag88-agent-output-degradation.md) | @drag88 (Aswin) | **"Why Your Agent's Output Gets Worse Over Time"** — multi-agent convergence problem. 4-tier memory (working → episodic → semantic → procedural). 3-layer enforcement pipeline (YAML regex → Gemini LLM judge → self-learning loop). Core insight: convert expensive runtime LLM checks into free static regex rules over time. |
 | [versatly-clawvault](references/versatly-clawvault.md) | Versatly (@drag88) | **ClawVault** npm CLI tool — structured markdown memory vault with observation pipeline, knowledge graph, session lifecycle (wake/sleep/checkpoint), task/project primitives, Obsidian integration, OpenClaw hooks. 449+ tests. v2.6.1. |
+| [vstorm-memv](references/vstorm-memv.md) | vstorm-co | **memv** (PyPI: `memvee`) — Nemori-inspired predict-calibrate extraction + episode segmentation, plus Graphiti-style bi-temporal validity and hybrid retrieval (sqlite-vec + FTS5 + RRF) on SQLite. |
 
 ## Paper Reference Summaries (Academic / Industry)
 
@@ -46,6 +47,7 @@ If you reference this repo’s summaries/analyses in academic or professional wo
 | [xu-a-mem](references/xu-a-mem.md) | Xu et al. | **A‑Mem**: Zettelkasten-inspired note network with LLM-driven link generation and “memory evolution” (updating older note attributes as new evidence arrives); strong LoCoMo multi-hop/temporal gains with far lower token lengths than full-context (as reported). |
 | [salama-meminsight](references/salama-meminsight.md) | Salama et al. | **MemInsight**: autonomous memory augmentation that mines/annotates attributes (entity-centric + conversation-centric; turn/session granularity) and uses attribute-guided retrieval; large LoCoMo retrieval recall gains vs DPR RAG baseline (as reported). |
 | [rasmussen-zep](references/rasmussen-zep.md) | Rasmussen et al. | **Zep**: production memory layer built on **Graphiti**, a **bi-temporal** knowledge graph (episodes → entities/facts → communities) with validity intervals and invalidation-based corrections; evaluated on DMR + LongMemEval. |
+| [nan-nemori](references/nan-nemori.md) | Nan et al. | **Nemori**: cognitively-inspired self-organizing agent memory with semantic episode boundary detection + episodic narratives and a predict-calibrate loop that distills semantic knowledge from prediction gaps; strong LoCoMo + LongMemEvalS results (as reported). |
 | [li-memos](references/li-memos.md) | Li et al. | **MemOS**: OS-like memory control plane with MemCube (payload+metadata), lifecycle/scheduling, governance (ACL/TTL/audit), and multi-substrate memory (plaintext/activation/KV/parameter/LoRA). |
 | [yan-memory-r1](references/yan-memory-r1.md) | Yan et al. | **Memory-R1**: reinforcement-learned memory manager (ADD/UPDATE/DELETE/NOOP) + answer agent with learned memory distillation; data-efficient RL (PPO/GRPO) training with exact-match reward. |
 | [jonelagadda-mnemosyne](references/jonelagadda-mnemosyne.md) | Jonelagadda et al. | **Mnemosyne**: edge-friendly graph memory with substance/redundancy filters, probabilistic recall with decay/refresh, and a fixed-budget “core summary” for persona-level context. |
@@ -84,6 +86,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-coolmanns-openclaw-memory-architecture](ANALYSIS-coolmanns-openclaw-memory-architecture.md) | `references/coolmanns-openclaw-memory-architecture.md` + `vendor/openclaw-memory-architecture/` | Layered stack critique with benchmark-method verification, operational risks, doc drift notes |
 | [ANALYSIS-drag88-agent-output-degradation](ANALYSIS-drag88-agent-output-degradation.md) | `references/drag88-agent-output-degradation.md` | Convergence + enforcement pattern critique (judge→rule distillation), measurement gaps, risks |
 | [ANALYSIS-versatly-clawvault](ANALYSIS-versatly-clawvault.md) | `references/versatly-clawvault.md` + `vendor/clawvault/` | Product/tooling critique (surface area, hooks, qmd dependency), security posture, missing benchmarks |
+| [ANALYSIS-vstorm-memv](ANALYSIS-vstorm-memv.md) | `references/vstorm-memv.md` + `vendor/memv/` | Implementation critique of Nemori-inspired predict-calibrate extraction + bi-temporal validity + hybrid retrieval, with gaps/risks and shisad mapping |
 
 ## Paper Deep Dive Analyses (Academic / Industry)
 
@@ -107,6 +110,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-arxiv-2501.13956-zep](ANALYSIS-arxiv-2501.13956-zep.md) | `references/rasmussen-zep.md` + `references/papers/arxiv-2501.13956.pdf` | System deep dive emphasizing bi-temporal validity semantics, episodic+semantic+community graph tiers, hybrid retrieval (BM25/embeddings/BFS), and implications for shisad versioned memory |
 | [ANALYSIS-arxiv-2507.03724-memos](ANALYSIS-arxiv-2507.03724-memos.md) | `references/li-memos.md` + `references/papers/arxiv-2507.03724.pdf` | System deep dive emphasizing MemCube metadata, multi-substrate memory (plaintext/KV/parameter), lifecycle/scheduling/governance, and mapping to shisad primitives |
 | [ANALYSIS-arxiv-2508.19828-memory-r1](ANALYSIS-arxiv-2508.19828-memory-r1.md) | `references/yan-memory-r1.md` + `references/papers/arxiv-2508.19828.pdf` | RL deep dive emphasizing learned memory ops (ADD/UPDATE/DELETE/NOOP) + post-retrieval memory distillation, reward design, and what’s required to safely adopt this in shisad |
+| [ANALYSIS-arxiv-2508.03341-nemori](ANALYSIS-arxiv-2508.03341-nemori.md) | `references/nan-nemori.md` + `references/papers/arxiv-2508.03341.pdf` | System deep dive emphasizing episode segmentation (Two-Step Alignment) + predict-calibrate semantic distillation, reported LoCoMo/LongMemEvalS gains, and implications for shisad write gating + correction semantics |
 | [ANALYSIS-arxiv-2510.08601-mnemosyne](ANALYSIS-arxiv-2510.08601-mnemosyne.md) | `references/jonelagadda-mnemosyne.md` + `references/papers/arxiv-2510.08601.pdf` | System deep dive emphasizing edge-first graph memory, redundancy/refresh, probabilistic decay-based recall, and a fixed-budget core/persona summary; includes evaluation-rigor cautions |
 | [ANALYSIS-arxiv-2511.12960-engram](ANALYSIS-arxiv-2511.12960-engram.md) | `references/patel-engram.md` + `references/papers/arxiv-2511.12960.pdf` | System deep dive emphasizing typed memory (episodic/semantic/procedural), deterministic routing/formatting, strict evidence budgets, and strong token/latency results; mapping to shisad primitives |
 | [ANALYSIS-arxiv-2511.20857-evo-memory](ANALYSIS-arxiv-2511.20857-evo-memory.md) | `references/wei-evo-memory.md` + `references/papers/arxiv-2511.20857.pdf` | Benchmark deep dive emphasizing streaming task-sequence evaluation for experience reuse, plus refine/prune mechanisms and metrics (robustness, step efficiency) for shisad’s eval harness |
@@ -188,6 +192,15 @@ agentic-memory/
     │   ├── scripts/                   ← init, seed, search, ingest, decay, benchmark, telemetry
     │   ├── templates/                 ← starter files (active-context, gating-policies, etc.)
     │   └── plugin-graph-memory/       ← OpenClaw plugin (JS)
+    │
+    ├── memv/                          ← github.com/vstorm-co/memv
+    │   ├── README.md
+    │   ├── CHANGELOG.md
+    │   ├── pyproject.toml             ← PyPI: memvee, v0.1.0
+    │   ├── docs/                      ← docs site (MkDocs)
+    │   ├── src/
+    │   │   └── memv/                  ← segmentation, extraction, validity, retrieval, storage
+    │   └── tests/
     │
     └── clawvault/                     ← github.com/Versatly/clawvault
         ├── README.md

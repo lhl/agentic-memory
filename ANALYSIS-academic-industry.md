@@ -36,58 +36,59 @@ If you want a “SOTA‑shaped” memory system in 2026, the literature is conve
 
 ### Benchmarks (what they test)
 
-- **LoCoMo (arXiv:2402.17753)**: very long, multi‑session dialogue grounded in personas + temporal event graphs (and images); demonstrates that **wrong retrieval hurts**.
-- **LongMemEval (arXiv:2410.10813)**: assistant‑style multi‑session histories with **updates** and **abstention**; provides the shared decomposition: **indexing → retrieval → reading**.
-- **EverMemBench (arXiv:2602.01313)**: >1M‑token, multi‑party / multi‑group interleavings; includes **oracle evidence** evaluation to isolate retrieval vs reading failures.
-- **MemBench (arXiv:2506.21605)**: participation vs observation scenarios; factual vs reflective memory; includes **read/write time** and capacity cliffs.
-- **LoCoMo‑Plus (arXiv:2602.10715)**: “cognitive memory”: latent constraints (state/goal/value/causal) under cue–trigger semantic disconnect; evaluated via **constraint consistency**.
-- **StructMemEval (arXiv:2602.11243)**: evaluates whether agents form/use **structures** (trees/state/ledgers), including **hint vs no‑hint** diagnostics.
+- **LoCoMo ([arXiv:2402.17753](https://arxiv.org/abs/2402.17753))**: very long, multi‑session dialogue grounded in personas + temporal event graphs (and images); demonstrates that **wrong retrieval hurts**.
+- **LongMemEval ([arXiv:2410.10813](https://arxiv.org/abs/2410.10813))**: assistant‑style multi‑session histories with **updates** and **abstention**; provides the shared decomposition: **indexing → retrieval → reading**.
+- **EverMemBench ([arXiv:2602.01313](https://arxiv.org/abs/2602.01313))**: >1M‑token, multi‑party / multi‑group interleavings; includes **oracle evidence** evaluation to isolate retrieval vs reading failures.
+- **MemBench ([arXiv:2506.21605](https://arxiv.org/abs/2506.21605))**: participation vs observation scenarios; factual vs reflective memory; includes **read/write time** and capacity cliffs.
+- **LoCoMo‑Plus ([arXiv:2602.10715](https://arxiv.org/abs/2602.10715))**: “cognitive memory”: latent constraints (state/goal/value/causal) under cue–trigger semantic disconnect; evaluated via **constraint consistency**.
+- **StructMemEval ([arXiv:2602.11243](https://arxiv.org/abs/2602.11243))**: evaluates whether agents form/use **structures** (trees/state/ledgers), including **hint vs no‑hint** diagnostics.
 
 ### Systems / architectures (what to steal)
 
-- **MemGPT (arXiv:2310.08560)**: OS‑style paging between bounded context and external stores; foundational baseline for explicit memory ops.
-- **Mem0 (arXiv:2504.19413)**: production‑leaning explicit ops (`ADD/UPDATE/DELETE/NOOP`) + tokens/p95 latency reporting; optional KG variant.
-- **Zep / Graphiti (arXiv:2501.13956)**: bi‑temporal KG with validity intervals + hybrid retrieval + constructor; strong “corrections without forgetting” semantics.
-- **AriGraph (arXiv:2407.04363)**: episodic↔semantic **memory graph world model** (episodes linked to extracted triplets) with semantic→episodic two‑stage retrieval; strong for interactive environments.
-- **MemOS (arXiv:2507.03724)**: memory “operating system” with MemCubes, lifecycle/governance, and multi‑substrate memory (plaintext/activation/parameter).
-- **HEMA (arXiv:2504.16754)**: dual memory (running summary + vector store) with explicit token budgets + pruning + summary‑of‑summaries.
-- **ENGRAM (arXiv:2511.12960)**: typed episodic/semantic/procedural stores + simple router + strict evidence budgets; “simplicity wins” story with latency reporting.
-- **Memoria (arXiv:2512.12686)**: transcript + session summaries + persona KG; uses **recency weighting** to prioritize newer preferences.
-- **Mnemosyne (arXiv:2510.08601)**: edge‑oriented memory graph with **commit‑time substance/redundancy gates**, probabilistic recall traversal, and a fixed‑budget “core summary”.
-- **TiMem (arXiv:2601.02845)**: temporal consolidation hierarchy (segment→session→day→week→profile) + query‑aware planner + gating.
-- **EverMemOS (arXiv:2601.02163)**: MemCells (episode+narrative+facts+foresight validity) → MemScenes + sufficiency verifier + query rewriting.
-- **HiMem (arXiv:2601.06377)**: episode memory + stable note memory; note‑first retrieval with fallback; reconsolidation loop.
-- **SimpleMem (arXiv:2601.02553)**: write‑time structured compression + online synthesis + intent‑aware retrieval planning + multi‑view (dense/sparse/symbolic) union/dedup.
-- **MemInsight (arXiv:2503.21760)**: autonomous attribute mining/annotation to make memory searchable via stable fields, not just embeddings.
-- **A‑Mem (arXiv:2502.12110)**: Zettelkasten‑like note network with LLM link generation and “memory evolution” (rewrites).
-- **Hindsight (arXiv:2512.12818)**: separates **evidence vs beliefs vs derived summaries**; multi‑channel retrieval + fusion/rerank + belief/confidence updates (“retain/recall/reflect”).
-- **GAM (arXiv:2511.18423)**: JIT “deep research over your own history”: universal page‑store + lightweight memos + researcher that compiles optimized context at runtime (high latency).
-- **Recursive Language Models (arXiv:2512.24601)**: programmable/recursive “reading engine” over arbitrarily long evidence stores via sandboxed code + subcalls (not persistent memory per se).
+- **MemGPT ([arXiv:2310.08560](https://arxiv.org/abs/2310.08560))**: OS‑style paging between bounded context and external stores; foundational baseline for explicit memory ops.
+- **Mem0 ([arXiv:2504.19413](https://arxiv.org/abs/2504.19413))**: production‑leaning explicit ops (`ADD/UPDATE/DELETE/NOOP`) + tokens/p95 latency reporting; optional KG variant.
+- **Zep / Graphiti ([arXiv:2501.13956](https://arxiv.org/abs/2501.13956))**: bi‑temporal KG with validity intervals + hybrid retrieval + constructor; strong “corrections without forgetting” semantics.
+- **AriGraph ([arXiv:2407.04363](https://arxiv.org/abs/2407.04363))**: episodic↔semantic **memory graph world model** (episodes linked to extracted triplets) with semantic→episodic two‑stage retrieval; strong for interactive environments.
+- **MemOS ([arXiv:2507.03724](https://arxiv.org/abs/2507.03724))**: memory “operating system” with MemCubes, lifecycle/governance, and multi‑substrate memory (plaintext/activation/parameter).
+- **HEMA ([arXiv:2504.16754](https://arxiv.org/abs/2504.16754))**: dual memory (running summary + vector store) with explicit token budgets + pruning + summary‑of‑summaries.
+- **ENGRAM ([arXiv:2511.12960](https://arxiv.org/abs/2511.12960))**: typed episodic/semantic/procedural stores + simple router + strict evidence budgets; “simplicity wins” story with latency reporting.
+- **Memoria ([arXiv:2512.12686](https://arxiv.org/abs/2512.12686))**: transcript + session summaries + persona KG; uses **recency weighting** to prioritize newer preferences.
+- **Mnemosyne ([arXiv:2510.08601](https://arxiv.org/abs/2510.08601))**: edge‑oriented memory graph with **commit‑time substance/redundancy gates**, probabilistic recall traversal, and a fixed‑budget “core summary”.
+- **Nemori ([arXiv:2508.03341](https://arxiv.org/abs/2508.03341))**: cognitively-inspired dual memory (episodes + semantic KB) with LLM boundary detection and **predict-calibrate** knowledge distillation from prediction gaps; strong LoCoMo + LongMemEvalS results (as reported).
+- **TiMem ([arXiv:2601.02845](https://arxiv.org/abs/2601.02845))**: temporal consolidation hierarchy (segment→session→day→week→profile) + query‑aware planner + gating.
+- **EverMemOS ([arXiv:2601.02163](https://arxiv.org/abs/2601.02163))**: MemCells (episode+narrative+facts+foresight validity) → MemScenes + sufficiency verifier + query rewriting.
+- **HiMem ([arXiv:2601.06377](https://arxiv.org/abs/2601.06377))**: episode memory + stable note memory; note‑first retrieval with fallback; reconsolidation loop.
+- **SimpleMem ([arXiv:2601.02553](https://arxiv.org/abs/2601.02553))**: write‑time structured compression + online synthesis + intent‑aware retrieval planning + multi‑view (dense/sparse/symbolic) union/dedup.
+- **MemInsight ([arXiv:2503.21760](https://arxiv.org/abs/2503.21760))**: autonomous attribute mining/annotation to make memory searchable via stable fields, not just embeddings.
+- **A‑Mem ([arXiv:2502.12110](https://arxiv.org/abs/2502.12110))**: Zettelkasten‑like note network with LLM link generation and “memory evolution” (rewrites).
+- **Hindsight ([arXiv:2512.12818](https://arxiv.org/abs/2512.12818))**: separates **evidence vs beliefs vs derived summaries**; multi‑channel retrieval + fusion/rerank + belief/confidence updates (“retain/recall/reflect”).
+- **GAM ([arXiv:2511.18423](https://arxiv.org/abs/2511.18423))**: JIT “deep research over your own history”: universal page‑store + lightweight memos + researcher that compiles optimized context at runtime (high latency).
+- **Recursive Language Models ([arXiv:2512.24601](https://arxiv.org/abs/2512.24601))**: programmable/recursive “reading engine” over arbitrarily long evidence stores via sandboxed code + subcalls (not persistent memory per se).
 
 ### Learning / evolution (memory as policy + feedback)
 
-- **AgeMem (arXiv:2601.01885)**: RL policy over both LTM ops and STM tools (`retrieve/summary/filter`) with a staged curriculum.
-- **Memory‑R1 (arXiv:2508.19828)**: RL fine‑tunes a memory manager (CRUD) and an answer agent (post‑retrieval distillation).
-- **Evo‑Memory (arXiv:2511.20857)**: benchmark/framework for **test‑time evolution**: streaming tasks, experience reuse, refine/prune, order robustness.
-- **Live‑Evo (arXiv:2602.02369)**: online evolution with an Experience Bank + Meta‑Guideline Bank, and contrastive **memory‑on vs memory‑off** utility measurement.
-- **ReMe (arXiv:2512.10696)**: procedural memory lifecycle acquire→reuse→refine; utility‑based pruning (deletion must become invalidation in safe systems).
+- **AgeMem ([arXiv:2601.01885](https://arxiv.org/abs/2601.01885))**: RL policy over both LTM ops and STM tools (`retrieve/summary/filter`) with a staged curriculum.
+- **Memory‑R1 ([arXiv:2508.19828](https://arxiv.org/abs/2508.19828))**: RL fine‑tunes a memory manager (CRUD) and an answer agent (post‑retrieval distillation).
+- **Evo‑Memory ([arXiv:2511.20857](https://arxiv.org/abs/2511.20857))**: benchmark/framework for **test‑time evolution**: streaming tasks, experience reuse, refine/prune, order robustness.
+- **Live‑Evo ([arXiv:2602.02369](https://arxiv.org/abs/2602.02369))**: online evolution with an Experience Bank + Meta‑Guideline Bank, and contrastive **memory‑on vs memory‑off** utility measurement.
+- **ReMe ([arXiv:2512.10696](https://arxiv.org/abs/2512.10696))**: procedural memory lifecycle acquire→reuse→refine; utility‑based pruning (deletion must become invalidation in safe systems).
 
 ### Internal/latent memory (important contrasts)
 
-- **Titans (arXiv:2501.00663)**: test‑time adaptive neural memory with explicit surprise/momentum/forgetting dynamics.
-- **M+ (arXiv:2502.00592)**: latent long‑term memory tokens with a co‑trained retriever; retention to 100k–160k+ tokens (as reported).
-- **Nested Learning (arXiv:2512.24695)**: “continuum memory” via multi‑timescale update frequencies; conceptual consolidation lens for external systems.
+- **Titans ([arXiv:2501.00663](https://arxiv.org/abs/2501.00663))**: test‑time adaptive neural memory with explicit surprise/momentum/forgetting dynamics.
+- **M+ ([arXiv:2502.00592](https://arxiv.org/abs/2502.00592))**: latent long‑term memory tokens with a co‑trained retriever; retention to 100k–160k+ tokens (as reported).
+- **Nested Learning ([arXiv:2512.24695](https://arxiv.org/abs/2512.24695))**: “continuum memory” via multi‑timescale update frequencies; conceptual consolidation lens for external systems.
 
 ### Security / trust (memory as attack surface)
 
-- **MINJA (arXiv:2503.03704)**: query‑only memory injection for systems that store demonstrations/trajectories; shows write‑path is a security boundary.
-- **Memory poisoning attack & defense (arXiv:2601.05504)**: distinguishes ISR vs ASR; shows “initial benign memory” can reduce ASR, while higher retrieval `k` can amplify it; warns that “trust score” can fail as a security control.
+- **MINJA ([arXiv:2503.03704](https://arxiv.org/abs/2503.03704))**: query‑only memory injection for systems that store demonstrations/trajectories; shows write‑path is a security boundary.
+- **Memory poisoning attack & defense ([arXiv:2601.05504](https://arxiv.org/abs/2601.05504))**: distinguishes ISR vs ASR; shows “initial benign memory” can reduce ASR, while higher retrieval `k` can amplify it; warns that “trust score” can fail as a security control.
 
 ### Surveys (useful organizing frames)
 
-- **Zhang et al. survey (arXiv:2404.13501)**: broad checklist of memory forms/ops/evaluation (pre‑2025 wave).
-- **Hu et al. survey (arXiv:2512.13564)**: unifying triangle **Forms ↔ Functions ↔ Dynamics** + trustworthiness frontier.
-- **Yang et al. graph survey (arXiv:2602.05665)**: graph‑centric lifecycle **extract → store → retrieve → evolve** and operator taxonomy.
+- **Zhang et al. survey ([arXiv:2404.13501](https://arxiv.org/abs/2404.13501))**: broad checklist of memory forms/ops/evaluation (pre‑2025 wave).
+- **Hu et al. survey ([arXiv:2512.13564](https://arxiv.org/abs/2512.13564))**: unifying triangle **Forms ↔ Functions ↔ Dynamics** + trustworthiness frontier.
+- **Yang et al. graph survey ([arXiv:2602.05665](https://arxiv.org/abs/2602.05665))**: graph‑centric lifecycle **extract → store → retrieve → evolve** and operator taxonomy.
 
 ## 2) A shared vocabulary: forms, functions, dynamics, and the pipeline
 

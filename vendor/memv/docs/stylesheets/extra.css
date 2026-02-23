@@ -1,0 +1,257 @@
+/* ============================================
+   memv — dark atmospheric violet theme
+   Matched to banner: deep slate + diffuse violet glow
+   ============================================ */
+
+/* --------------------------------------------
+   Custom Properties
+   -------------------------------------------- */
+:root {
+  --memv-violet: #9178b8;
+  --memv-violet-light: #b9a0d6;
+  --memv-violet-dim: #6b5490;
+  --memv-violet-glow: rgba(145, 120, 184, 0.12);
+  --memv-cream: #e4ddd2;
+  --memv-text-muted: #9e96ab;
+
+  --md-primary-fg-color: var(--memv-violet);
+  --md-primary-fg-color--light: var(--memv-violet-light);
+  --md-primary-fg-color--dark: var(--memv-violet-dim);
+  --md-accent-fg-color: var(--memv-violet-light);
+}
+
+[data-md-color-scheme="slate"] {
+  --md-primary-fg-color: var(--memv-violet);
+  --md-primary-fg-color--light: var(--memv-violet-light);
+  --md-primary-fg-color--dark: var(--memv-violet-dim);
+  --md-accent-fg-color: var(--memv-violet-light);
+  --md-default-bg-color: #111120;
+  --md-default-bg-color--light: #16162a;
+  --md-code-bg-color: #0d0d1a;
+  --md-code-fg-color: #c8c0d8;
+  --md-typeset-color: #cdc5d8;
+  --md-typeset-a-color: var(--memv-violet-light);
+}
+
+[data-md-color-scheme="default"] {
+  --md-default-bg-color: #faf9f7;
+  --md-default-bg-color--light: #f4f2ef;
+  --md-code-bg-color: #f0eee9;
+  --md-typeset-a-color: var(--memv-violet);
+}
+
+/* --------------------------------------------
+   Header & Navigation Bar
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] .md-header {
+  background: #0e0e1c;
+  border-bottom: 1px solid rgba(145, 120, 184, 0.08);
+}
+
+[data-md-color-scheme="slate"] .md-tabs {
+  background: #0e0e1c;
+}
+
+/* --------------------------------------------
+   Announcement Bar
+   -------------------------------------------- */
+.md-banner {
+  background: #0a0a16;
+  border-bottom: 1px solid rgba(145, 120, 184, 0.06);
+}
+
+.md-banner a {
+  color: var(--memv-text-muted) !important;
+  font-size: 0.72rem;
+  letter-spacing: 0.03em;
+}
+
+.md-banner a:hover {
+  color: var(--memv-violet-light) !important;
+}
+
+/* --------------------------------------------
+   Sidebar
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] .md-sidebar {
+  border-right: 1px solid rgba(145, 120, 184, 0.05);
+}
+
+.md-nav__link--active {
+  font-weight: 600;
+  color: var(--memv-violet-light) !important;
+}
+
+[data-md-color-scheme="slate"] .md-nav__link:hover {
+  color: var(--memv-violet-light);
+}
+
+/* --------------------------------------------
+   Typography
+   -------------------------------------------- */
+.md-typeset h1 {
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+[data-md-color-scheme="slate"] .md-typeset h1 {
+  color: var(--memv-cream);
+}
+
+[data-md-color-scheme="slate"] .md-typeset h2 {
+  color: #d4cce0;
+}
+
+.md-content h1[id="memv"] {
+  text-align: center;
+  font-size: 2.5rem;
+  margin-top: 0;
+}
+
+/* --------------------------------------------
+   Links
+   -------------------------------------------- */
+.md-typeset a:hover {
+  text-decoration-color: var(--memv-violet);
+}
+
+/* --------------------------------------------
+   Code Blocks
+   -------------------------------------------- */
+.md-typeset pre {
+  border-radius: 8px;
+  border: 1px solid rgba(145, 120, 184, 0.08);
+}
+
+.md-typeset code {
+  border-radius: 4px;
+}
+
+[data-md-color-scheme="slate"] .md-typeset code {
+  background: rgba(145, 120, 184, 0.08);
+}
+
+[data-md-color-scheme="slate"] .highlight .filename {
+  background: #0a0a15;
+  border-bottom: 1px solid rgba(145, 120, 184, 0.06);
+}
+
+/* --------------------------------------------
+   Tables
+   -------------------------------------------- */
+.md-typeset table:not([class]) th {
+  background: var(--memv-violet-dim);
+  color: white;
+  font-weight: 600;
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) th {
+  background: rgba(107, 84, 144, 0.6);
+}
+
+[data-md-color-scheme="slate"] .md-typeset table:not([class]) tr:hover td {
+  background: var(--memv-violet-glow);
+}
+
+/* --------------------------------------------
+   Admonitions
+   -------------------------------------------- */
+.md-typeset .admonition,
+.md-typeset details {
+  border-radius: 6px;
+}
+
+.md-typeset .admonition.tip,
+.md-typeset details.tip {
+  border-color: var(--memv-violet);
+}
+
+.md-typeset .tip > .admonition-title,
+.md-typeset .tip > summary {
+  background-color: var(--memv-violet-glow);
+}
+
+.md-typeset .admonition.note,
+.md-typeset details.note {
+  border-color: var(--memv-violet-dim);
+}
+
+.md-typeset .note > .admonition-title,
+.md-typeset .note > summary {
+  background-color: rgba(107, 84, 144, 0.08);
+}
+
+/* --------------------------------------------
+   Buttons
+   -------------------------------------------- */
+.md-button--primary {
+  background-color: var(--memv-violet);
+  border-color: var(--memv-violet);
+  border-radius: 6px;
+  transition: background-color 0.2s, box-shadow 0.2s;
+}
+
+.md-button--primary:hover {
+  background-color: var(--memv-violet-dim);
+  border-color: var(--memv-violet-dim);
+  box-shadow: 0 0 20px rgba(145, 120, 184, 0.2);
+}
+
+/* --------------------------------------------
+   Footer
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] .md-footer {
+  background: #0a0a16;
+  border-top: 1px solid rgba(145, 120, 184, 0.06);
+}
+
+/* --------------------------------------------
+   Search
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] .md-search__form {
+  background: rgba(145, 120, 184, 0.06);
+  border: 1px solid rgba(145, 120, 184, 0.08);
+  border-radius: 6px;
+}
+
+[data-md-color-scheme="slate"] .md-search__form:hover {
+  border-color: rgba(145, 120, 184, 0.15);
+}
+
+/* --------------------------------------------
+   Horizontal Rules
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] .md-typeset hr {
+  border-color: rgba(145, 120, 184, 0.1);
+}
+
+/* --------------------------------------------
+   Scrollbar (Webkit)
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] ::-webkit-scrollbar {
+  width: 6px;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb {
+  background: rgba(145, 120, 184, 0.15);
+  border-radius: 3px;
+}
+
+[data-md-color-scheme="slate"] ::-webkit-scrollbar-thumb:hover {
+  background: rgba(145, 120, 184, 0.25);
+}
+
+/* --------------------------------------------
+   Mermaid Diagrams
+   -------------------------------------------- */
+[data-md-color-scheme="slate"] .mermaid {
+  --md-mermaid-node-bg-color: rgba(145, 120, 184, 0.1);
+  --md-mermaid-node-fg-color: #cdc5d8;
+  --md-mermaid-edge-color: rgba(145, 120, 184, 0.3);
+  --md-mermaid-label-fg-color: #cdc5d8;
+  --md-mermaid-label-bg-color: #111120;
+}

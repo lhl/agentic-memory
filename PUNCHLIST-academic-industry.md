@@ -169,6 +169,12 @@ Conventions (see `templates/README.md`):
 
 ## P1 — Additional papers to include (recommended for academic/industry synthesis)
 
+### [x] arXiv:2508.03341 — Nemori: Self-Organizing Agent Memory Inspired by Cognitive Science — Nan et al.
+- [x] PDF: `references/papers/arxiv-2508.03341.pdf`
+- [x] Text snapshot: `references/papers/arxiv-2508.03341.md`
+- [x] Reference summary: `references/nan-nemori.md`
+- [x] Analysis: `ANALYSIS-arxiv-2508.03341-nemori.md`
+
 ### [x] arXiv:2602.11243 — Evaluating Memory Structure in LLM Agents (StructMemEval) — Shutova et al.
 - [x] PDF: `references/papers/arxiv-2602.11243.pdf`
 - [x] Text snapshot: `references/papers/arxiv-2602.11243.md`

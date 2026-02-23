@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgentMemory - Temporal Memory for AI Agents</title>
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-card: #1a1a25;
+            --text-primary: #e8e8ed;
+            --text-secondary: #9898a8;
+            --accent: #6366f1;
+            --accent-light: #818cf8;
+            --accent-glow: rgba(99, 102, 241, 0.3);
+            --success: #10b981;
+            --warning: #f59e0b;
+            --border: #2a2a35;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.9);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border);
+            z-index: 1000;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-light);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 6rem 2rem 4rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 50% 50%, var(--accent-glow) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+            max-width: 900px;
+        }
+
+        .hero h1 {
+            font-size: clamp(2.5rem, 8vw, 5rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, var(--accent-light) 50%, var(--accent) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero .subtitle {
+            font-size: clamp(1.1rem, 3vw, 1.5rem);
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .hero .tagline {
+            display: inline-block;
+            padding: 0.5rem 1.5rem;
+            border: 1px solid var(--accent);
+            border-radius: 2rem;
+            font-size: 0.95rem;
+            color: var(--accent-light);
+            margin-bottom: 3rem;
+        }
+
+        /* Sections */
+        section {
+            padding: 6rem 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            transition: transform 0.3s, border-color 0.3s;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent);
+        }
+
+        .feature-icon {
+            width: 3rem;
+            height: 3rem;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            border-radius: 0.75rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.5rem;
+        }
+
+        .feature-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        /* Architecture Diagram */
+        .architecture {
+            background: var(--bg-secondary);
+            border-radius: 1.5rem;
+            padding: 3rem;
+            margin: 2rem 0;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            align-items: center;
+        }
+
+        .flow-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .flow-box {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 0.75rem;
+            padding: 1rem 1.5rem;
+            text-align: center;
+            min-width: 150px;
+            transition: all 0.3s;
+        }
+
+        .flow-box:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .flow-box.primary {
+            background: linear-gradient(135deg, var(--accent) 0%, #4f46e5 100%);
+            border: none;
+        }
+
+        .flow-box.highlight {
+            border-color: var(--success);
+        }
+
+        .flow-box .label {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .flow-box .sub {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .flow-arrow {
+            color: var(--accent);
+            font-size: 1.5rem;
+        }
+
+        .flow-connector {
+            width: 2px;
+            height: 2rem;
+            background: var(--accent);
+            position: relative;
+        }
+
+        .flow-connector::after {
+            content: '';
+            position: absolute;
+            bottom: -6px;
+            left: 50%;
+            transform: translateX(-50%);
+            border-left: 6px solid transparent;
+            border-right: 6px solid transparent;
+            border-top: 8px solid var(--accent);
+        }
+
+        /* Code Block */
+        .code-block {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', 'Fira Code', monospace;
+            font-size: 0.9rem;
+            line-height: 1.8;
+            margin: 1.5rem 0;
+            white-space: pre;
+        }
+
+        .code-block .number { color: #f472b6; }
+
+        .code-block .comment { color: #6b7280; }
+        .code-block .keyword { color: #c084fc; }
+        .code-block .string { color: #34d399; }
+        .code-block .function { color: #60a5fa; }
+        .code-block .class { color: #fbbf24; }
+        .code-block .variable { color: #f472b6; }
+
+        /* Stats */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: var(--bg-card);
+            border-radius: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--accent) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        /* Pipeline Steps */
+        .pipeline-steps {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .pipeline-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 1.5rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            transition: all 0.3s;
+        }
+
+        .pipeline-step:hover {
+            border-color: var(--accent);
+        }
+
+        .step-number {
+            width: 2.5rem;
+            height: 2.5rem;
+            background: var(--accent);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        .step-content h4 {
+            font-size: 1.1rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Concept Cards */
+        .concept-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+        }
+
+        .concept-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 1rem;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .concept-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--accent) 0%, var(--accent-light) 100%);
+        }
+
+        .concept-card h3 {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+
+        .concept-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin-bottom: 1rem;
+        }
+
+        .concept-card .example {
+            background: var(--bg-secondary);
+            padding: 1rem;
+            border-radius: 0.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        /* Components Table */
+        .components-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 2rem 0;
+        }
+
+        .components-table th,
+        .components-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .components-table th {
+            font-weight: 600;
+            color: var(--accent-light);
+            background: var(--bg-secondary);
+        }
+
+        .components-table tr:hover {
+            background: var(--bg-card);
+        }
+
+        .components-table td:first-child {
+            font-weight: 500;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge.storage { background: #1e3a5f; color: #60a5fa; }
+        .badge.processing { background: #1e3a3a; color: #34d399; }
+        .badge.retrieval { background: #3f1e3f; color: #c084fc; }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 4rem 2rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-secondary);
+        }
+
+        footer a {
+            color: var(--accent-light);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+
+            section {
+                padding: 4rem 1rem;
+            }
+
+            .architecture {
+                padding: 1.5rem;
+            }
+
+            .flow-box {
+                min-width: 120px;
+                padding: 0.75rem 1rem;
+            }
+        }
+
+        /* Scroll Animations */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .fade-in.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <nav>
+        <div class="logo">AgentMemory</div>
+        <div class="nav-links">
+            <a href="#features">Features</a>
+            <a href="#architecture">Architecture</a>
+            <a href="#concepts">Concepts</a>
+            <a href="#usage">Usage</a>
+            <a href="#components">Components</a>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <div class="tagline">Knowledge extraction that learns what matters</div>
+            <h1>AgentMemory</h1>
+            <p class="subtitle">
+                A structured, temporal memory system for AI agents.
+                Knowledge extraction through prediction error, not upfront scoring.
+            </p>
+            <div style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2rem;">
+                <div style="background: var(--bg-card); padding: 1rem 2rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div style="color: var(--accent-light); font-size: 0.8rem;">CORE INSIGHT</div>
+                    <div style="font-weight: 600;">Importance = Prediction Error</div>
+                </div>
+                <div style="background: var(--bg-card); padding: 1rem 2rem; border-radius: 0.75rem; border: 1px solid var(--border);">
+                    <div style="color: var(--success); font-size: 0.8rem;">APPROACH</div>
+                    <div style="font-weight: 600;">Predict-Calibrate Extraction</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="features">
+        <div class="section-header">
+            <h2>Key Features</h2>
+            <p>Built for production AI agents that need persistent, intelligent memory</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🧠</div>
+                <h3>Predict-Calibrate Extraction</h3>
+                <p>Knowledge value emerges from prediction error. Extract only what you failed to predict, making every piece of knowledge truly informative.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">⏱️</div>
+                <h3>Bi-Temporal Validity</h3>
+                <p>Track both event time (when facts are true) and transaction time (when you learned them). Enables time-travel queries and contradiction handling.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🔍</div>
+                <h3>Hybrid Retrieval</h3>
+                <p>Combines vector similarity and BM25 text search via Reciprocal Rank Fusion (RRF). Best of both semantic and keyword matching.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">📝</div>
+                <h3>Episode Segmentation</h3>
+                <p>Automatically segments conversations into coherent episodes based on topic shifts and time gaps. LLM-generated narratives for retrieval.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">🔐</div>
+                <h3>Per-User Isolation</h3>
+                <p>Privacy-by-design with complete data isolation between users. All queries automatically scoped to user context.</p>
+            </div>
+            <div class="feature-card fade-in">
+                <div class="feature-icon">⚡</div>
+                <h3>Async-First Design</h3>
+                <p>Built for async/await from the ground up. Background processing, embedding caching, and non-blocking operations.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="architecture">
+        <div class="section-header">
+            <h2>Architecture</h2>
+            <p>From raw messages to semantic knowledge in a structured pipeline</p>
+        </div>
+
+        <div class="architecture">
+            <div class="flow-diagram">
+                <div class="flow-row">
+                    <div class="flow-box primary">
+                        <div class="label">Messages</div>
+                        <div class="sub">User + Assistant</div>
+                    </div>
+                </div>
+
+                <div class="flow-connector"></div>
+
+                <div class="flow-row">
+                    <div class="flow-box">
+                        <div class="label">BoundaryDetector</div>
+                        <div class="sub">LLM segmentation</div>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">
+                        <div class="label">BatchSegmenter</div>
+                        <div class="sub">Episode grouping</div>
+                    </div>
+                </div>
+
+                <div class="flow-connector"></div>
+
+                <div class="flow-row">
+                    <div class="flow-box">
+                        <div class="label">EpisodeGenerator</div>
+                        <div class="sub">Narrative synthesis</div>
+                    </div>
+                    <span class="flow-arrow">→</span>
+                    <div class="flow-box">
+                        <div class="label">EpisodeMerger</div>
+                        <div class="sub">Deduplication</div>
+                    </div>
+                </div>
+
+                <div class="flow-connector"></div>
+
+                <div class="flow-row">
+                    <div class="flow-box highlight">
+                        <div class="label">PredictCalibrateExtractor</div>
+                        <div class="sub">Core Innovation</div>
+                    </div>
+                </div>
+
+                <div class="flow-connector"></div>
+
+                <div class="flow-row">
+                    <div class="flow-box">
+                        <div class="label">VectorIndex</div>
+                        <div class="sub">sqlite-vec</div>
+                    </div>
+                    <span class="flow-arrow">+</span>
+                    <div class="flow-box">
+                        <div class="label">TextIndex</div>
+                        <div class="sub">FTS5</div>
+                    </div>
+                </div>
+
+                <div class="flow-connector"></div>
+
+                <div class="flow-row">
+                    <div class="flow-box primary">
+                        <div class="label">Retriever</div>
+                        <div class="sub">RRF Fusion</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card fade-in">
+                <div class="stat-value">SQLite</div>
+                <div class="stat-label">Single-file storage</div>
+            </div>
+            <div class="stat-card fade-in">
+                <div class="stat-value">RRF</div>
+                <div class="stat-label">Rank fusion (k=60)</div>
+            </div>
+            <div class="stat-card fade-in">
+                <div class="stat-value">1536</div>
+                <div class="stat-label">Default dimensions</div>
+            </div>
+            <div class="stat-card fade-in">
+                <div class="stat-value">Async</div>
+                <div class="stat-label">Native await support</div>
+            </div>
+        </div>
+    </section>
+
+    <section id="concepts">
+        <div class="section-header">
+            <h2>Core Concepts</h2>
+            <p>The innovations that make AgentMemory different</p>
+        </div>
+
+        <div class="concept-grid">
+            <div class="concept-card fade-in">
+                <h3>🎯 Predict-Calibrate</h3>
+                <p>
+                    Instead of scoring importance upfront, predict what an episode should contain
+                    based on existing knowledge, then extract only what you failed to predict.
+                </p>
+                <div class="example">
+                    Existing: "User lives in NYC"<br>
+                    Episode: "I moved to SF"<br>
+                    Prediction: "User is in NYC"<br>
+                    Extract: "User moved to SF" ✓
+                </div>
+            </div>
+
+            <div class="concept-card fade-in">
+                <h3>⏱️ Bi-Temporal Model</h3>
+                <p>
+                    Two time dimensions: <strong>Event time</strong> (when facts are true in the world)
+                    and <strong>Transaction time</strong> (when we learned/invalidated them).
+                </p>
+                <div class="example">
+                    valid_at: 2024-01-15 (moved)<br>
+                    invalid_at: null (still valid)<br>
+                    created_at: 2024-01-20 (learned)<br>
+                    expired_at: null (current truth)
+                </div>
+            </div>
+
+            <div class="concept-card fade-in">
+                <h3>📚 Nemori Pattern</h3>
+                <p>
+                    Episodes store <strong>original_messages</strong> (ground truth) separately from
+                    <strong>content</strong> (LLM narrative). Extraction uses only original messages.
+                </p>
+                <div class="example">
+                    content: "User discussed moving..."<br>
+                    original_messages: [raw JSON]<br>
+                    ↓<br>
+                    Extract from originals only
+                </div>
+            </div>
+
+            <div class="concept-card fade-in">
+                <h3>🔀 Hybrid Retrieval</h3>
+                <p>
+                    Combines vector similarity (semantic) with BM25 text search (keyword)
+                    using Reciprocal Rank Fusion for balanced results.
+                </p>
+                <div class="example">
+                    RRF = 0.5/(60+rank_vec) +<br>
+                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;0.5/(60+rank_text)<br>
+                    k=60 (standard parameter)
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="usage">
+        <div class="section-header">
+            <h2>Usage</h2>
+            <p>Simple, intuitive API for managing agent memory</p>
+        </div>
+
+        <div class="code-block">
+<span class="keyword">from</span> memvee <span class="keyword">import</span> <span class="class">Memory</span>
+<span class="keyword">from</span> memvee.embeddings <span class="keyword">import</span> <span class="class">OpenAIEmbedAdapter</span>
+<span class="keyword">from</span> memvee.llm <span class="keyword">import</span> <span class="class">PydanticAIAdapter</span>
+
+<span class="comment"># Initialize with adapters</span>
+<span class="variable">memory</span> = <span class="class">Memory</span>(
+    db_path=<span class="string">".db/memory.db"</span>,
+    embedding_client=<span class="class">OpenAIEmbedAdapter</span>(),
+    llm_client=<span class="class">PydanticAIAdapter</span>(<span class="string">"openai:gpt-4.1-mini"</span>),
+    auto_process=<span class="keyword">True</span>,
+    batch_threshold=<span class="number">5</span>,
+)
+
+<span class="comment"># Use as async context manager</span>
+<span class="keyword">async with</span> <span class="variable">memory</span>:
+    <span class="comment"># Add conversation exchanges</span>
+    <span class="keyword">await</span> <span class="variable">memory</span>.<span class="function">add_exchange</span>(
+        user_id=<span class="string">"user_123"</span>,
+        user_message=<span class="string">"I just moved to San Francisco"</span>,
+        assistant_message=<span class="string">"That's exciting! How's the transition?"</span>
+    )
+
+    <span class="comment"># Force processing</span>
+    <span class="keyword">await</span> <span class="variable">memory</span>.<span class="function">flush</span>(user_id=<span class="string">"user_123"</span>)
+
+    <span class="comment"># Retrieve relevant context</span>
+    <span class="variable">results</span> = <span class="keyword">await</span> <span class="variable">memory</span>.<span class="function">retrieve</span>(
+        query=<span class="string">"Where does the user live?"</span>,
+        user_id=<span class="string">"user_123"</span>
+    )
+
+    <span class="comment"># Format for LLM context injection</span>
+    <span class="variable">context</span> = <span class="variable">results</span>.<span class="function">to_prompt</span>()
+        </div>
+
+        <div class="pipeline-steps">
+            <div class="pipeline-step fade-in">
+                <div class="step-number">1</div>
+                <div class="step-content">
+                    <h4>Add Messages</h4>
+                    <p>Use <code>add_exchange()</code> to add user/assistant pairs. Messages are stored immediately with timestamps.</p>
+                </div>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-number">2</div>
+                <div class="step-content">
+                    <h4>Process into Episodes</h4>
+                    <p>Messages are segmented by topic and time, then transformed into episodes with LLM-generated narratives.</p>
+                </div>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-number">3</div>
+                <div class="step-content">
+                    <h4>Extract Knowledge</h4>
+                    <p>Predict-calibrate runs against original messages, extracting only genuinely new or contradicting information.</p>
+                </div>
+            </div>
+            <div class="pipeline-step fade-in">
+                <div class="step-number">4</div>
+                <div class="step-content">
+                    <h4>Retrieve on Query</h4>
+                    <p>Hybrid search combines vector similarity and keyword matching to find relevant episodes and knowledge.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="components">
+        <div class="section-header">
+            <h2>Components</h2>
+            <p>Modular architecture for maximum flexibility</p>
+        </div>
+
+        <table class="components-table">
+            <thead>
+                <tr>
+                    <th>Component</th>
+                    <th>Type</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Memory</td>
+                    <td><span class="badge processing">API</span></td>
+                    <td>Main entry point. Coordinates all components via lifecycle management.</td>
+                </tr>
+                <tr>
+                    <td>MessageStore</td>
+                    <td><span class="badge storage">Storage</span></td>
+                    <td>CRUD operations for raw conversation messages.</td>
+                </tr>
+                <tr>
+                    <td>EpisodeStore</td>
+                    <td><span class="badge storage">Storage</span></td>
+                    <td>Stores episodes with original_messages JSON and time bounds.</td>
+                </tr>
+                <tr>
+                    <td>KnowledgeStore</td>
+                    <td><span class="badge storage">Storage</span></td>
+                    <td>Semantic knowledge with bi-temporal validity fields.</td>
+                </tr>
+                <tr>
+                    <td>VectorIndex</td>
+                    <td><span class="badge storage">Storage</span></td>
+                    <td>sqlite-vec for k-NN similarity search on embeddings.</td>
+                </tr>
+                <tr>
+                    <td>TextIndex</td>
+                    <td><span class="badge storage">Storage</span></td>
+                    <td>FTS5 full-text search with query sanitization.</td>
+                </tr>
+                <tr>
+                    <td>BoundaryDetector</td>
+                    <td><span class="badge processing">Processing</span></td>
+                    <td>LLM-based semantic boundary detection for episode segmentation.</td>
+                </tr>
+                <tr>
+                    <td>BatchSegmenter</td>
+                    <td><span class="badge processing">Processing</span></td>
+                    <td>Groups messages into episodes by time gaps and boundaries.</td>
+                </tr>
+                <tr>
+                    <td>EpisodeGenerator</td>
+                    <td><span class="badge processing">Processing</span></td>
+                    <td>Transforms message groups into narrative episodes.</td>
+                </tr>
+                <tr>
+                    <td>EpisodeMerger</td>
+                    <td><span class="badge processing">Processing</span></td>
+                    <td>Merges semantically similar episodes to reduce redundancy.</td>
+                </tr>
+                <tr>
+                    <td>PredictCalibrateExtractor</td>
+                    <td><span class="badge processing">Processing</span></td>
+                    <td>Core innovation. Two-stage knowledge extraction via prediction error.</td>
+                </tr>
+                <tr>
+                    <td>Retriever</td>
+                    <td><span class="badge retrieval">Retrieval</span></td>
+                    <td>Hybrid search with RRF fusion and temporal filtering.</td>
+                </tr>
+                <tr>
+                    <td>EmbeddingCache</td>
+                    <td><span class="badge retrieval">Retrieval</span></td>
+                    <td>LRU cache with TTL for query embeddings.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="margin-top: 3rem;">
+            <h3 style="margin-bottom: 1.5rem;">Project Structure</h3>
+            <div class="code-block" style="font-size: 0.85rem;">
+src/memvee/
+├── memory/
+│   ├── memory.py          <span class="comment"># Main Memory class</span>
+│   ├── _api.py            <span class="comment"># Public methods</span>
+│   ├── _lifecycle.py      <span class="comment"># Component initialization</span>
+│   ├── _pipeline.py       <span class="comment"># Processing orchestration</span>
+│   └── _task_manager.py   <span class="comment"># Async task handling</span>
+├── processing/
+│   ├── boundary.py        <span class="comment"># BoundaryDetector</span>
+│   ├── batch_segmenter.py <span class="comment"># Message grouping</span>
+│   ├── episodes.py        <span class="comment"># Episode generation</span>
+│   ├── extraction.py      <span class="comment"># Predict-calibrate</span>
+│   ├── episode_merger.py  <span class="comment"># Semantic merging</span>
+│   └── prompts.py         <span class="comment"># LLM prompt templates</span>
+├── retrieval/
+│   └── retriever.py       <span class="comment"># Hybrid search + RRF</span>
+├── storage/sqlite/
+│   ├── _base.py           <span class="comment"># StoreBase class</span>
+│   ├── _messages.py       <span class="comment"># MessageStore</span>
+│   ├── _episodes.py       <span class="comment"># EpisodeStore</span>
+│   ├── _knowledge.py      <span class="comment"># KnowledgeStore</span>
+│   ├── _vector_index.py   <span class="comment"># VectorIndex</span>
+│   └── _text_index.py     <span class="comment"># TextIndex</span>
+├── embeddings/
+│   └── openai.py          <span class="comment"># OpenAI adapter</span>
+├── llm/
+│   └── pydantic_ai.py     <span class="comment"># Multi-provider LLM</span>
+├── dashboard/             <span class="comment"># TUI for debugging</span>
+│   └── app.py             <span class="comment"># Textual app</span>
+├── models.py              <span class="comment"># Data models</span>
+├── protocols.py           <span class="comment"># Interfaces</span>
+├── config.py              <span class="comment"># Configuration</span>
+└── cache.py               <span class="comment"># EmbeddingCache</span>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <p style="margin-bottom: 1rem;">
+            <strong>AgentMemory</strong> — Structured temporal memory for AI agents
+        </p>
+        <p style="font-size: 0.9rem;">
+            Built with SQLite, sqlite-vec, and FTS5<br>
+            Python 3.13+ • Async-first • Privacy-by-design
+        </p>
+    </footer>
+
+    <script>
+        // Intersection Observer for fade-in animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                }
+            });
+        }, { threshold: 0.1 });
+
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Smooth scroll for nav links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>

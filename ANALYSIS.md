@@ -413,6 +413,7 @@ Below are representative systems and what they add to the design space; most are
 **Hierarchical / multi-tier memory management**
 - **TiMem** (2026): tree-structured memory; reports SOTA on LoCoMo and LongMemEval-S. arXiv:2601.02845 https://arxiv.org/abs/2601.02845
 - **HiMem** (2026): hierarchical “episode memory” + “note memory”, linking and conflict-aware reconsolidation. arXiv:2601.06377 https://arxiv.org/abs/2601.06377
+- **Nemori** (2025): self-organizing dual memory (episodic segmentation + predict-calibrate semantic distillation); strong LoCoMo and LongMemEvalS gains with large token reductions (as reported). arXiv:2508.03341 https://arxiv.org/abs/2508.03341
 - **ENGRAM** (2025): long-term memory agent with hierarchical memory; reports SOTA LoCoMo and large LongMemEval gains with low token usage. arXiv:2511.12960 https://arxiv.org/abs/2511.12960
 - **Hindsight** (2025): biomimetic memory with multiple explicit memory types (facts, experiences, beliefs, etc.) and retain/recall/reflect operations; reports strong LongMemEval and LoCoMo performance. arXiv:2512.12818 https://arxiv.org/abs/2512.12818
 

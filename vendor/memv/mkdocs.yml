@@ -1,0 +1,165 @@
+site_name: memv
+site_description: Structured, temporal memory for AI agents.
+site_url: https://vstorm-co.github.io/memv/
+repo_url: https://github.com/vstorm-co/memv
+repo_name: vstorm-co/memv
+
+theme:
+  name: material
+  custom_dir: docs/overrides
+  palette:
+    - media: "(prefers-color-scheme: dark)"
+      scheme: slate
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - media: "(prefers-color-scheme: light)"
+      scheme: default
+      primary: custom
+      accent: custom
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  font:
+    text: DM Sans
+    code: JetBrains Mono
+  favicon: assets/favicon.png
+  icon:
+    repo: fontawesome/brands/github
+    admonition:
+      note: octicons/tag-16
+      abstract: octicons/checklist-16
+      info: octicons/info-16
+      tip: octicons/squirrel-16
+      success: octicons/check-16
+      question: octicons/question-16
+      warning: octicons/alert-16
+      failure: octicons/x-circle-16
+      danger: octicons/zap-16
+      bug: octicons/bug-16
+      example: octicons/beaker-16
+      quote: octicons/quote-16
+  features:
+    # Navigation
+    - navigation.instant
+    - navigation.instant.prefetch
+    - navigation.instant.progress
+    - navigation.tracking
+    - navigation.path
+    - navigation.top
+    - navigation.footer
+    # Search
+    - search.suggest
+    - search.highlight
+    - search.share
+    # Content
+    - content.tabs.link
+    - content.code.copy
+    - content.code.select
+    - content.code.annotate
+    - content.tooltips
+    # Table of contents
+    - toc.follow
+    # Header
+    - announce.dismiss
+
+nav:
+  - memv: index.md
+  - Installation: installation.md
+  - Getting Started: getting-started.md
+  - Core Concepts:
+    - concepts/index.md
+    - Predict-Calibrate: concepts/predict-calibrate.md
+    - Episodes: concepts/episodes.md
+    - Bi-Temporal Validity: concepts/bi-temporal.md
+    - Retrieval: concepts/retrieval.md
+  - Advanced:
+    - Configuration: advanced/configuration.md
+    - Custom Providers: advanced/custom-providers.md
+    - Async Processing: advanced/async-processing.md
+  - Examples:
+    - examples/index.md
+    - PydanticAI: examples/pydantic-ai.md
+    - LangGraph: examples/langgraph.md
+    - LlamaIndex: examples/llamaindex.md
+    - CrewAI: examples/crewai.md
+    - AutoGen: examples/autogen.md
+  - API Reference: api.md
+
+plugins:
+  - search:
+      separator: '[\s\u200b\-_,:!=\[\]()"`/]+|\.(?!\d)|&[lg]t;|(?!\b)(?=[A-Z][a-z])'
+  - mkdocstrings:
+      handlers:
+        python:
+          paths: [src]
+          options:
+            docstring_style: google
+            show_source: false
+            show_root_heading: true
+            show_symbol_type_heading: true
+            show_symbol_type_toc: true
+            heading_level: 3
+            members_order: source
+            show_signature_annotations: true
+            separate_signature: true
+            signature_crossrefs: true
+
+markdown_extensions:
+  # Python Markdown
+  - abbr
+  - admonition
+  - attr_list
+  - def_list
+  - footnotes
+  - md_in_html
+  - tables
+  - toc:
+      permalink: true
+      toc_depth: 3
+  # PyMdownx
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+      auto_title: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+      combine_header_slug: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/vstorm-co/memv
+      name: GitHub
+    - icon: fontawesome/brands/python
+      link: https://pypi.org/project/memvee/
+      name: PyPI
+  generator: false
+
+extra_css:
+  - stylesheets/extra.css
+
+extra_javascript:
+  - javascripts/extra.js
