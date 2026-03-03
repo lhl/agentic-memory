@@ -87,6 +87,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-drag88-agent-output-degradation](ANALYSIS-drag88-agent-output-degradation.md) | `references/drag88-agent-output-degradation.md` | Convergence + enforcement pattern critique (judge→rule distillation), measurement gaps, risks |
 | [ANALYSIS-versatly-clawvault](ANALYSIS-versatly-clawvault.md) | `references/versatly-clawvault.md` + `vendor/clawvault/` | Product/tooling critique (surface area, hooks, qmd dependency), security posture, missing benchmarks |
 | [ANALYSIS-vstorm-memv](ANALYSIS-vstorm-memv.md) | `references/vstorm-memv.md` + `vendor/memv/` | Implementation critique of Nemori-inspired predict-calibrate extraction + bi-temporal validity + hybrid retrieval, with gaps/risks and shisad mapping |
+| [ANALYSIS-mira-OSS](ANALYSIS-mira-OSS.md) | `vendor/mira-OSS/` | Full-stack event-driven agent with autonomous memory lifecycle: multi-factor activity-day sigmoid decay, hub-based entity discovery, typed relationship links, Text-Based LoRA behavioral adaptation, production-grade multi-user security (RLS + Vault); gaps in write gating, external benchmarks, and taint tracking |
 
 ## Paper Deep Dive Analyses (Academic / Industry)
 
@@ -152,6 +153,8 @@ agentic-memory/
 ├── ANALYSIS-coolmanns-openclaw-memory-architecture.md
 ├── ANALYSIS-drag88-agent-output-degradation.md
 ├── ANALYSIS-versatly-clawvault.md
+├── ANALYSIS-vstorm-memv.md
+├── ANALYSIS-mira-OSS.md
 ├── PUNCHLIST-academic-industry.md     ← tracking checklist for paper deep dives
 ├── templates/                         ← templates for paper analyses/summaries
 │
@@ -174,6 +177,27 @@ agentic-memory/
 │       └── arxiv-*.md
 │
 └── vendor/                            ← cloned source repos
+    ├── mira-OSS/                      ← github.com/taylorsatula/mira-OSS (submodule, AGPLv3)
+    │   ├── README.md
+    │   ├── CLAUDE.md                  ← project guide (architecture, patterns, principles)
+    │   ├── main.py                    ← FastAPI entry point
+    │   ├── cns/                       ← Central Nervous System (conversation orchestration)
+    │   │   ├── api/                   ← FastAPI endpoints (chat, actions, data, health)
+    │   │   ├── core/                  ← Domain models (Continuum, Message, Events)
+    │   │   ├── services/              ← Orchestrator, subcortical, summary, collapse handler
+    │   │   └── infrastructure/        ← Repositories, Valkey cache, unit of work
+    │   ├── lt_memory/                 ← Long-term memory system
+    │   │   ├── scoring_formula.sql    ← Multi-factor activity-day sigmoid importance scoring
+    │   │   ├── models.py             ← Memory, Entity, ExtractedMemory, link types
+    │   │   ├── hybrid_search.py      ← BM25 + pgvector with RRF
+    │   │   ├── proactive.py          ← Dual-path retrieval (similarity + hub discovery)
+    │   │   ├── hub_discovery.py      ← Entity-driven memory retrieval via pg_trgm
+    │   │   └── processing/           ← Extraction, consolidation, entity GC pipelines
+    │   ├── working_memory/           ← System prompt composition via trinkets
+    │   ├── tools/                    ← Self-registering tool framework (11 built-in)
+    │   ├── config/                   ← Pydantic config + prompt templates
+    │   └── auth/                     ← WebAuthn + magic link authentication
+    │
     ├── openclaw-memory-architecture/  ← github.com/coolmanns/openclaw-memory-architecture
     │   ├── README.md
     │   ├── PROJECT.md

@@ -1,7 +1,8 @@
 # Vendor Snapshots
 
-Vendored copies of external repositories for research reference. These are
-point-in-time snapshots — not submodules or live checkouts.
+Vendored copies of external repositories for research reference. Most are
+point-in-time snapshots (not submodules or live checkouts). Exceptions are
+noted below.
 
 ## Repositories
 
@@ -16,6 +17,13 @@ point-in-time snapshots — not submodules or live checkouts.
 - **Commit:** `f6d9be60ecd0d0283da53c8baa1f2de881ec3cab`
 - **Date:** 2026-02-20
 - **Message:** add $CLAW token address
+
+### mira-OSS (**git submodule** — AGPLv3)
+- **Source:** https://github.com/taylorsatula/mira-OSS
+- **Reviewed commit:** `ee44b18` (version 2026.03.07-major)
+- **Review date:** 2026-03-03
+- **License:** AGPLv3 — included as a **git submodule** (not vendored) to avoid license concerns. Run `git submodule update --init vendor/mira-OSS` to fetch the code for your own analysis.
+- **Note:** Full-stack event-driven conversational AI with autonomous memory lifecycle (extraction, linking, consolidation, decay), Text-Based LoRA behavioral adaptation, and multi-user PostgreSQL RLS isolation.
 
 ### openclaw-memory-architecture
 - **Source:** https://github.com/coolmanns/openclaw-memory-architecture

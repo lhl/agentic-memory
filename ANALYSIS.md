@@ -3,7 +3,7 @@ title: "Synthesis — Agentic Memory Systems (Comparison + Design Space)"
 date: 2026-02-21
 type: synthesis
 scope:
-  - agentic-memory repo systems (jumperz, joelclaw ADR-0077, OpenClaw architecture, Marvy output degradation, ClawVault)
+  - agentic-memory repo systems (jumperz, joelclaw ADR-0077, OpenClaw architecture, Marvy output degradation, ClawVault, memv, MIRA-OSS)
   - comparison baselines (ChatGPT/Claude-style minimal memory, Letta/MemGPT, Mem0)
   - implementation target (shisad long-term memory plans)
 related:
@@ -12,6 +12,8 @@ related:
   - ANALYSIS-coolmanns-openclaw-memory-architecture.md
   - ANALYSIS-drag88-agent-output-degradation.md
   - ANALYSIS-versatly-clawvault.md
+  - ANALYSIS-vstorm-memv.md
+  - ANALYSIS-mira-OSS.md
   - references/jumperz-agent-memory-stack.md
   - references/joelhooks-adr-0077-memory-system-next-phase.md
   - references/coolmanns-openclaw-memory-architecture.md
@@ -19,6 +21,8 @@ related:
   - references/versatly-clawvault.md
   - vendor/openclaw-memory-architecture
   - vendor/clawvault
+  - vendor/memv
+  - vendor/mira-OSS
 external_comparisons:
   - shisad docs: /home/lhl/github/shisa-ai/shisad/docs
   - Letta (formerly MemGPT): https://github.com/letta-ai/letta
@@ -70,6 +74,8 @@ But tasks are often **sidecar tooling**, not integrated into retrieval/ranking a
 - **OpenClaw memory architecture (vendored repo, benchmark-driven):** `ANALYSIS-coolmanns-openclaw-memory-architecture.md`
 - **drag88/Marvy (convergence + enforcement loop pattern):** `ANALYSIS-drag88-agent-output-degradation.md`
 - **ClawVault (vendored CLI + hooks, workflow productization):** `ANALYSIS-versatly-clawvault.md`
+- **memv (vendored library, Nemori-inspired pipeline):** `ANALYSIS-vstorm-memv.md`
+- **MIRA-OSS (vendored full-stack app, event-driven with autonomous memory lifecycle):** `ANALYSIS-mira-OSS.md`
 
 ### Comparison baselines (external)
 - **Minimal “MEMORY.md-only” agent setups:** common pattern in prompt-engineered agents.
@@ -122,6 +128,8 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 | OpenClaw architecture | ✅ | ✅ | ✅ | ✅ (daily logs) | ✅ (facts.db + MEMORY.md) | ✅ (gating policies/runbooks) | ✅ (project memory) | ✅ (facts+relations+aliases) | ✅ (decay cron, reindex) | ✅ (60-query benchmark) |
 | drag88/Marvy | ⚠️ | ✅ | ✅ | ✅ (daily + hourly summaries) | ✅ (JSON entries) | ✅ (rules + enforcement) | ⚠️ | ❌ | ✅ (cron-driven) | ❌ (qualitative) |
 | ClawVault | ⚠️ | ✅ (workflow) | ✅ (ledger/transcripts + observe) | ✅ (reflect/recap) | ✅ (typed entries) | ⚠️ (inject rules + hooks) | ✅ (tasks/projects) | ✅ (graph index) | ✅ (reindex/refresh) | ❌ (no benchmark harness) |
+| memv | ❌ | ❌ | ✅ (messages) | ✅ (episodes) | ✅ (semantic statements) | ❌ | ❌ | ❌ | ⚠️ (invalidation) | ❌ |
+| MIRA-OSS | ✅ (DomainDocs + LoRA directives) | ✅ (notification center) | ✅ (Continuum segments) | ✅ (first-person summaries) | ✅ (Memory objects) | ✅ (behavioral directives via Text-Based LoRA) | ⚠️ (reminders) | ✅ (entity links + hub discovery) | ✅ (decay + consolidation + entity GC) | ⚠️ (internal tuning tests only) |
 | Letta/MemGPT | ✅ (memory blocks) | ✅ | ✅ (recall) | ⚠️ (summary as needed) | ✅ (archival) | ⚠️ (tools/skills) | ⚠️ | ❌ (not core) | ⚠️ (agent-managed) | ⚠️ (depends) |
 | Mem0 | ✅ (user prefs) | ✅ (session) | ⚠️ | ⚠️ | ✅ (memories) | ⚠️ | ⚠️ | ⚠️ (paper mentions graph variant) | ✅ (consolidation in paper) | ✅ (benchmark in paper) |
 | shisad (planned/partially implemented) | ✅ | ✅ | ✅ | ✅ (summaries + events planned) | ✅ (gated MemoryEntry) | ✅ (policy invariants) | ✅ (todos planned) | ✅ (knowledge graph planned) | ✅ (consolidation planned) | ✅ (security + adversarial tests) |
@@ -183,8 +191,11 @@ Three distinct kinds of “feedback loops” appear:
 2) **Behavior correction loops**: lessons files / behavior loop (jumperz; joelclaw).  
    Risk: “policy learning” becomes a covert instruction channel unless gated.
 
-3) **Enforcement distillation loops**: LLM judge → deterministic rules (Marvy).  
+3) **Enforcement distillation loops**: LLM judge → deterministic rules (Marvy).
    Risk: rule bloat; encoding judge quirks; style overconstraint.
+
+4) **Behavioral adaptation loops**: signal extraction → accumulation → periodic synthesis → directive injection (MIRA-OSS "Text-Based LoRA").
+   Risk: directive drift; compounding biases; no mechanism to "unlearn" a bad directive except manual editing.
 
 ### 3.5 Reliability primitives (often mislabeled as “memory”)
 
@@ -202,37 +213,37 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 
 **Retrieval / context construction**
 
-| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | Letta/MemGPT | Mem0 | shisad |
-|---|---|---|---|---|---|---|---|---|---|
-| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ | ✅ | ✅ |
-| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ❌ | ⚠️ | 🧪 |
-| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ❌ | ⚠️ | 🧪 |
-| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ⚠️ | ⚠️ | ✅ (trust tiers planned) |
-| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ⚠️ | ⚠️ | ⚠️ |
-| Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ⚠️ | ✅ (paper claims) | ✅ (TTL/decay planned) |
-| Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ | ❌ | ✅ |
-| Taint/trust labels carried through | ❌ | 🧪 (trust pass) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Letta/MemGPT | Mem0 | shisad |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF) | ✅ | ✅ | ✅ |
+| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm) | ❌ | ⚠️ | 🧪 |
+| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal) | ❌ | ⚠️ | 🧪 |
+| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path) | ⚠️ | ⚠️ | ✅ (trust tiers planned) |
+| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion) | ⚠️ | ⚠️ | ⚠️ |
+| Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ✅ (multi-factor sigmoid, activity-day) | ⚠️ | ✅ (paper claims) | ✅ (TTL/decay planned) |
+| Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ (~15 pinned + ~5 fresh) | ✅ | ✅ | ✅ |
+| Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Taint/trust labels carried through | ❌ | 🧪 (trust pass) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 **Write / ingestion governance**
 
-| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | Letta/MemGPT | Mem0 | shisad |
-|---|---|---|---|---|---|---|---|---|---|
-| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (recall) | ⚠️ | ✅ |
-| Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ |
-| Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ | ⚠️ | ✅ |
-| Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ❌ | ❌ | ✅ (confirmation paths) |
-| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ⚠️ | ✅ (paper claims) | ✅ (planned) |
-| Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (provenance + user verification) |
+| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Letta/MemGPT | Mem0 | shisad |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id) | ✅ (recall) | ⚠️ | ✅ |
+| Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (batch LLM extraction + entity linking) | ⚠️ | ✅ | ✅ |
+| Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ (auto-extract at collapse) | ❌ | ⚠️ | ✅ |
+| Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ⚠️ (memory_tool for manual create) | ❌ | ❌ | ✅ (confirmation paths) |
+| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.92 fuzzy + consolidation clusters) | ⚠️ | ✅ (paper claims) | ✅ (planned) |
+| Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes links + scoring penalty) | ⚠️ | ⚠️ | ✅ (provenance + user verification) |
 
 **Maintenance / evaluation**
 
-| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | Letta/MemGPT | Mem0 | shisad |
-|---|---|---|---|---|---|---|---|---|---|
-| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ⚠️ | ✅ | ✅ |
-| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ❌ | ❌ | ✅ (daemon) |
-| Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ❌ | ✅ (paper) | ✅ (tests + planned harness) |
-| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ⚠️ | ✅ (service analytics) | ✅ |
+| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Letta/MemGPT | Mem0 | shisad |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC) | ⚠️ | ✅ | ✅ |
+| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout) | ❌ | ❌ | ✅ (daemon) |
+| Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ⚠️ (internal tuning tests) | ❌ | ✅ (paper) | ✅ (tests + planned harness) |
+| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking) | ⚠️ | ✅ (service analytics) | ✅ |
 
 ## 4) Deep comparisons by “hard problems”
 
@@ -248,6 +259,7 @@ How systems handle it:
 - **OpenClaw:** daily logs + “event entities” ingestion into facts.db (more structured; benchmark-driven).
 - **drag88/Marvy:** daily logs + hourly summaries; episodic feeds learnings (focus is on pipeline cadence).
 - **ClawVault:** ledger + observations + reflections; episodic appears as a workflow layer (wake/sleep/recap).
+- **MIRA-OSS:** continuous Continuum → segment collapse → first-person LLM summaries (with narrative continuity from previous 5 summaries). Memories extracted from segments carry `source_segment_id` provenance. No separate "episode object" type; episodes are implicitly the segments.
 - **shisad:** transcript store + compaction summary prefix + summarizer extraction; event-centric KG planned.
 
 Synthesis take:
@@ -260,6 +272,7 @@ Tasks are where memory meets action. Approaches:
 - **ClawVault:** explicit CLI primitives for tasks/projects/backlog/kanban; integrates into workflow; good ergonomics.
 - **OpenClaw:** `project-{slug}.md` as institutional memory; task tracking is not central, but project state is.
 - **joelclaw:** Todoist as review surface; tasks as human workflow, not an internal memory type.
+- **MIRA-OSS:** reminders via `reminder_tool` (time-based); no full task/project model. DomainDocs serve as stable project context but aren’t task primitives.
 - **shisad:** explicit “todo” nodes and task-centric filing are requirements in `PLAN-longterm-memory.md`.
 - **jumperz:** “Forward triggers” (temporal preload) gestures at tasks/reminders, but it’s not a full task model.
 
@@ -276,6 +289,7 @@ The naive model (“one active truth per subject+predicate”) fails for:
 
 More robust approaches seen/planned:
 - OpenClaw: activation/importance + aliases; less about conflict resolution, more about retrieval scaffolding.
+- MIRA-OSS: `supersedes` link type with scoring penalty (soft demotion, not hard deletion). Old memory still exists and is retrievable at lower priority. Closer to append-only correction than overwrite, but lacks explicit validity intervals for point-in-time queries.
 - shisad: typed entries + TTL/decay + provenance + user verification; allows “wrong-but-attributed” to exist without being treated as authoritative.
 
 Synthesis take:
@@ -526,3 +540,4 @@ Key design point: “memory consolidation” should mean **structure + provenanc
 - External comparisons (Letta/Mem0) are based on their public READMEs and cited paper(s) as of 2026-02-21; treat product claims as “as stated by authors” unless reproduced.
 - 2026-02-21: Added an arXiv-focused literature scan (benchmarks + recent “memory systems” + poisoning/security papers). This is not exhaustive; it’s a starting bibliography for deeper per-paper reference summaries if needed.
 - 2026-02-21: Added Reality Check notes on correction-aware provenance (append-only correction semantics) and connected them to multi-timescale consolidation and Nested Learning’s continuum-memory framing.
+- 2026-03-03: Added MIRA-OSS (taylorsatula) to all comparison matrices and deep comparisons. MIRA adds: multi-factor activity-day sigmoid decay, hub-based entity discovery, typed relationship links (supersedes/conflicts/supports/refines/precedes/contextualizes), Text-Based LoRA behavioral adaptation, and production-grade multi-user security (RLS + Vault). Also added memv and MIRA-OSS to the systems-in-scope list and related references.
