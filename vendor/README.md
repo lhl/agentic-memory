@@ -25,6 +25,12 @@ noted below.
 - **License:** AGPLv3 — included as a **git submodule** (not vendored) to avoid license concerns. Run `git submodule update --init vendor/mira-OSS` to fetch the code for your own analysis.
 - **Note:** Full-stack event-driven conversational AI with autonomous memory lifecycle (extraction, linking, consolidation, decay), Text-Based LoRA behavioral adaptation, and multi-user PostgreSQL RLS isolation.
 
+### always-on-memory-agent
+- **Source:** https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/agents/always-on-memory-agent
+- **Date:** 2026-03-07
+- **License:** Apache 2.0 (GoogleCloudPlatform/generative-ai repo)
+- **Note:** Official Google ADK sample agent (Gemini 3.1 Flash-Lite) with always-on daemon pattern: multimodal file watcher + periodic LLM consolidation + HTTP API + Streamlit dashboard. SQLite storage, no vector search. First-party reference implementation for ADK agent orchestration.
+
 ### openclaw-memory-architecture
 - **Source:** https://github.com/coolmanns/openclaw-memory-architecture
 - **Commit:** `5a7cb84969e3e34242b3e0e32949882d18ac2966`
