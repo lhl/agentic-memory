@@ -67,6 +67,21 @@ Rules:
 - Don’t invent implementation details; prefer “unknown/TBD” + links to upstream evidence.
 - When quoting benchmarks or counts, include context (hardware, dataset, date) when available.
 
+## Workflow: Triage New Systems (REVIEWED.md)
+
+All newly examined systems, projects, and papers go through `REVIEWED.md` **first** as a triage stage, unless the user explicitly directs otherwise.
+
+Process:
+1. Examine the system (clone, read docs, read code as needed).
+2. Write a triage entry in `REVIEWED.md`: summary table row + detailed assessment section.
+3. Decide disposition with the user:
+   - **Not promoted**: stays in REVIEWED.md with reasoning. Prevents re-examination later.
+   - **Promoted to ANALYSIS.md**: add to comparison matrices, note “PROMOTED” in REVIEWED.md. The REVIEWED.md entry stays as history.
+   - **Standalone analysis**: create `ANALYSIS-*.md` if the system warrants a deep dive.
+4. Systems that are clearly lightweight/PoC/convergent patterns can be documented in REVIEWED.md without promotion.
+
+The triage log is reverse-chronological with a summary table at the top and detailed sections below.
+
 ## Git Hygiene (Keep History Reviewable)
 
 - Commit when a coherent research task is complete (reference/vendor/README updates done); avoid mid-task commits.
@@ -75,6 +90,7 @@ Rules:
 - Stage files explicitly (avoid `git add .`).
 - Use simple commit prefixes: `docs:`, `vendor:`, `chore:`.
 - Don’t “fix” unrelated drift outside the active scope without asking.
+- **No bylines or co-author tags** in commit messages (no `Co-Authored-By`, no `Signed-off-by`, no agent attribution). Multiple agents work on this repo; individual attribution is noise.
 
 ## Meta: Evolving This File
 
