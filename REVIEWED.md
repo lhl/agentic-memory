@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-03-07
+last_updated: 2026-03-31
 type: triage
 related:
   - ANALYSIS.md
@@ -16,11 +16,98 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-03-31 | Codex memory subsystem (OpenAI) | [openai/codex](https://github.com/openai/codex) | **Promoted to ANALYSIS.md.** Two-phase async pipeline (gpt-5.1-codex-mini → gpt-5.3-codex) with SQLite-backed job coordination, progressive disclosure memory layout, skills as procedural memory, usage-based retention via citation tracking, thread-diff-based incremental forgetting, ~1,400 lines of extraction/consolidation prompts. Standalone analysis exists. |
+| 2026-03-31 | Claude Code memory subsystem (Anthropic) | Source: `/home/lhl/Downloads/claude-code/src` | **Promoted to ANALYSIS.md.** First-party production-scale memory: flat-file MEMORY.md + typed topic files + background extraction via forked agent + LLM-based relevance selection + team memory sync + auto dream consolidation + eval-validated prompts. Standalone analysis exists. |
 | 2026-03-07 | Always-On Memory Agent (Google) | [GoogleCloudPlatform/generative-ai](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/agents/always-on-memory-agent) | **PoC / tutorial only.** No retrieval (recency LIMIT 50), no decay, no dedup, no versioning. Standalone analysis exists. Not in ANALYSIS.md. |
 | 2026-03-07 | Hermes Agent memory | [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) | **Minimal MEMORY.md baseline.** Clean security hygiene but no retrieval sophistication, no consolidation, no graph, no decay. Not worth a standalone analysis. |
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-03-31 — Codex Memory Subsystem (OpenAI) — PROMOTED
+
+**Source:** https://github.com/openai/codex (`codex-rs/core/src/memories/` + `codex-rs/core/templates/memories/`)
+
+**What it is:** The memory subsystem of OpenAI's open-source coding agent CLI (Codex). First-party, open-source, Rust-based. Core memory module ~1,500+ LOC Rust across 12 files + ~1,550 lines of prompt templates + ~4,624 lines of database operations. The only system in our survey from a frontier model provider that is fully open source.
+
+**Architecture:**
+
+- **Two-phase async pipeline**: Phase 1 (gpt-5.1-codex-mini, reasoning=Low, 8-way parallel) extracts per-rollout memories → Phase 2 (gpt-5.3-codex, reasoning=Medium, single global job) consolidates into file hierarchy. Separate models tuned for each task.
+- **SQLite-backed job coordination**: `stage1_outputs` table (raw_memory, rollout_summary, usage tracking) + `jobs` table (ownership tokens, leases=1h, heartbeats=90s, watermarks, retry backoff). Multi-worker safe without external infrastructure.
+- **Progressive disclosure layout**: `memory_summary.md` (always loaded, ≤5K tokens) → `MEMORY.md` (grepable handbook) → `rollout_summaries/` (per-rollout evidence) → `skills/` (procedural memory).
+- **Skills as procedural memory**: SKILL.md with YAML frontmatter + scripts/ + templates/ + examples/. Extracted from recurring patterns (repeats > 1).
+- **Usage-based retention**: `usage_count` and `last_usage` tracking via citation parsing. Phase 2 selection ranks by usage. Unused memories pruned after `max_unused_days`.
+- **Thread-diff incremental forgetting**: Phase 2 receives selection diff (added/retained/removed thread IDs). Removed threads trigger targeted cleanup. Evidence preserved during transition.
+- **Memory citation tracking**: `<oai-mem-citation>` XML blocks with citation entries (file:line|note) and rollout IDs for attribution/usage feedback.
+- **Secret redaction**: `codex_secrets::redact_secrets()` on all Phase 1 outputs. Developer messages stripped. Memory-excluded fragments filtered.
+- **Sandboxed consolidation agent**: No network, local write only, no approvals, disabled features (SpawnCsv, Collab, MemoryTool). Prevents recursion.
+
+**What's interesting:**
+
+- **Two-phase batch pipeline**: Extraction at startup (not during session). Cheap model for parallel per-rollout extraction, expensive model for single consolidation pass. Avoids runtime overhead entirely.
+- **Usage-based retention via citation tracking**: The "echo/fizzle" feedback loop that @jumperz proposed — actually implemented. Citations → usage_count → selection priority → consolidation → better memories → more citations.
+- **Thread-diff-based forgetting**: Surgically precise incremental updates. Phase 2 agent sees exactly what's new, what's unchanged, and what's been removed. Evidence for removed threads preserved during transition for the agent to read before deciding what to delete.
+- **Skills as procedural memory**: Only system in our survey that extracts learned workflows into executable artifacts (scripts, templates, examples). Not just "what I know" but "how to do it."
+- **~1,400 lines of extraction + consolidation prompts**: Most detailed prompt engineering in our survey by line count. Minimum signal gate, task outcome triage, evidence-preservation rules, wording-preservation requirements.
+- **SQLite-as-infrastructure**: Leases, heartbeats, watermarks, ownership tokens — distributed-safe coordination without Redis or message queues. Practical for a CLI tool on developer laptops.
+
+**What's missing vs serious systems:**
+
+- **No LLM-based query-time selection** — retrieval is keyword grep over MEMORY.md; no vector search, no embeddings, no Sonnet-style selector
+- **No real-time extraction** — memories only extracted at next session startup; one-session lag
+- **No team/shared memory** — strictly per-user, per-machine
+- **No knowledge graph or entity linking** — memories organized by task group, not entities
+- **No correction/versioning semantics** — updates in place, no append-only correction chains
+- **No staleness caveats** — no automatic freshness annotations on recalled memories
+- **No session memory** — no running notes about current conversation
+- **No eval-validated prompts** — prompts are detailed but carry no eval case IDs or pass rates (unlike Claude Code)
+
+**Verdict:** **Promoted to ANALYSIS.md.** This is a genuinely sophisticated two-phase memory pipeline with novel mechanisms not seen in other systems: SQLite-backed distributed job coordination with leases/heartbeats/watermarks, two-model extraction→consolidation strategy, skills as procedural memory, usage-based retention via citation tracking, and thread-diff-based incremental forgetting. The batch-processing architecture is a fundamentally different approach than Claude Code's real-time extraction. Contributes unique mechanisms to the design space. Standalone analysis: `ANALYSIS-codex-memory.md`.
+
+---
+
+## 2026-03-31 — Claude Code Memory Subsystem (Anthropic) — PROMOTED
+
+**Source:** `/home/lhl/Downloads/claude-code/src` (decompiled/bundled source snapshot)
+
+**What it is:** The memory subsystem of Anthropic's official coding agent (Claude Code — CLI, IDE, web). First-party, production-scale, shipping to Anthropic's entire user base. TypeScript, ~3,500 LOC across 8 core files + 4 service directories. Reviewed from bundled source, not a public repository.
+
+**Architecture:**
+
+- **Flat-file storage**: `~/.claude/projects/<sanitized-git-root>/memory/` with MEMORY.md index (max 200 lines / 25KB) + individual topic files with YAML frontmatter.
+- **Four-type taxonomy**: user (role/preferences), feedback (corrections + confirmations), project (deadlines/decisions/context), reference (external system pointers). Enforced via prompt instructions, not code-level types. Combined mode adds per-type scope tags (always private / bias team / usually team).
+- **Background extraction via forked agent**: "Perfect fork" sharing parent's prompt cache. Fires at end of each query loop. Restricted tools (read + write-to-memory-only). Max 5 turns. Mutually exclusive with main agent writes (`hasMemoryWritesSince`).
+- **LLM-based query-time relevance selection**: Sonnet reads a manifest of memory descriptions and picks up to 5 relevant files per query. Tool-aware filtering (exclude reference docs for active tools, keep warnings). Not vector search.
+- **Team memory with server sync**: Private + shared directories. OAuth-authenticated delta sync. Secret scanning before upload. Size caps (250KB/entry, 200KB/request). Pull=server wins, push=delta only.
+- **Auto dream consolidation**: Time-gated (24h) + session-gated (5 sessions) + lock-gated. 4-phase: orient → gather → consolidate → prune. Forked agent with same tool restrictions.
+- **KAIROS daily-log mode**: Append-only `logs/YYYY/MM/YYYY-MM-DD.md` for long-lived assistant sessions. Separate `/dream` skill distills logs nightly.
+- **Session memory**: Separate forked subagent maintains per-conversation notes (12K token budget, section-based template). Distinct from persistent auto-memory.
+- **Security-hardened paths**: Symlink traversal protection (realpath on deepest existing ancestor), Unicode normalization attack detection, URL-encoded traversal rejection, null byte filtering, dangling symlink detection, projectSettings exclusion.
+- **Eval-validated prompts**: Source comments reference specific eval case IDs with pass/fail rates (e.g., "H1: 0/2 → 3/3 via appendSystemPrompt"). Memory prompts are empirically tuned.
+
+**What's interesting:**
+
+- **Forked-agent-as-infrastructure**: Three subsystems (extraction, consolidation, session memory) use the same "perfect fork with shared prompt cache" pattern. Only works when you control the inference infrastructure.
+- **LLM-based memory routing**: Sonnet selector picking from a manifest is a viable alternative to vector search at small scale (~200 files). Understands intent and context.
+- **Staleness-first recall**: Multi-layer freshness handling — mtime-based age strings, per-memory caveats, system prompt drift warnings, "before recommending from memory" section. "The memory says X exists ≠ X exists now."
+- **Exclusion list as design feature**: What NOT to save is specified in detail. Gate intercepts even explicit user requests to save derivable content ("ask what was surprising").
+- **Eval-validated prompt engineering**: Only system in our survey that cites specific eval IDs with pass rates. Header-wording A/B tests. Position-sensitivity experiments.
+- **Team memory scope per type**: Not binary private/shared — each type has its own scope guidance embedded in the type definition.
+- **Main/extraction mutual exclusion**: Clean cursor-based tracking prevents duplicate writes between the main agent and background extractor.
+
+**What's missing vs serious systems:**
+
+- **No vector search / embeddings** — LLM routing over descriptions only; 200-file hard cap is a scaling wall
+- **No knowledge graph or entity linking** — memories are isolated topic files
+- **No decay or importance scoring** — mtime-based staleness *display* but no scoring that affects retrieval priority
+- **No structured episode objects** — KAIROS logs are text, not structured events
+- **No correction/versioning semantics** — overwrite model ("update or remove"), no append-only corrections
+- **No write-side content gating** — no junk filter, no similarity dedup, no plausibility heuristics (prompt says "don't duplicate" but no code-level check)
+- **No benchmark harness** — internal evals referenced in comments but no user-facing quality measurement
+
+**Verdict:** **Promoted to ANALYSIS.md.** This is the convergent MEMORY.md pattern elevated to production scale with real infrastructure: forked agents, prompt cache sharing, team sync, multi-mode prompts, eval-validated behavioral instructions, and security hardening. Contributes novel mechanisms: forked-agent extraction with mutual exclusion, LLM-based relevance selection, staleness-first recall, team memory with per-type scope, and eval-validated prompt engineering. The most widely-deployed agentic memory system in our survey. Standalone analysis: `ANALYSIS-claude-code-memory.md`.
 
 ---
 

@@ -88,6 +88,8 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-versatly-clawvault](ANALYSIS-versatly-clawvault.md) | `references/versatly-clawvault.md` + `vendor/clawvault/` | Product/tooling critique (surface area, hooks, qmd dependency), security posture, missing benchmarks |
 | [ANALYSIS-vstorm-memv](ANALYSIS-vstorm-memv.md) | `references/vstorm-memv.md` + `vendor/memv/` | Implementation critique of Nemori-inspired predict-calibrate extraction + bi-temporal validity + hybrid retrieval, with gaps/risks and shisad mapping |
 | [ANALYSIS-mira-OSS](ANALYSIS-mira-OSS.md) | `vendor/mira-OSS/` | Full-stack event-driven agent with autonomous memory lifecycle: multi-factor activity-day sigmoid decay, hub-based entity discovery, typed relationship links, Text-Based LoRA behavioral adaptation, production-grade multi-user security (RLS + Vault); gaps in write gating, external benchmarks, and taint tracking |
+| [ANALYSIS-claude-code-memory](ANALYSIS-claude-code-memory.md) | Source: `/home/lhl/Downloads/claude-code/src` | **Claude Code memory subsystem (Anthropic)**: first-party production-scale memory system; flat-file MEMORY.md + typed topic files (user/feedback/project/reference) + background extraction via forked agent with mutual exclusion + LLM-based relevance selection (Sonnet) + team memory with OAuth sync + auto dream consolidation + KAIROS daily-log mode + eval-validated prompts with case IDs + security-hardened path validation; no vector search, no graph, no decay scoring |
+| [ANALYSIS-codex-memory](ANALYSIS-codex-memory.md) | [openai/codex](https://github.com/openai/codex) | **Codex memory subsystem (OpenAI)**: first-party open-source coding agent; two-phase async pipeline (gpt-5.1-codex-mini extraction → gpt-5.3-codex consolidation) + SQLite-backed job coordination (leases/heartbeats/watermarks) + progressive disclosure layout (memory_summary → MEMORY.md → rollout_summaries → skills) + skills as procedural memory + usage-based citation-driven retention + thread-diff incremental forgetting + ~1,400 lines extraction/consolidation prompts; no vector search, no team memory, no real-time extraction |
 | [ANALYSIS-google-always-on-memory-agent](ANALYSIS-google-always-on-memory-agent.md) | `vendor/always-on-memory-agent/` | Official Google ADK sample: always-on daemon with multimodal ingestion (27 file types via Gemini 3.1 Flash-Lite), periodic LLM consolidation, SQLite storage, HTTP API + Streamlit dashboard; no retrieval/search (recency scan LIMIT 50), no decay/dedup/versioning; useful as ADK orchestration reference and multimodal ingestion pattern |
 
 ## Paper Deep Dive Analyses (Academic / Industry)
@@ -156,6 +158,7 @@ agentic-memory/
 ├── ANALYSIS-versatly-clawvault.md
 ├── ANALYSIS-vstorm-memv.md
 ├── ANALYSIS-mira-OSS.md
+├── ANALYSIS-codex-memory.md
 ├── ANALYSIS-google-always-on-memory-agent.md
 ├── REVIEWED.md                        ← triage log (examined but not promoted to ANALYSIS)
 ├── PUNCHLIST-academic-industry.md     ← tracking checklist for paper deep dives
