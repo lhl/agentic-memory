@@ -87,7 +87,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-drag88-agent-output-degradation](ANALYSIS-drag88-agent-output-degradation.md) | `references/drag88-agent-output-degradation.md` | Convergence + enforcement pattern critique (judge→rule distillation), measurement gaps, risks |
 | [ANALYSIS-versatly-clawvault](ANALYSIS-versatly-clawvault.md) | `references/versatly-clawvault.md` + `vendor/clawvault/` | Product/tooling critique (surface area, hooks, qmd dependency), security posture, missing benchmarks |
 | [ANALYSIS-vstorm-memv](ANALYSIS-vstorm-memv.md) | `references/vstorm-memv.md` + `vendor/memv/` | Implementation critique of Nemori-inspired predict-calibrate extraction + bi-temporal validity + hybrid retrieval, with gaps/risks and shisad mapping |
-| [ANALYSIS-mira-OSS](ANALYSIS-mira-OSS.md) | `vendor/mira-OSS/` | Full-stack event-driven agent with autonomous memory lifecycle: multi-factor activity-day sigmoid decay, hub-based entity discovery, typed relationship links, Text-Based LoRA behavioral adaptation, production-grade multi-user security (RLS + Vault); gaps in write gating, external benchmarks, and taint tracking |
+| [ANALYSIS-mira-OSS](ANALYSIS-mira-OSS.md) | `vendor/mira-OSS/` | Full-stack event-driven agent (v1 rev 2): activity-day sigmoid decay, hub discovery + 3-axis linking (vector+entity+TF-IDF), Text-Based LoRA + user model synthesis with critic validation, background forage agent (sub-agent collaboration), portrait synthesis, 16 tools, context overflow remediation, immutable domain models, multi-user RLS + Vault; gaps in write gating, external benchmarks, taint tracking, and sub-agent capability scoping |
 | [ANALYSIS-google-always-on-memory-agent](ANALYSIS-google-always-on-memory-agent.md) | `vendor/always-on-memory-agent/` | Official Google ADK sample: always-on daemon with multimodal ingestion (27 file types via Gemini 3.1 Flash-Lite), periodic LLM consolidation, SQLite storage, HTTP API + Streamlit dashboard; no retrieval/search (recency scan LIMIT 50), no decay/dedup/versioning; useful as ADK orchestration reference and multimodal ingestion pattern |
 
 ## Paper Deep Dive Analyses (Academic / Industry)
@@ -180,7 +180,7 @@ agentic-memory/
 │       └── arxiv-*.md
 │
 └── vendor/                            ← cloned source repos
-    ├── mira-OSS/                      ← github.com/taylorsatula/mira-OSS (submodule, AGPLv3)
+    ├── mira-OSS/                      ← github.com/taylorsatula/mira-OSS (snapshot, AGPLv3)
     │   ├── README.md
     │   ├── CLAUDE.md                  ← project guide (architecture, patterns, principles)
     │   ├── main.py                    ← FastAPI entry point

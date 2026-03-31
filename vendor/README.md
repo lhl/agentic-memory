@@ -18,12 +18,13 @@ noted below.
 - **Date:** 2026-02-20
 - **Message:** add $CLAW token address
 
-### mira-OSS (**git submodule** — AGPLv3)
+### mira-OSS (AGPLv3)
 - **Source:** https://github.com/taylorsatula/mira-OSS
-- **Reviewed commit:** `ee44b18` (version 2026.03.07-major)
-- **Review date:** 2026-03-03
-- **License:** AGPLv3 — included as a **git submodule** (not vendored) to avoid license concerns. Run `git submodule update --init vendor/mira-OSS` to fetch the code for your own analysis.
-- **Note:** Full-stack event-driven conversational AI with autonomous memory lifecycle (extraction, linking, consolidation, decay), Text-Based LoRA behavioral adaptation, and multi-user PostgreSQL RLS isolation.
+- **Reviewed commit:** `f8b13b9` (version 2026.03.30-major, "MIRA OS v1 rev 2")
+- **Previous review:** `ee44b18` (version 2026.03.07-major, 2026-03-03)
+- **Review date:** 2026-03-30
+- **License:** AGPLv3
+- **Note:** Full-stack event-driven conversational AI with autonomous memory lifecycle (extraction, 3-axis linking, consolidation, activity-day decay), Text-Based LoRA behavioral adaptation, user model synthesis with critic validation, background forage agent (sub-agent collaboration), portrait synthesis, 16 tools, context overflow remediation, immutable domain models, and multi-user PostgreSQL RLS isolation.
 
 ### always-on-memory-agent
 - **Source:** https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/agents/always-on-memory-agent

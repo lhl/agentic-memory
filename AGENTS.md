@@ -10,7 +10,7 @@ This is a **research collection** focused on agentic memory systems: architectur
 
 Primary artifacts:
 - `references/`: our curated summaries (Markdown with YAML frontmatter)
-- `vendor/`: point-in-time snapshots of relevant external repos (stripped, not submodules)
+- `vendor/`: external repos for research reference (prefer submodules; some legacy snapshots)
 - `README.md`: the index/entrypoint; should stay accurate
 
 ## Key Directories
@@ -42,22 +42,28 @@ agentic-memory/
    - Add any new source links
    - Fix any file tree drift caused by your change
 
-## Workflow: Vendor an External Repo Snapshot
+## Workflow: Add an External Repo to vendor/
 
-Vendored repos live in `vendor/` (not `vendors/`).
+External repos live in `vendor/` (not `vendors/`).
+
+**Prefer git submodules** over vendored snapshots. Submodules keep our repo lean and avoid bloating history with external code. The tradeoff (upstream could vanish) is acceptable — we care more about repo size than archival preservation.
+
+Adding a submodule:
+```bash
+git submodule add <url> vendor/<repo-name>
+cd vendor/<repo-name> && git checkout <commit-or-tag>
+cd ../.. && git add vendor/<repo-name> .gitmodules
+```
 
 Rules:
-- Snapshots are **point-in-time copies** (no submodules; no live checkouts).
-- Do not keep `.git/` directories under `vendor/`.
-- Record provenance in `vendor/README.md` for every snapshot:
+- Record provenance in `vendor/README.md` for every entry (submodule or snapshot):
   - Source URL
-  - Upstream commit SHA / tag
-  - Capture date (YYYY-MM-DD)
+  - Reviewed commit SHA / tag
+  - Review date (YYYY-MM-DD)
   - Short note/message about what was captured and why
-- Keep vendor trees lean:
-  - Remove obvious generated artifacts (`node_modules/`, `dist/`, `.venv/`, build caches, etc.)
-  - Keep upstream license/notice files when present
-- Avoid editing vendored code for “style” or “cleanup”.
+- Some legacy entries are **point-in-time snapshots** (actual code committed). These are fine to leave as-is but new additions should use submodules.
+- For snapshots: do not keep `.git/` directories; remove generated artifacts (`node_modules/`, `dist/`, `.venv/`, build caches); keep upstream license files.
+- Avoid editing external code for “style” or “cleanup”.
   - Any research notes belong in `references/`, not inside `vendor/`.
 
 ## Research/Claim Hygiene

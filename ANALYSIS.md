@@ -1,6 +1,6 @@
 ---
 title: "Synthesis — Agentic Memory Systems (Comparison + Design Space)"
-date: 2026-03-07
+date: 2026-03-30
 type: synthesis
 scope:
   - agentic-memory repo systems (jumperz, joelclaw ADR-0077, OpenClaw architecture, Marvy output degradation, ClawVault, memv, MIRA-OSS, Gigabrain)
@@ -131,7 +131,7 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 | drag88/Marvy | ⚠️ | ✅ | ✅ | ✅ (daily + hourly summaries) | ✅ (JSON entries) | ✅ (rules + enforcement) | ⚠️ | ❌ | ✅ (cron-driven) | ❌ (qualitative) |
 | ClawVault | ⚠️ | ✅ (workflow) | ✅ (ledger/transcripts + observe) | ✅ (reflect/recap) | ✅ (typed entries) | ⚠️ (inject rules + hooks) | ✅ (tasks/projects) | ✅ (graph index) | ✅ (reindex/refresh) | ❌ (no benchmark harness) |
 | memv | ❌ | ❌ | ✅ (messages) | ✅ (episodes) | ✅ (semantic statements) | ❌ | ❌ | ❌ | ⚠️ (invalidation) | ❌ |
-| MIRA-OSS | ✅ (DomainDocs + LoRA directives) | ✅ (notification center) | ✅ (Continuum segments) | ✅ (first-person summaries) | ✅ (Memory objects) | ✅ (behavioral directives via Text-Based LoRA) | ⚠️ (reminders) | ✅ (entity links + hub discovery) | ✅ (decay + consolidation + entity GC) | ⚠️ (internal tuning tests only) |
+| MIRA-OSS (v1r2) | ✅ (DomainDocs + LoRA directives + portrait) | ✅ (notification center + forage results) | ✅ (Continuum segments) | ✅ (first-person summaries) | ✅ (Memory objects) | ✅ (behavioral directives via Text-Based LoRA + user model synthesis) | ⚠️ (reminders) | ✅ (entity links + hub discovery + 3-axis linking) | ✅ (decay + consolidation + entity GC) | ⚠️ (internal tuning tests only) |
 | Gigabrain | ⚠️ (AGENT_IDENTITY type) | ❌ | ✅ (native sync of daily notes) | ✅ (EPISODE type) | ✅ (USER_FACT/PREFERENCE/DECISION/ENTITY) | ❌ | ❌ | ⚠️ (person service + co-occurrence graph export) | ✅ (nightly pipeline: quality sweep + dedup + archive + vacuum) | ✅ (memorybench harness + 12 tests) |
 | Letta/MemGPT | ✅ (memory blocks) | ✅ | ✅ (recall) | ⚠️ (summary as needed) | ✅ (archival) | ⚠️ (tools/skills) | ⚠️ | ❌ (not core) | ⚠️ (agent-managed) | ⚠️ (depends) |
 | Mem0 | ✅ (user prefs) | ✅ (session) | ⚠️ | ⚠️ | ✅ (memories) | ⚠️ | ⚠️ | ⚠️ (paper mentions graph variant) | ✅ (consolidation in paper) | ✅ (benchmark in paper) |
@@ -200,6 +200,9 @@ Three distinct kinds of “feedback loops” appear:
 4) **Behavioral adaptation loops**: signal extraction → accumulation → periodic synthesis → directive injection (MIRA-OSS "Text-Based LoRA").
    Risk: directive drift; compounding biases; no mechanism to "unlearn" a bad directive except manual editing.
 
+5) **Assessment-anchored user modeling**: evaluate conversation against system prompt sections → classify alignment/misalignment signals → periodic synthesis with critic validation → user model and portrait injection (MIRA-OSS v1r2).
+   Risk: assessment quality depends on system prompt section design; critic validation (Haiku) may miss subtle observation laundering.
+
 ### 3.5 Reliability primitives (often mislabeled as “memory”)
 
 Checkpointing/replay is an “ops primitive” but shows up in most stacks:
@@ -218,35 +221,35 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 
 | Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Letta/MemGPT | Mem0 | shisad |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF) | ⚠️ (FTS + weighted Jaccard, no embeddings) | ✅ | ✅ | ✅ |
-| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm) | ✅ (person service + coreference) | ❌ | ⚠️ | 🧪 |
-| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal) | ❌ (graph export only) | ❌ | ⚠️ | 🧪 |
-| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path) | ✅ (class budgets: core/situational/decisions) | ⚠️ | ⚠️ | ✅ (trust tiers planned) |
-| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion) | ⚠️ (entity coreference + query sanitization) | ⚠️ | ⚠️ | ⚠️ |
+| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF + intent-aware weighting) | ⚠️ (FTS + weighted Jaccard, no embeddings) | ✅ | ✅ | ✅ |
+| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm + 3-axis linking) | ✅ (person service + coreference) | ❌ | ⚠️ | 🧪 |
+| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal + TF-IDF orphan recovery) | ❌ (graph export only) | ❌ | ⚠️ | 🧪 |
+| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path + background forage agent) | ✅ (class budgets: core/situational/decisions) | ⚠️ | ⚠️ | ✅ (trust tiers planned) |
+| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion, replaces original query) | ⚠️ (entity coreference + query sanitization) | ⚠️ | ⚠️ | ⚠️ |
 | Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ✅ (multi-factor sigmoid, activity-day) | ✅ (stepped recency: 1d/7d/30d/90d/365d) | ⚠️ | ✅ (paper claims) | ✅ (TTL/decay planned) |
 | Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ (~15 pinned + ~5 fresh) | ✅ (topK=8 + class budgets + token cap) | ✅ | ✅ | ✅ |
-| Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ | ⚠️ (scope: shared vs profile, private vs group) | ❌ | ❌ | ✅ |
+| Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ (forage agent code-constrained, not arch-constrained) | ⚠️ (scope: shared vs profile, private vs group) | ❌ | ❌ | ✅ |
 | Taint/trust labels carried through | ❌ | 🧪 (trust pass) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 **Write / ingestion governance**
 
 | Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Letta/MemGPT | Mem0 | shisad |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id) | ✅ (event-sourced: append-only memory_events + per-memory timeline) | ✅ (recall) | ⚠️ | ✅ |
-| Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (batch LLM extraction + entity linking) | ✅ (7 typed memories via XML tag protocol) | ⚠️ | ✅ | ✅ |
-| Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ (auto-extract at collapse) | ✅ (junk filter + dedup + plausibility + review queue) | ❌ | ⚠️ | ✅ |
+| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id + batch tracking) | ✅ (event-sourced: append-only memory_events + per-memory timeline) | ✅ (recall) | ⚠️ | ✅ |
+| Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (batch LLM extraction + entity linking + 3-axis relationship discovery) | ✅ (7 typed memories via XML tag protocol) | ⚠️ | ✅ | ✅ |
+| Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ (auto-extract at collapse; 0.85 fuzzy + 0.7 vector dedup only) | ✅ (junk filter + dedup + plausibility + review queue) | ❌ | ⚠️ | ✅ |
 | Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ⚠️ (memory_tool for manual create) | ✅ (review queue for borderline captures + audit shadow/apply) | ❌ | ❌ | ✅ (confirmation paths) |
-| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.92 fuzzy + consolidation clusters) | ✅ (exact + weighted Jaccard with type-aware thresholds) | ⚠️ | ✅ (paper claims) | ✅ (planned) |
+| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.85 fuzzy + 0.7 vector + connected-component consolidation clusters) | ✅ (exact + weighted Jaccard with type-aware thresholds) | ⚠️ | ✅ (paper claims) | ✅ (planned) |
 | Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes links + scoring penalty) | ⚠️ (event log preserves history but no versioned corrections) | ⚠️ | ⚠️ | ✅ (provenance + user verification) |
 
 **Maintenance / evaluation**
 
 | Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Letta/MemGPT | Mem0 | shisad | Gigabrain |
 |---|---|---|---|---|---|---|---|---|---|---|---|
-| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC) | ⚠️ | ✅ | ✅ | ✅ (nightly pipeline: snapshot → sync → sweep → dedup → audit → archive → vacuum → metrics) |
-| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout) | ❌ | ❌ | ✅ (daemon) | ⚠️ (CLI-triggered `gigabrainctl nightly`; no daemon/scheduler) |
+| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC + use-day scheduling) | ⚠️ | ✅ | ✅ | ✅ (nightly pipeline: snapshot → sync → sweep → dedup → audit → archive → vacuum → metrics) |
+| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout + extraction retry 6h) | ❌ | ❌ | ✅ (daemon) | ⚠️ (CLI-triggered `gigabrainctl nightly`; no daemon/scheduler) |
 | Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ⚠️ (internal tuning tests) | ❌ | ✅ (paper) | ✅ (tests + planned harness) | ✅ (harness-lab-run.js with A/B comparison, bilingual eval cases) |
-| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking) | ⚠️ | ✅ (service analytics) | ✅ | ✅ (event-sourced: every capture/reject/dedup/audit logged with reason_codes, similarity scores, JSON payloads) |
+| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking + forage traces) | ⚠️ | ✅ (service analytics) | ✅ | ✅ (event-sourced: every capture/reject/dedup/audit logged with reason_codes, similarity scores, JSON payloads) |
 
 ## 4) Deep comparisons by “hard problems”
 
@@ -262,7 +265,7 @@ How systems handle it:
 - **OpenClaw:** daily logs + “event entities” ingestion into facts.db (more structured; benchmark-driven).
 - **drag88/Marvy:** daily logs + hourly summaries; episodic feeds learnings (focus is on pipeline cadence).
 - **ClawVault:** ledger + observations + reflections; episodic appears as a workflow layer (wake/sleep/recap).
-- **MIRA-OSS:** continuous Continuum → segment collapse → first-person LLM summaries (with narrative continuity from previous 5 summaries). Memories extracted from segments carry `source_segment_id` provenance. No separate "episode object" type; episodes are implicitly the segments.
+- **MIRA-OSS (v1r2):** continuous Continuum → segment collapse (active/paused/collapsed states) → first-person LLM summaries (with narrative continuity from previous 5 summaries). Memories extracted from segments carry `source_segment_id` provenance. No separate "episode object" type; episodes are implicitly the segments. Session reconstruction assembles: collapse marker → summaries → behavioral primer → continuity → active messages.
 - **shisad:** transcript store + compaction summary prefix + summarizer extraction; event-centric KG planned.
 
 Synthesis take:
@@ -275,7 +278,7 @@ Tasks are where memory meets action. Approaches:
 - **ClawVault:** explicit CLI primitives for tasks/projects/backlog/kanban; integrates into workflow; good ergonomics.
 - **OpenClaw:** `project-{slug}.md` as institutional memory; task tracking is not central, but project state is.
 - **joelclaw:** Todoist as review surface; tasks as human workflow, not an internal memory type.
-- **MIRA-OSS:** reminders via `reminder_tool` (time-based); no full task/project model. DomainDocs serve as stable project context but aren’t task primitives.
+- **MIRA-OSS (v1r2):** reminders via `reminder_tool` (time-based); punchclock for time tracking; no full task/project model. DomainDocs serve as stable project context but aren’t task primitives. The forage agent can speculatively gather context for tasks but doesn’t manage task state.
 - **shisad:** explicit “todo” nodes and task-centric filing are requirements in `PLAN-longterm-memory.md`.
 - **jumperz:** “Forward triggers” (temporal preload) gestures at tasks/reminders, but it’s not a full task model.
 
@@ -554,6 +557,9 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | **Text-Based LoRA (behavioral adaptation)** | MIRA-OSS | Signal extraction from interactions → accumulation → periodic synthesis into behavioral directives → directive injection. A form of "fine-tuning without fine-tuning" via accumulated behavioral modification signals. | Implemented |
 | **Continuum segments with narrative summaries** | MIRA-OSS | Continuous transcript stream collapsed into segments; LLM generates first-person narrative summaries with continuity from previous 5 summaries. Memories carry `source_segment_id` provenance linking back to source material. | Implemented |
 | **Typed relationship links** | MIRA-OSS | Memory entities connected via typed edges: supersedes, conflicts, supports, refines, precedes, contextualizes. Richer than simple "related to" — captures the *nature* of the relationship. | Implemented |
+| **Background forage agent (sub-agent collaboration)** | MIRA-OSS (v1r2) | Autonomous LLM-in-a-loop running in daemon thread with shared ToolRepository and user context propagation. Quality rubric (GROUNDED, RELEVANT, SPECIFIC, USEFUL, HONEST) baked into agent system prompt. Results surface via event bus → ForageTrinket → notification center. First folk system with parallel sub-agent collaboration. | Implemented |
+| **Assessment-anchored user model synthesis** | MIRA-OSS (v1r2) | Conversation evaluated against anonymized system prompt sections → alignment/misalignment/contextual_pass signals with strength levels → periodic synthesis with Haiku critic validation loop (max 3 attempts) → XML user model. More structured than generic positive/negative feedback extraction. | Implemented |
+| **3-axis linking (vector + entity + TF-IDF)** | MIRA-OSS (v1r2) | Memory linking uses three discovery axes: vector similarity, entity co-occurrence (with embedding floor for common-entity suppression), and TF-IDF term overlap (catches orphan memories with no entities and distant embeddings via rare shared terms). | Implemented |
 
 ### Retrieval-side innovations
 
@@ -563,6 +569,8 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | **Multi-factor activity-day sigmoid decay** | MIRA-OSS | Decay based on *activity days* (days with actual interaction), not calendar days. Prevents memories from decaying during inactive periods. Uses sigmoid curve, not linear or exponential. | Implemented |
 | **Hub-based entity discovery** | MIRA-OSS | Entity graph traversal starting from high-connectivity "hub" nodes, pulling in related entities and their connected memories. Leverages graph topology for retrieval, not just direct matches. | Implemented |
 | **Subcortical pre-filter → dual-path retrieval** | MIRA-OSS | Fast "subcortical" pre-filter determines retrieval strategy before expensive search. Dual-path: pinned core memories (~15) + fresh retrieval (~5) composed together. | Implemented |
+| **Speculative background retrieval (forage agent)** | MIRA-OSS (v1r2) | Background LLM-in-a-loop uses shared tools (continuum, memory, web search) to speculatively gather context in parallel with primary conversation. Quality rubric prevents hallucinated results. Multiple concurrent forages tracked by task_id. | Implemented |
+| **Context overflow remediation** | MIRA-OSS (v1r2) | Embedding-based drift pruning (remove messages least similar to current query) → oldest-first fallback → tool pair safety → retry (up to 3 attempts). Graceful degradation vs simple truncation. | Implemented |
 | **60-query benchmark-driven tuning** | OpenClaw | Retrieval quality systematically measured against a 60-query benchmark suite. Weights and parameters tuned empirically, not by intuition. | Implemented |
 | **Bi-temporal validity windows** | memv | Memories carry both *assertion time* (when stored) and *valid time* (when the fact was/is true). Enables temporal queries ("what did I believe in January?") and prevents stale facts from polluting current context. | Proposed (spec) |
 | **Forward triggers (temporal preload)** | @jumperz | Pre-scheduled memory injection based on anticipated future context needs — reminders and task-relevant memories loaded proactively. | Proposed (spec) |
@@ -592,6 +600,8 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | **Memory as "Memory OS" tiers** | Synthesis (this doc) | Six-tier model: append-only source → derived corpus → durable typed entries → structured filing → curated always-loaded → maintenance layer. Provides a framework for evaluating any memory system's completeness. | Conceptual |
 | **Skills as procedural memory** | Hermes Agent | SKILL.md files with YAML frontmatter and progressive disclosure (Level 0: list → Level 1: full → Level 2: references). Maps learned workflows to memory entries. (Not in ANALYSIS.md comparison; see REVIEWED.md.) | Implemented |
 | **Person service with bilingual coreference** | Gigabrain | Entity mention tracking across memories with bilingual (EN/DE) pronoun resolution for follow-up queries. "Who is X?" query detection with entity answer hints injected into recall. | Implemented |
+| **Portrait synthesis from collapsed summaries** | MIRA-OSS (v1r2) | Every 10 use-days, generates a 150–250 word prose portrait from recent collapsed segment summaries (20 activity-day window). Injected into base system prompt as `{user_context}`. Provides the LLM with a continuously-updated user model without consuming memory retrieval budget. | Implemented |
+| **Immutable domain models + Unit of Work** | MIRA-OSS (v1r2) | Frozen dataclasses for ContinuumState and Message prevent silent state mutations. Continuum aggregate root uses mutable message cache with immutable backing state. Unit of Work pattern ensures atomic DB→cache persistence with DB authoritative on crash. | Implemented |
 | **Multimodal memory ingestion** | Google Always-On Memory Agent | 27 file types via Gemini native multimodal capabilities — images, PDFs, audio, video summarized into text memories. Most memory systems are text-only. (PoC quality; see REVIEWED.md.) | PoC |
 
 ## Corrections & Updates
@@ -602,3 +612,4 @@ This section catalogs **unique or notably original mechanisms** from any system,
 - 2026-02-21: Added Reality Check notes on correction-aware provenance (append-only correction semantics) and connected them to multi-timescale consolidation and Nested Learning’s continuum-memory framing.
 - 2026-03-03: Added MIRA-OSS (taylorsatula) to all comparison matrices and deep comparisons. MIRA adds: multi-factor activity-day sigmoid decay, hub-based entity discovery, typed relationship links (supersedes/conflicts/supports/refines/precedes/contextualizes), Text-Based LoRA behavioral adaptation, and production-grade multi-user security (RLS + Vault). Also added memv and MIRA-OSS to the systems-in-scope list and related references.
 - 2026-03-07: Added Gigabrain (legendaryvibecoder) to all comparison matrices. Gigabrain adds: event-sourced storage (append-only events + materialized projection), explicit capture via XML tag protocol, type-aware semantic dedup thresholds, multi-gate write pipeline with review queue, class-budgeted recall, and A/B recall benchmark harness. Also created Section 11 "Novel Memory Features" cataloging unique mechanisms across all systems regardless of source completeness. Triage details in REVIEWED.md.
+- 2026-03-30: Refreshed MIRA-OSS entries across all matrices for v1 rev 2 (2026.03.30-major). Substantive additions: background forage agent (first folk system with parallel sub-agent collaboration), assessment-anchored user model synthesis with critic validation, portrait synthesis, 3-axis linking (vector + entity + TF-IDF), extraction pipeline restructure, verbose refinement ablated, context overflow remediation, immutable domain models + Unit of Work, 16 tools (up from 11), account tier system, segment pause/resume. ANALYSIS-mira-OSS.md fully rewritten. See REVIEWED.md for triage entry.
