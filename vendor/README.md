@@ -32,6 +32,13 @@ noted below.
 - **License:** Apache 2.0 (GoogleCloudPlatform/generative-ai repo)
 - **Note:** Official Google ADK sample agent (Gemini 3.1 Flash-Lite) with always-on daemon pattern: multimodal file watcher + periodic LLM consolidation + HTTP API + Streamlit dashboard. SQLite storage, no vector search. First-party reference implementation for ADK agent orchestration.
 
+### supermemory
+- **Source:** https://github.com/supermemoryai/supermemory
+- **Commit:** `38282a37d68e6dc9827f5734d5b8603067b7f480`
+- **Date:** 2026-03-28
+- **License:** MIT
+- **Note:** Lean subset (schemas, architecture docs, SDK client, MCP server). Industry memory-as-a-service startup. Open-source repo is frontend/SDK — core memory engine (versioning, relationship traversal, search, forgetting, profile generation) is proprietary backend at `api.supermemory.ai`. Research value is in the data model schemas and architecture documentation.
+
 ### openclaw-memory-architecture
 - **Source:** https://github.com/coolmanns/openclaw-memory-architecture
 - **Commit:** `5a7cb84969e3e34242b3e0e32949882d18ac2966`

@@ -26,6 +26,7 @@ If you reference this repo’s summaries/analyses in academic or professional wo
 | [drag88-agent-output-degradation](references/drag88-agent-output-degradation.md) | @drag88 (Aswin) | **"Why Your Agent's Output Gets Worse Over Time"** — multi-agent convergence problem. 4-tier memory (working → episodic → semantic → procedural). 3-layer enforcement pipeline (YAML regex → Gemini LLM judge → self-learning loop). Core insight: convert expensive runtime LLM checks into free static regex rules over time. |
 | [versatly-clawvault](references/versatly-clawvault.md) | Versatly (@drag88) | **ClawVault** npm CLI tool — structured markdown memory vault with observation pipeline, knowledge graph, session lifecycle (wake/sleep/checkpoint), task/project primitives, Obsidian integration, OpenClaw hooks. 449+ tests. v2.6.1. |
 | [vstorm-memv](references/vstorm-memv.md) | vstorm-co | **memv** (PyPI: `memvee`) — Nemori-inspired predict-calibrate extraction + episode segmentation, plus Graphiti-style bi-temporal validity and hybrid retrieval (sqlite-vec + FTS5 + RRF) on SQLite. |
+| [supermemory](references/supermemory.md) | Dhravya Shah / supermemoryai | **Supermemory** memory-as-a-service API: memory versioning (linked-list chains), typed relationships (`updates`/`extends`/`derives`), static/dynamic profile synthesis, time-based forgetting with reason tracking, multi-model embedding storage. **Critical caveat**: open-source repo is frontend/SDK only; core engine is proprietary backend at `api.supermemory.ai`. |
 
 ## Paper Reference Summaries (Academic / Industry)
 
@@ -91,6 +92,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-claude-code-memory](ANALYSIS-claude-code-memory.md) | Source: `/home/lhl/Downloads/claude-code/src` | **Claude Code memory subsystem (Anthropic)**: first-party production-scale memory system; flat-file MEMORY.md + typed topic files (user/feedback/project/reference) + background extraction via forked agent with mutual exclusion + LLM-based relevance selection (Sonnet) + team memory with OAuth sync + auto dream consolidation + KAIROS daily-log mode + eval-validated prompts with case IDs + security-hardened path validation; no vector search, no graph, no decay scoring |
 | [ANALYSIS-codex-memory](ANALYSIS-codex-memory.md) | [openai/codex](https://github.com/openai/codex) | **Codex memory subsystem (OpenAI)**: first-party open-source coding agent; two-phase async pipeline (gpt-5.1-codex-mini extraction → gpt-5.3-codex consolidation) + SQLite-backed job coordination (leases/heartbeats/watermarks) + progressive disclosure layout (memory_summary → MEMORY.md → rollout_summaries → skills) + skills as procedural memory + usage-based citation-driven retention + thread-diff incremental forgetting + ~1,400 lines extraction/consolidation prompts; no vector search, no team memory, no real-time extraction |
 | [ANALYSIS-google-always-on-memory-agent](ANALYSIS-google-always-on-memory-agent.md) | `vendor/always-on-memory-agent/` | Official Google ADK sample: always-on daemon with multimodal ingestion (27 file types via Gemini 3.1 Flash-Lite), periodic LLM consolidation, SQLite storage, HTTP API + Streamlit dashboard; no retrieval/search (recency scan LIMIT 50), no decay/dedup/versioning; useful as ADK orchestration reference and multimodal ingestion pattern |
+| [ANALYSIS-supermemory](ANALYSIS-supermemory.md) | `references/supermemory.md` + `vendor/supermemory/` | Memory-as-a-service startup: memory versioning (linked-list chains via parentMemoryId/rootMemoryId/isLatest), typed relationship ontology (updates/extends/derives), static/dynamic profile synthesis API, time-based forgetting with audit trail, multi-model embedding columns, MemoryBench framework; **open-source repo is SDK/frontend only — core engine logic is proprietary hosted backend** |
 
 ## Paper Deep Dive Analyses (Academic / Industry)
 
@@ -143,6 +145,8 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | @joelhooks ADR tweet | https://x.com/joelhooks/status/2024947701738262773 |
 | joelclaw ADR-0077 | https://joelclaw.com/adrs/0077-memory-system-next-phase |
 | @drag88 article | https://x.com/drag88/status/2022551759491862974 |
+| supermemory docs | https://supermemory.ai/docs |
+| supermemory repo | https://github.com/supermemoryai/supermemory |
 
 ## File Tree
 
@@ -160,6 +164,7 @@ agentic-memory/
 ├── ANALYSIS-mira-OSS.md
 ├── ANALYSIS-codex-memory.md
 ├── ANALYSIS-google-always-on-memory-agent.md
+├── ANALYSIS-supermemory.md
 ├── REVIEWED.md                        ← triage log (examined but not promoted to ANALYSIS)
 ├── PUNCHLIST-academic-industry.md     ← tracking checklist for paper deep dives
 ├── templates/                         ← templates for paper analyses/summaries
@@ -236,6 +241,23 @@ agentic-memory/
     │   ├── src/
     │   │   └── memv/                  ← segmentation, extraction, validity, retrieval, storage
     │   └── tests/
+    │
+    ├── supermemory/                    ← github.com/supermemoryai/supermemory (lean subset: schemas, SDK, MCP, arch docs)
+    │   ├── LICENSE
+    │   ├── README.md                  ← provenance + open-source vs hosted-backend split
+    │   ├── packages/
+    │   │   ├── validation/            ← Zod schemas (data model definitions)
+    │   │   │   ├── schemas.ts
+    │   │   │   └── api.ts
+    │   │   ├── lib/
+    │   │   │   ├── api.ts             ← reveals backend dependency (api.supermemory.ai)
+    │   │   │   └── similarity.ts      ← client-side cosine sim (visualization only)
+    │   │   └── tools/src/shared/
+    │   │       └── memory-client.ts   ← SDK client (profile search, prompt formatting)
+    │   ├── apps/mcp/src/
+    │   │   └── server.ts              ← MCP server (memory/recall/whoAmI tools)
+    │   └── skills/supermemory/references/
+    │       └── architecture.md        ← claimed design (558 lines)
     │
     └── clawvault/                     ← github.com/Versatly/clawvault
         ├── README.md
