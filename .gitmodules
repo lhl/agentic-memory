@@ -1,3 +1,6 @@
 [submodule "vendor/mira-OSS"]
 	path = vendor/mira-OSS
 	url = https://github.com/taylorsatula/mira-OSS.git
+[submodule "vendor/widemem-ai"]
+	path = vendor/widemem-ai
+	url = https://github.com/remete618/widemem-ai.git

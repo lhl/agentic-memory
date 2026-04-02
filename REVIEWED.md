@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-03-31
+last_updated: 2026-04-02
 type: triage
 related:
   - ANALYSIS.md
@@ -16,6 +16,7 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-02 | widemem-ai (remete618) | [remete618/widemem-ai](https://github.com/remete618/widemem-ai) | **Not promoted.** Clean library-style memory SDK (~3.5K LOC Python) with importance+decay scoring, hierarchical tiers (fact→summary→theme), YMYL domain protection, batch conflict resolution, self-supervised extraction data collection, MCP server, and uncertainty-aware retrieval. Well-engineered but convergent — no novel mechanisms beyond what ANALYSIS.md already covers. See detailed notes below. |
 | 2026-03-28 | Supermemory (supermemoryai) | [supermemoryai/supermemory](https://github.com/supermemoryai/supermemory) | **PROMOTED to ANALYSIS.md + standalone.** Industry (startup) memory-as-a-service. Version chains, typed relationships (updates/extends/derives), static/dynamic profiles, temporal forgetting. Core engine proprietary — open-source is SDK/UI client only. Self-reported #1 on LongMemEval/LoCoMo/ConvoMem (no paper). See `ANALYSIS-supermemory.md`. |
 | 2026-03-31 | Codex memory subsystem (OpenAI) | [openai/codex](https://github.com/openai/codex) | **Promoted to ANALYSIS.md.** Two-phase async pipeline (gpt-5.1-codex-mini → gpt-5.3-codex) with SQLite-backed job coordination, progressive disclosure memory layout, skills as procedural memory, usage-based retention via citation tracking, thread-diff-based incremental forgetting, ~1,400 lines of extraction/consolidation prompts. Standalone analysis exists. |
 | 2026-03-31 | Claude Code memory subsystem (Anthropic) | Source: `/home/lhl/Downloads/claude-code/src` | **Promoted to ANALYSIS.md.** First-party production-scale memory: flat-file MEMORY.md + typed topic files + background extraction via forked agent + LLM-based relevance selection + team memory sync + auto dream consolidation + eval-validated prompts. Standalone analysis exists. |
@@ -25,6 +26,79 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-04-02 — widemem-ai (remete618)
+
+**Source:** https://github.com/remete618/widemem-ai
+**Commit:** `f2b4e2f` (HEAD as of review)
+**License:** Apache 2.0
+**Language:** Python 3.10+, ~3,500 LOC library + ~2,300 LOC tests (140 tests claimed)
+**Published:** PyPI `widemem-ai`, v1.4+
+**Age:** 28 commits, 2026-03-08 to 2026-03-20
+
+**What it is:** A standalone Python memory library (pip-installable SDK) with an MCP server. Designed as a pluggable memory backend for AI agents/assistants. Multi-provider: OpenAI/Anthropic/Ollama for LLM, OpenAI/Sentence-Transformers/Ollama for embeddings, FAISS/Qdrant for vector storage, SQLite for history/audit.
+
+**Architecture:**
+
+- **Write pipeline**: Input text → LLM fact extraction (JSON structured output, importance 1-10) → YMYL importance floor enforcement → batch conflict resolution (single LLM call: ADD/UPDATE/DELETE/NONE per fact vs existing memories found by embedding similarity) → content-hash dedup → vector store insert → SQLite history log.
+- **Read pipeline**: Query → embed → vector search (FAISS inner product with L2 normalization) → TTL filter → multi-factor scoring (`similarity_weight × similarity + importance_weight × importance + recency_weight × recency`) → adaptive query scoring (factual queries boost similarity, temporal queries boost recency) → topic boost multiplier → YMYL decay immunity → optional hierarchy routing (fact/summary/theme tier preference by query type) → confidence assessment → `SearchResult` with `RetrievalConfidence` enum.
+- **Hierarchical memory (3 tiers)**: `FACT` → `SUMMARY` → `THEME`. LLM groups facts by topic, summarizes groups, then synthesizes themes from summaries. Tier routing at query time: broad queries prefer themes, specific queries prefer facts, mid-range queries prefer summaries. Disabled by default.
+- **Temporal decay**: 4 functions — exponential (`e^(-rate×days)`), linear (`1 - rate×days`), step (1.0/0.7/0.4/0.1 at 7/30/90+ days), none. Configurable rate. YMYL facts can be decay-immune.
+- **YMYL domain protection**: Regex-based classifier (strong patterns like "blood pressure" + weak patterns like "doctor", 8 categories). Strong matches or 2+ weak matches → importance floor (default 8.0) + decay immunity + forced active retrieval.
+- **Batch conflict resolution**: Single LLM call receives all new facts + all similar existing memories. Returns per-fact actions (ADD/UPDATE/DELETE/NONE) with target IDs. ID mapper translates sequential ints ↔ UUIDs for prompt compactness. Falls back to ADD-all on LLM failure.
+- **Active retrieval**: Contradiction detection via LLM — compares new facts against existing high-similarity memories. Returns `Clarification` objects (contradiction/ambiguity + question). Callback-based: caller decides whether to proceed or abort.
+- **Uncertainty-aware responses**: Confidence levels (HIGH/MODERATE/LOW/NONE) based on top-similarity thresholds (0.65/0.45/0.25). Three uncertainty modes (strict/helpful/creative) determine response guidance (refuse/hedge/answer/offer_guess). Frustration detection via keyword matching ("you forgot", "I told you") with fact extraction and auto-pin.
+- **Pin mechanism**: `pin()` stores a memory at elevated importance (default 9.0). Useful for user-corrected facts or YMYL data. Processes through normal pipeline then elevates.
+- **Self-supervised extraction collection**: Logs (input_text, extracted_facts, model, timestamp) to SQLite. Exportable as JSONL for fine-tuning a local extraction model. `SelfSupervisedExtractor` class can use a fine-tuned HuggingFace model with confidence-gated fallback to the LLM extractor.
+- **Persistence repetition boosting**: `boost_on_repetition()` checks if content is ≥0.85 similar to existing memory; if so, bumps importance by configurable amount. "Things the user keeps mentioning automatically become harder to forget."
+- **MCP server**: stdio-based, 6 tools (add, search, delete, count, pin, export, health). Defaults to Ollama + Sentence-Transformers for fully local operation.
+- **History/audit**: SQLite table logs every ADD/UPDATE/DELETE with old_content/new_content and timestamp. Per-memory timeline queryable via API.
+- **Retrieval modes**: Fast (top_k=10, 3x fetch, no hierarchy), Balanced (top_k=25, 4x fetch, hierarchy), Deep (top_k=50, 5x fetch, hierarchy). Per-query or config-level.
+
+**What's interesting:**
+
+- **YMYL as a first-class concern**: The dual-confidence regex classifier (strong/weak patterns across 8 categories) with importance floors, decay immunity, and forced active retrieval is the most explicit YMYL handling in our survey. No other system treats "your blood type should not decay" as a design principle.
+- **Adaptive query scoring**: Dynamically adjusting similarity/importance/recency weights based on query type (factual → similarity-first, temporal → recency-first, multi-hop → default) is a pragmatic approach. The two-pass similarity rescue (ensure top-similarity results aren't buried) is a nice detail.
+- **Self-supervised extraction pipeline**: Collecting (input, extraction) pairs for model distillation with a confidence-gated fallback extractor is forward-looking. No other folk system in our survey has this explicit distillation path.
+- **Clean library design**: Pydantic models, provider abstractions, base classes, dependency injection, thread locking. This is the most pip-installable-SDK-shaped system in the survey. The MCP server is a thin wrapper over the library API.
+
+**What's missing vs serious systems:**
+
+- **No knowledge graph or entity linking** — memories are isolated facts in a vector store. No relationships, no entity resolution, no co-occurrence tracking.
+- **No consolidation pipeline** — hierarchical summarization is on-demand (`summarize()`), not scheduled. No nightly maintenance, no quality sweeps, no pruning beyond TTL.
+- **No event sourcing** — history table is an audit log, but memories are mutable (update-in-place). No append-only corrections, no versioning, no supersedes chains.
+- **No write gating** — no junk filter, no plausibility heuristics, no content quality checks beyond what the LLM extraction prompt implicitly provides. Content-hash dedup only (no semantic dedup on the write path).
+- **No team/shared memory** — single-user, single-machine.
+- **No background processing** — all extraction is synchronous in the `add()` call path. No async workers, no batch processing outside the session.
+- **No security hardening** — no path traversal guards, no injection scanning on memory content, no secret detection. The MCP server has no auth.
+- **Repetition boosting is defined but not wired** — `persistence.py` defines `boost_on_repetition()` but it's not called anywhere in the pipeline. Dead code.
+- **Hierarchy is off by default** — and the query router is keyword-based, not LLM-based. The grouping/summarization in `HierarchyManager` uses LLM but must be explicitly triggered.
+
+**Comparison to existing ANALYSIS.md systems:**
+
+| Mechanism | widemem-ai | Closest existing system |
+|-----------|-----------|------------------------|
+| Importance scoring | LLM-assigned 1-10 + YMYL floors | Gigabrain (value scoring), memv (LLM importance) |
+| Temporal decay | 4 decay functions, configurable | MIRA-OSS (activity-day decay), memv (configurable decay) |
+| Conflict resolution | Batch LLM call (ADD/UPDATE/DELETE/NONE) | Gigabrain (multi-gate pipeline), Codex (Phase 2 consolidation) |
+| Hierarchical tiers | fact→summary→theme (LLM-based) | ENGRAM (working→episodic→semantic→procedural) |
+| Active retrieval | Contradiction detection + clarification callback | Supermemory (forced contradiction detection) |
+| YMYL protection | Regex classifier + importance floors + decay immunity | None in survey (unique, but narrow) |
+| Self-supervised collection | Extraction pair logging for distillation | None in survey (unique, but unrealized) |
+| Vector search | FAISS/Qdrant with multi-factor ranking | Standard across most serious systems |
+| Uncertainty handling | Confidence levels + response guidance + frustration detection | None in survey (unique) |
+
+**Verdict:** **Not promoted.** widemem-ai is a well-engineered, pip-installable memory SDK with clean architecture and good test coverage. However, its core mechanisms are convergent with patterns already well-covered in ANALYSIS.md — importance scoring, temporal decay, LLM extraction, batch conflict resolution, and vector retrieval are all established patterns. The unique contributions (YMYL protection, self-supervised extraction collection, uncertainty/frustration handling) are interesting surface features but don't represent novel architectural mechanisms:
+
+- YMYL protection is regex-based classification + importance floors — a policy layer, not a new memory architecture pattern.
+- Self-supervised extraction is a logging pipeline for future distillation — the distillation itself doesn't exist yet (`SelfSupervisedExtractor` falls back to LLM if no model loaded).
+- Uncertainty handling is post-retrieval response formatting, not a retrieval mechanism.
+- The repetition boosting mechanism is dead code.
+- No knowledge graph, no event sourcing, no background consolidation, no team memory, no security model.
+
+The system occupies the same design space as memv (vector search + LLM extraction + importance scoring) with cleaner packaging but fewer novel mechanisms than Gigabrain (event sourcing, multi-gate write pipeline, class-budgeted recall) or the first-party systems (Codex, Claude Code). Keep an eye on the self-supervised extraction path if it matures.
 
 ---
 

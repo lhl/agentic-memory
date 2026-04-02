@@ -39,6 +39,13 @@ noted below.
 - **License:** MIT
 - **Note:** Lean subset (schemas, architecture docs, SDK client, MCP server). Industry memory-as-a-service startup. Open-source repo is frontend/SDK — core memory engine (versioning, relationship traversal, search, forgetting, profile generation) is proprietary backend at `api.supermemory.ai`. Research value is in the data model schemas and architecture documentation.
 
+### widemem-ai
+- **Source:** https://github.com/remete618/widemem-ai
+- **Commit:** `f2b4e2f211bb47614af2a47f044966925a15f9db`
+- **Date:** 2026-04-02
+- **License:** Apache 2.0
+- **Note:** Python memory SDK (~3.5K LOC) with importance+decay scoring, hierarchical fact→summary→theme tiers, YMYL domain protection, batch conflict resolution, self-supervised extraction data collection, MCP server, and uncertainty-aware retrieval. Added as submodule. Reviewed but not promoted — convergent patterns, no novel architectural mechanisms vs existing ANALYSIS.md coverage.
+
 ### openclaw-memory-architecture
 - **Source:** https://github.com/coolmanns/openclaw-memory-architecture
 - **Commit:** `5a7cb84969e3e34242b3e0e32949882d18ac2966`
