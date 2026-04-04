@@ -1,9 +1,9 @@
 ---
 title: "Synthesis — Agentic Memory Systems (Comparison + Design Space)"
-date: 2026-03-30
+date: 2026-04-04
 type: synthesis
 scope:
-  - agentic-memory repo systems (jumperz, joelclaw ADR-0077, OpenClaw architecture, Marvy output degradation, ClawVault, memv, MIRA-OSS, Gigabrain, Supermemory)
+  - agentic-memory repo systems (jumperz, joelclaw ADR-0077, OpenClaw architecture, Marvy output degradation, ClawVault, memv, MIRA-OSS, Gigabrain, OpenViking, ByteRover CLI, Supermemory)
   - comparison baselines (ChatGPT/Claude-style minimal memory, Letta/MemGPT, Mem0)
   - implementation target (shisad long-term memory plans)
 related:
@@ -16,6 +16,8 @@ related:
   - ANALYSIS-mira-OSS.md
   - ANALYSIS-claude-code-memory.md
   - ANALYSIS-codex-memory.md
+  - ANALYSIS-openviking.md
+  - ANALYSIS-byterover-cli.md
   - ANALYSIS-supermemory.md
   - REVIEWED.md (Gigabrain detailed notes, Claude Code detailed notes, Codex detailed notes, Supermemory detailed notes)
   - references/jumperz-agent-memory-stack.md
@@ -27,6 +29,8 @@ related:
   - vendor/clawvault
   - vendor/memv
   - vendor/mira-OSS
+  - vendor/openviking
+  - vendor/byterover-cli
   - vendor/supermemory
 external_comparisons:
   - shisad docs: /home/lhl/github/shisa-ai/shisad/docs
@@ -71,6 +75,10 @@ But tasks are often **sidecar tooling**, not integrated into retrieval/ranking a
 5) Among sources here, **OpenClaw memory architecture** is the most synthesis-ready on the *engineering* axis (explicit layering + benchmark harness + drift tracking).  
 **shisad** is the most synthesis-ready on the *safety* axis (taint-aware, capability-scoped retrieval; gated memory writes; instruction/data boundary).
 
+6) Two newer systems widen the design space in useful ways:
+- **OpenViking** treats memory as one namespace inside a broader typed context filesystem / control plane.
+- **ByteRover CLI** treats memory as an agent-native coding runtime with local-first storage, lifecycle metadata, and five-tier progressive retrieval.
+
 ## 0) Systems in scope
 
 ### In this repo (primary comparison set)
@@ -84,6 +92,8 @@ But tasks are often **sidecar tooling**, not integrated into retrieval/ranking a
 - **Gigabrain (OpenClaw memory plugin, event-sourced with multi-gate write pipeline):** detailed notes in `REVIEWED.md`
 - **Claude Code memory subsystem (Anthropic, first-party production system):** `ANALYSIS-claude-code-memory.md`
 - **Codex memory subsystem (OpenAI, first-party open-source):** `ANALYSIS-codex-memory.md`
+- **OpenViking (volcengine, typed context database / filesystem):** `ANALYSIS-openviking.md`
+- **ByteRover CLI (campfirein, local-first coding memory runtime):** `ANALYSIS-byterover-cli.md`
 - **Supermemory (industry startup, memory-as-a-service):** `ANALYSIS-supermemory.md`
 
 ### Comparison baselines (external)
@@ -147,11 +157,15 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 | Letta/MemGPT | ✅ (memory blocks) | ✅ | ✅ (recall) | ⚠️ (summary as needed) | ✅ (archival) | ⚠️ (tools/skills) | ⚠️ | ❌ (not core) | ⚠️ (agent-managed) | ⚠️ (depends) |
 | Mem0 | ✅ (user prefs) | ✅ (session) | ⚠️ | ⚠️ | ✅ (memories) | ⚠️ | ⚠️ | ⚠️ (paper mentions graph variant) | ✅ (consolidation in paper) | ✅ (benchmark in paper) |
 | Supermemory | ✅ (static profile) | ⚠️ (dynamic profile) | ⚠️ (documents) | ⚠️ (documents as source) | ✅ (MemoryEntry with versioning) | ❌ | ❌ | ✅ (updates/extends/derives ontology) | ⚠️ (forgetAfter TTL; no visible maintenance) | ⚠️ (MemoryBench framework; self-reported claims) |
+| OpenViking | ⚠️ | ✅ | ✅ (sessions) | ✅ (session commit + promotion) | ✅ (typed memory categories) | ✅ (skills/resources as first-class context) | ✅ (projects/sessions/resources) | ⚠️ (hierarchical namespace, not graph-first) | ✅ (L0/L1/L2 promotion + async extraction) | ⚠️ (limited plugin-level evaluation) |
+| ByteRover CLI | ⚠️ | ✅ | ⚠️ (curated carryover, not transcript-first) | ⚠️ (experience compressed into context tree) | ✅ (Context Tree nodes) | ✅ (coding guidance/workflow memory) | ✅ (repo/project context) | ⚠️ (tree relationships, not full graph) | ✅ (lifecycle/decay + structured curation) | ✅ (vendor-authored benchmark paper) |
 | shisad (planned/partially implemented) | ✅ | ✅ | ✅ | ✅ (summaries + events planned) | ✅ (gated MemoryEntry) | ✅ (policy invariants) | ✅ (todos planned) | ✅ (knowledge graph planned) | ✅ (consolidation planned) | ✅ (security + adversarial tests) |
 
 Notes:
 - Several systems “have episodic memory” only in the sense that they keep daily logs; that’s **episodic storage**, not necessarily **episodic retrieval**.
-- “Evaluation” is often missing or proxy-based; OpenClaw and Mem0 are the exceptions (benchmark harness / paper).
+- `OpenViking` is broader than a pure memory system; the table scores only the memory-relevant parts of its typed context substrate.
+- `ByteRover CLI` has stronger benchmark coverage than most coding-agent systems here, but the public evidence is still mostly vendor-authored.
+- “Evaluation” is often missing or proxy-based; OpenClaw, ByteRover CLI, and Mem0 are the clearest harness/paper cases here.
 
 ## 3) Technique catalog (what mechanisms recur)
 
@@ -181,6 +195,8 @@ Recurring retrieval moves:
 - **Decay/recency weighting**: recency as a prior (jumperz; joelclaw planned; OpenClaw uses activation/importance).
 - **Injection caps**: bound the number of injected memories per turn (jumperz; joelclaw planned; shisad top-K).
 - **Trust tags**: stale/uncertain/conflict flags (jumperz “trust pass”; shisad taint + capability-scoped retrieval; OpenClaw “main session only” rules).
+- **Typed hierarchical retrieval**: navigate namespaces and recurse through object trees, not just rank chunks (OpenViking).
+- **Progressive local retrieval**: exact/fuzzy/index hits first, then model-heavy retrieval only when cheaper paths fail (ByteRover CLI).
 
 ### 3.3 Maintenance & consolidation
 
@@ -190,6 +206,10 @@ Almost all “serious” systems converge on:
   - rebuild indices,
   - prune stale items,
   - regenerate summaries.
+
+Two newer variants sharpen that pattern:
+- `OpenViking` treats maintenance as **promotion between tiers** (session-local capture to higher-level typed stores).
+- `ByteRover CLI` treats maintenance as **lifecycle management** with explicit curation verbs and decay-aware retrieval.
 
 Open question (rarely specified well): *what does “stale” mean?*
 - “unused” is not the same as “wrong”.
@@ -231,37 +251,37 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 
 **Retrieval / context construction**
 
-| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | shisad |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF + intent-aware weighting) | ⚠️ (FTS + weighted Jaccard, no embeddings) | ⚠️ (LLM-based Sonnet selector, no embeddings) | ❌ (keyword grep only) | ✅ (claimed: vector + metadata + rerank) | ✅ | ✅ | ✅ |
-| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm + 3-axis linking) | ✅ (person service + coreference) | ❌ | ❌ | ⚠️ (relationship graph, not explicit NER) | ❌ | ⚠️ | 🧪 |
-| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal + TF-IDF orphan recovery) | ❌ (graph export only) | ❌ | ❌ | ✅ (claimed: relationship expansion in search) | ❌ | ⚠️ | 🧪 |
-| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path + background forage agent) | ✅ (class budgets: core/situational/decisions) | ✅ (Sonnet selector → memory content → staleness) | ✅ (memory_summary → MEMORY.md → rollout_summaries → skills) | ✅ (profile static/dynamic + search results) | ⚠️ | ⚠️ | ✅ (trust tiers planned) |
-| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion, replaces original query) | ⚠️ (entity coreference + query sanitization) | ❌ | ❌ | ✅ (rewriteQuery flag, +400ms) | ⚠️ | ⚠️ | ⚠️ |
-| Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ✅ (multi-factor sigmoid, activity-day) | ✅ (stepped recency: 1d/7d/30d/90d/365d) | ⚠️ (mtime-based staleness display only) | ✅ (usage-based: usage_count + last_usage drive selection + pruning) | ✅ (forgetAfter TTL + recency in ranking) | ⚠️ | ✅ (paper claims) | ✅ (TTL/decay planned) |
-| Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ (~15 pinned + ~5 fresh) | ✅ (topK=8 + class budgets + token cap) | ✅ (max 5 via Sonnet selector) | ⚠️ (memory_summary token cap 5K; MEMORY.md unbounded grep) | ✅ (limit 1–100 per search) | ✅ | ✅ | ✅ |
-| Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ (forage agent code-constrained, not arch-constrained) | ⚠️ (scope: shared vs profile, private vs group) | ❌ | ❌ | ✅ (containerTag isolation + RBAC) | ❌ | ❌ | ✅ |
-| Taint/trust labels carried through | ❌ | 🧪 (trust pass) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | OpenViking | ByteRover CLI | shisad |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF + intent-aware weighting) | ⚠️ (FTS + weighted Jaccard, no embeddings) | ⚠️ (LLM-based Sonnet selector, no embeddings) | ❌ (keyword grep only) | ✅ (claimed: vector + metadata + rerank) | ✅ | ✅ | ⚠️ (structured find + semantic search, not classic hybrid RAG) | ⚠️ (exact/fuzzy/index + LLM tiers, not embedding-first) | ✅ |
+| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm + 3-axis linking) | ✅ (person service + coreference) | ❌ | ❌ | ⚠️ (relationship graph, not explicit NER) | ❌ | ⚠️ | ❌ | ❌ | 🧪 |
+| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal + TF-IDF orphan recovery) | ❌ (graph export only) | ❌ | ❌ | ✅ (claimed: relationship expansion in search) | ❌ | ⚠️ | ⚠️ (hierarchy traversal rather than graph traversal) | ❌ | 🧪 |
+| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path + background forage agent) | ✅ (class budgets: core/situational/decisions) | ✅ (Sonnet selector → memory content → staleness) | ✅ (memory_summary → MEMORY.md → rollout_summaries → skills) | ✅ (profile static/dynamic + search results) | ⚠️ | ⚠️ | ✅ (L0/L1/L2) | ✅ (five tiers) | ✅ (trust tiers planned) |
+| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion, replaces original query) | ⚠️ (entity coreference + query sanitization) | ❌ | ❌ | ✅ (rewriteQuery flag, +400ms) | ⚠️ | ⚠️ | ❌ | ⚠️ (LLM tiers can reformulate implicitly) | ⚠️ |
+| Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ✅ (multi-factor sigmoid, activity-day) | ✅ (stepped recency: 1d/7d/30d/90d/365d) | ⚠️ (mtime-based staleness display only) | ✅ (usage-based: usage_count + last_usage drive selection + pruning) | ✅ (forgetAfter TTL + recency in ranking) | ⚠️ | ✅ (paper claims) | ⚠️ (tier promotion and session locality more than explicit decay) | ✅ (AKL/lifecycle decay) | ✅ (TTL/decay planned) |
+| Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ (~15 pinned + ~5 fresh) | ✅ (topK=8 + class budgets + token cap) | ✅ (max 5 via Sonnet selector) | ⚠️ (memory_summary token cap 5K; MEMORY.md unbounded grep) | ✅ (limit 1–100 per search) | ✅ | ✅ | ⚠️ | ✅ | ✅ |
+| Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ (forage agent code-constrained, not arch-constrained) | ⚠️ (scope: shared vs profile, private vs group) | ❌ | ❌ | ✅ (containerTag isolation + RBAC) | ❌ | ❌ | ⚠️ (type-scoped and namespace-scoped, not security-capability scoped) | ❌ | ✅ |
+| Taint/trust labels carried through | ❌ | 🧪 (trust pass) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 **Write / ingestion governance**
 
-| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | shisad |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id + batch tracking) | ✅ (event-sourced: append-only memory_events + per-memory timeline) | ✅ (JSONL transcripts) | ✅ (stage1_outputs DB table + rollout_summaries/ files + raw_memories.md) | ⚠️ (MemoryDocumentSource join; version chains preserve history) | ✅ (recall) | ⚠️ | ✅ |
-| Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (batch LLM extraction + entity linking + 3-axis relationship discovery) | ✅ (7 typed memories via XML tag protocol) | ✅ (4-type taxonomy: user/feedback/project/reference) | ✅ (task groups with prefs/knowledge/failures + rollout summaries with task outcome triage) | ✅ (MemoryEntry extraction from documents; static/dynamic classification) | ⚠️ | ✅ | ✅ |
-| Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ (auto-extract at collapse; 0.85 fuzzy + 0.7 vector dedup only) | ✅ (junk filter + dedup + plausibility + review queue) | ⚠️ (exclusion list + prompt-enforced "ask what was surprising") | ⚠️ (minimum signal gate in Phase 1 prompt; no code-level gate) | ❌ (no visible write gating) | ❌ | ⚠️ | ✅ |
-| Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ⚠️ (memory_tool for manual create) | ✅ (review queue for borderline captures + audit shadow/apply) | ⚠️ (/remember skill for review + promotion) | ❌ | ⚠️ (MCP forget action; no promotion workflow) | ❌ | ❌ | ✅ (confirmation paths) |
-| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.85 fuzzy + 0.7 vector + connected-component consolidation clusters) | ✅ (exact + weighted Jaccard with type-aware thresholds) | ⚠️ (prompt: "don't duplicate"; no code-level check) | ⚠️ (Phase 2 consolidation merges; no code-level similarity check) | ⚠️ (claimed; not visible in open-source) | ⚠️ | ✅ (paper claims) | ✅ (planned) |
-| Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes links + scoring penalty) | ⚠️ (event log preserves history but no versioned corrections) | ❌ (overwrite model) | ⚠️ (thread-diff forgetting preserves evidence during transition but no correction chains) | ✅ (version chains + `updates` relationship; old versions preserved with isLatest=false) | ⚠️ | ⚠️ | ✅ (provenance + user verification) |
+| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | OpenViking | ByteRover CLI | shisad |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id + batch tracking) | ✅ (event-sourced: append-only memory_events + per-memory timeline) | ✅ (JSONL transcripts) | ✅ (stage1_outputs DB table + rollout_summaries/ files + raw_memories.md) | ⚠️ (MemoryDocumentSource join; version chains preserve history) | ✅ (recall) | ⚠️ | ✅ (session commits as source artifacts) | ❌ | ✅ |
+| Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (batch LLM extraction + entity linking + 3-axis relationship discovery) | ✅ (7 typed memories via XML tag protocol) | ✅ (4-type taxonomy: user/feedback/project/reference) | ✅ (task groups with prefs/knowledge/failures + rollout summaries with task outcome triage) | ✅ (MemoryEntry extraction from documents; static/dynamic classification) | ⚠️ | ✅ | ✅ | ✅ | ✅ |
+| Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ (auto-extract at collapse; 0.85 fuzzy + 0.7 vector dedup only) | ✅ (junk filter + dedup + plausibility + review queue) | ⚠️ (exclusion list + prompt-enforced "ask what was surprising") | ⚠️ (minimum signal gate in Phase 1 prompt; no code-level gate) | ❌ (no visible write gating) | ❌ | ⚠️ | ⚠️ | ⚠️ | ✅ |
+| Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ⚠️ (memory_tool for manual create) | ✅ (review queue for borderline captures + audit shadow/apply) | ⚠️ (/remember skill for review + promotion) | ❌ | ⚠️ (MCP forget action; no promotion workflow) | ❌ | ❌ | ⚠️ (explicit commit boundary, but not review-queue driven) | ❌ | ✅ (confirmation paths) |
+| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.85 fuzzy + 0.7 vector + connected-component consolidation clusters) | ✅ (exact + weighted Jaccard with type-aware thresholds) | ⚠️ (prompt: "don't duplicate"; no code-level check) | ⚠️ (Phase 2 consolidation merges; no code-level similarity check) | ⚠️ (claimed; not visible in open-source) | ⚠️ | ✅ (paper claims) | ⚠️ | ✅ | ✅ (planned) |
+| Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes links + scoring penalty) | ⚠️ (event log preserves history but no versioned corrections) | ❌ (overwrite model) | ⚠️ (thread-diff forgetting preserves evidence during transition but no correction chains) | ✅ (version chains + `updates` relationship; old versions preserved with isLatest=false) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (provenance + user verification) |
 
 **Maintenance / evaluation**
 
-| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | shisad |
-|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC + use-day scheduling) | ✅ (nightly pipeline: snapshot → sync → sweep → dedup → audit → archive → vacuum → metrics) | ✅ (auto dream: time+session+lock gates) | ✅ (startup pipeline: prune → Phase 1 → Phase 2; watermark-based dirty tracking) | ⚠️ (forgetAfter implies scheduler; not visible) | ⚠️ | ✅ | ✅ |
-| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout + extraction retry 6h) | ⚠️ (CLI-triggered `gigabrainctl nightly`; no daemon/scheduler) | ⚠️ (time gate + scan throttle prevents over-consolidation) | ✅ (SQLite leases: expired leases auto-release; retry backoff prevents hot-loops) | ❌ (not visible) | ❌ | ❌ | ✅ (daemon) |
-| Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ⚠️ (internal tuning tests) | ✅ (harness-lab-run.js with A/B comparison, bilingual eval cases) | ✅ (internal evals with case IDs; no user-facing harness) | ❌ | ✅ (MemoryBench: cross-system benchmark framework with MemScore composite metric) | ❌ | ✅ (paper) | ✅ (tests + planned harness) |
-| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking + forage traces) | ✅ (event-sourced: every capture/reject/dedup/audit logged with reason_codes, similarity scores, JSON payloads) | ✅ (extraction/dream telemetry + memory shape analytics) | ✅ (per-phase metrics: job counts, e2e latency, token usage histograms, memory usage tracking by file type) | ✅ (analytics dashboard: usage/errors/latency/token savings) | ⚠️ | ✅ (service analytics) | ✅ |
+| Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | OpenViking | ByteRover CLI | shisad |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC + use-day scheduling) | ✅ (nightly pipeline: snapshot → sync → sweep → dedup → audit → archive → vacuum → metrics) | ✅ (auto dream: time+session+lock gates) | ✅ (startup pipeline: prune → Phase 1 → Phase 2; watermark-based dirty tracking) | ⚠️ (forgetAfter implies scheduler; not visible) | ⚠️ | ✅ | ✅ | ✅ | ✅ |
+| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout + extraction retry 6h) | ⚠️ (CLI-triggered `gigabrainctl nightly`; no daemon/scheduler) | ⚠️ (time gate + scan throttle prevents over-consolidation) | ✅ (SQLite leases: expired leases auto-release; retry backoff prevents hot-loops) | ❌ (not visible) | ❌ | ❌ | ❌ | ❌ | ✅ (daemon) |
+| Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ⚠️ (internal tuning tests) | ✅ (harness-lab-run.js with A/B comparison, bilingual eval cases) | ✅ (internal evals with case IDs; no user-facing harness) | ❌ | ✅ (MemoryBench: cross-system benchmark framework with MemScore composite metric) | ❌ | ✅ (paper) | ⚠️ (plugin-level evals, not a public harness) | ✅ (paper) | ✅ (tests + planned harness) |
+| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking + forage traces) | ✅ (event-sourced: every capture/reject/dedup/audit logged with reason_codes, similarity scores, JSON payloads) | ✅ (extraction/dream telemetry + memory shape analytics) | ✅ (per-phase metrics: job counts, e2e latency, token usage histograms, memory usage tracking by file type) | ✅ (analytics dashboard: usage/errors/latency/token savings) | ⚠️ | ✅ (service analytics) | ⚠️ | ⚠️ | ✅ |
 
 ## 4) Deep comparisons by “hard problems”
 
@@ -278,6 +298,8 @@ How systems handle it:
 - **drag88/Marvy:** daily logs + hourly summaries; episodic feeds learnings (focus is on pipeline cadence).
 - **ClawVault:** ledger + observations + reflections; episodic appears as a workflow layer (wake/sleep/recap).
 - **MIRA-OSS (v1r2):** continuous Continuum → segment collapse (active/paused/collapsed states) → first-person LLM summaries (with narrative continuity from previous 5 summaries). Memories extracted from segments carry `source_segment_id` provenance. No separate "episode object" type; episodes are implicitly the segments. Session reconstruction assembles: collapse marker → summaries → behavioral primer → continuity → active messages.
+- **OpenViking:** session objects are first-class and can be committed, extracted, and promoted across L0/L1/L2 storage. It is stronger on session-to-memory promotion than on standalone event objects.
+- **ByteRover CLI:** weaker on raw episodic replay than transcript-first systems; stronger on compressing prior coding work into maintained context nodes that survive across tasks and repositories.
 - **shisad:** transcript store + compaction summary prefix + summarizer extraction; event-centric KG planned.
 
 Synthesis take:
@@ -349,6 +371,8 @@ High-leverage additions (if not already planned):
 - **Entity/alias layer** as a first-class primitive (graph retrieval for structured questions).
 - **Operator ergonomics**: a human-readable view/edit surface (ClawVault/Obsidian-style) for memory inspection and correction.
 - **Maintenance jobs**: dedup/decay/conflict detection with explicit invariants (already planned in shisad M4).
+- **Typed namespaces + recursive retrieval** for sessions/projects/resources/skills, without collapsing everything into flat notes (OpenViking direction).
+- **Progressive local retrieval tiers + structured curation verbs** so cheap retrieval and explicit merge/delete/update policies happen before expensive agentic search (ByteRover direction).
 
 Lower-confidence additions (need careful evaluation):
 - **Echo/fizzle** (usefulness feedback) — only if we can attribute causality without gaming.
@@ -393,6 +417,17 @@ Main synthesis point:
   - explicit memory types (episodic vs procedural vs task),
   - debuggable, inspectable artifacts.
 
+### 6.4 OpenViking and ByteRover as “not just RAG” comparisons
+
+These two systems are useful contrast cases because neither is well-described as generic vector-RAG:
+
+- `OpenViking` is a typed context substrate. Its key move is not “retrieve better chunks,” but organize agent state as namespaced objects (`viking://`) with session commit, extraction, and promotion across L0/L1/L2.
+- `ByteRover CLI` is a local-first coding memory runtime. Its key move is not “store more notes,” but curate a markdown context tree with lifecycle metadata and five-tier retrieval so expensive model-mediated search is a last resort rather than the default.
+
+The synthesis implication is that a serious memory system needs a clear answer to two questions:
+- what are the durable objects?
+- what is the escalation path from cheap retrieval to expensive retrieval?
+
 ## 7) A synthesis-friendly mental model: “Memory OS” as tiers (not features)
 
 Across systems, the consistent spine is:
@@ -404,7 +439,7 @@ Across systems, the consistent spine is:
 5) **Curated always-loaded context:** very small identity + “what’s hot” (budgeted)
 6) **Maintenance + evaluation:** consolidation jobs + benchmarks + telemetry
 
-The key lesson from the best systems here (OpenClaw + shisad) is:
+The key lesson from the best systems here (OpenClaw and shisad on engineering/safety, OpenViking on typed substrate design, ByteRover CLI on local-first curation) is:
 - treat memory as **data engineering + search quality + security invariants**, not as “prompt magic”.
 
 ## 8) Open questions (for the next synthesis phase)
@@ -571,6 +606,8 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | **Exclusion-list-as-design-feature** | Claude Code | Explicit "What NOT to save" section prevents saving derivable content (code patterns, git history, architecture). Gate intercepts even explicit user requests to save activity logs — "ask what was *surprising* or *non-obvious* about it." Eval-validated (memory-prompt-iteration case 3, 0/2 → 3/3). | Implemented (production) |
 | **Two-phase batch extraction→consolidation pipeline** | Codex | Phase 1 (gpt-5.1-codex-mini, reasoning=Low, 8-way parallel) extracts per-rollout memories → Phase 2 (gpt-5.3-codex, reasoning=Medium, single global) consolidates. Separate models tuned for task difficulty: cheap/fast for embarrassingly-parallel extraction, expensive/thoughtful for serial consolidation. | Implemented (open-source) |
 | **Minimum signal gate (prompt-level no-op)** | Codex | Phase 1 extraction prompt contains explicit decision gate: "Will a future agent behave better because of this?" If the rollout lacks learning value (one-off queries, generic updates, temporary facts), the model returns empty JSON — no memory created. Encourages no-op as the default, not save-everything. | Implemented (open-source) |
+| **Session commit with asynchronous promotion** | OpenViking | Sessions are committed as source objects, then background extraction/summarization promotes useful material across L0/L1/L2 stores and typed memory categories. Clean separation between hot-path capture and cold-path consolidation. | Implemented |
+| **Lifecycle-scored context curation (AKL + verbs)** | ByteRover CLI | Context nodes carry lifecycle metadata and are manipulated through explicit operations (`ADD`/`UPDATE`/`UPSERT`/`MERGE`/`DELETE`). Consolidation becomes an explicit runtime behavior, not an opaque background summarizer. | Implemented |
 | **Text-Based LoRA (behavioral adaptation)** | MIRA-OSS | Signal extraction from interactions → accumulation → periodic synthesis into behavioral directives → directive injection. A form of "fine-tuning without fine-tuning" via accumulated behavioral modification signals. | Implemented |
 | **Continuum segments with narrative summaries** | MIRA-OSS | Continuous transcript stream collapsed into segments; LLM generates first-person narrative summaries with continuity from previous 5 summaries. Memories carry `source_segment_id` provenance linking back to source material. | Implemented |
 | **Typed relationship links** | MIRA-OSS | Memory entities connected via typed edges: supersedes, conflicts, supports, refines, precedes, contextualizes. Richer than simple "related to" — captures the *nature* of the relationship. | Implemented |
@@ -595,6 +632,8 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | **Progressive disclosure memory layout** | Codex | Four-tier read path: `memory_summary.md` (always loaded, ≤5K tokens) → `MEMORY.md` (grepable handbook) → `rollout_summaries/` (per-rollout evidence) → `skills/` (procedural memory). Each layer is more detailed and less frequently accessed. Agent uses keyword grep, not embeddings. Quick memory pass budget: ≤4-6 search steps. | Implemented (open-source) |
 | **Usage-based citation-driven retention** | Codex | Agent appends `<oai-mem-citation>` XML blocks to responses. Parsed → thread IDs → increment `usage_count`/`last_usage` in DB. Phase 2 selection ranks by usage_count. Unused memories pruned after `max_unused_days`. First system in survey with complete citation→usage→retention→consolidation feedback loop. | Implemented (open-source) |
 | **60-query benchmark-driven tuning** | OpenClaw | Retrieval quality systematically measured against a 60-query benchmark suite. Weights and parameters tuned empirically, not by intuition. | Implemented |
+| **Filesystem-style typed retrieval over `viking://`** | OpenViking | Same substrate supports structured `find()` and semantic `search()` across memory, resources, skills, sessions, and projects, with recursive hierarchy traversal. Moves retrieval from "search a bag of notes" to "navigate typed context objects." | Implemented |
+| **Five-tier progressive retrieval** | ByteRover CLI | Tier 0 exact cache → Tier 1 fuzzy cache → Tier 2 MiniSearch direct → Tier 3 optimized LLM → Tier 4 full agentic retrieval. Retrieval cost escalates only when cheaper paths fail. | Implemented |
 | **Static/dynamic profile synthesis API** | Supermemory | First-class `/v4/profile` endpoint that automatically partitions memories into permanent facts (`isStatic: true`) vs recent context, served alongside search results in a single call. No other system in the survey exposes profile generation as an API primitive — most treat persona as a manually maintained block. | Implemented (backend proprietary) |
 | **Bi-temporal validity windows** | memv | Memories carry both *assertion time* (when stored) and *valid time* (when the fact was/is true). Enables temporal queries ("what did I believe in January?") and prevents stale facts from polluting current context. | Proposed (spec) |
 | **Forward triggers (temporal preload)** | @jumperz | Pre-scheduled memory injection based on anticipated future context needs — reminders and task-relevant memories loaded proactively. | Proposed (spec) |
@@ -633,6 +672,7 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | Feature | System | What's novel | Status |
 |---------|--------|-------------|--------|
 | **Memory as "Memory OS" tiers** | Synthesis (this doc) | Six-tier model: append-only source → derived corpus → durable typed entries → structured filing → curated always-loaded → maintenance layer. Provides a framework for evaluating any memory system's completeness. | Conceptual |
+| **Filesystem-shaped context namespace (`viking://`)** | OpenViking | Hierarchical object store treating agent context as a filesystem-like namespace rather than separate memory/document/tool silos. Memory is one typed namespace inside a broader control plane. | Implemented |
 | **Skills as procedural memory** | Hermes Agent | SKILL.md files with YAML frontmatter and progressive disclosure (Level 0: list → Level 1: full → Level 2: references). Maps learned workflows to memory entries. (Not in ANALYSIS.md comparison; see REVIEWED.md.) | Implemented |
 | **Person service with bilingual coreference** | Gigabrain | Entity mention tracking across memories with bilingual (EN/DE) pronoun resolution for follow-up queries. "Who is X?" query detection with entity answer hints injected into recall. | Implemented |
 | **Portrait synthesis from collapsed summaries** | MIRA-OSS (v1r2) | Every 10 use-days, generates a 150–250 word prose portrait from recent collapsed segment summaries (20 activity-day window). Injected into base system prompt as `{user_context}`. Provides the LLM with a continuously-updated user model without consuming memory retrieval budget. | Implemented |
@@ -640,10 +680,13 @@ This section catalogs **unique or notably original mechanisms** from any system,
 | **Forked-agent-as-infrastructure pattern** | Claude Code | Three subsystems (extraction, consolidation, session memory) use the same "perfect fork with shared prompt cache" pattern. Restricted tool permissions per fork. Only viable when you control the inference infrastructure (cache sharing). | Implemented (production) |
 | **KAIROS daily-log + nightly dream mode** | Claude Code | Long-lived assistant sessions use append-only date-named logs (`logs/YYYY/MM/YYYY-MM-DD.md`) with timestamped bullets. MEMORY.md becomes read-only (maintained nightly from logs via /dream). Date rollover handled via attachment. Separates hot-path writes from cold-path indexing. | Implemented (production) |
 | **Skills as procedural memory** | Codex | SKILL.md with YAML frontmatter (name, description, argument-hint, allowed-tools, user-invocable) + `scripts/` (executable helpers) + `templates/` (reusable) + `examples/` (worked examples). Creation criteria: repeats > 1, failure shields, formatting contracts. Keep < 500 lines. First system in survey to extract learned workflows into executable filesystem artifacts. | Implemented (open-source) |
+| **Markdown Context Tree** | ByteRover CLI | Local-first, file-native persistent knowledge tree where agent memory lives as inspectable markdown nodes instead of a remote vector store. Strong fit for coding workflows that already live in files and version control. | Implemented |
 | **Two-model extraction→consolidation strategy** | Codex | Phase 1 uses smaller/cheaper model (gpt-5.1-codex-mini, reasoning=Low) for embarrassingly-parallel per-rollout extraction. Phase 2 uses larger/more capable model (gpt-5.3-codex, reasoning=Medium) for serial global consolidation. Matches compute cost to task difficulty. | Implemented (open-source) |
 | **Multimodal memory ingestion** | Google Always-On Memory Agent | 27 file types via Gemini native multimodal capabilities — images, PDFs, audio, video summarized into text memories. Most memory systems are text-only. (PoC quality; see REVIEWED.md.) | PoC |
 
 ## Corrections & Updates
+
+- 2026-04-04: Folded in the standalone analyses for `OpenViking` and `ByteRover CLI`. `OpenViking` is now treated as a typed context filesystem / control plane; `ByteRover CLI` as an agent-native coding memory runtime with lifecycle-managed local context.
 
 - This synthesis is grounded in the local deep dives (`ANALYSIS-*.md`) and vendored snapshots for OpenClaw/ClawVault.
 - External comparisons (Letta/Mem0) are based on their public READMEs and cited paper(s) as of 2026-02-21; treat product claims as “as stated by authors” unless reproduced.

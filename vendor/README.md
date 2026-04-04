@@ -51,3 +51,39 @@ noted below.
 - **Commit:** `5a7cb84969e3e34242b3e0e32949882d18ac2966`
 - **Date:** 2026-02-20
 - **Message:** Merge remote changes + resolve README conflict
+
+### hermes-agent
+- **Source:** https://github.com/NousResearch/hermes-agent
+- **Reviewed commit:** `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e`
+- **Review date:** 2026-04-03
+- **Note:** Hermes Agent now exposes a `MemoryProvider` abstraction with seven external provider plugins (Honcho, OpenViking, Mem0, Hindsight, Holographic, RetainDB, ByteRover). Built-in memory remains minimal; research value is in the adapter/orchestration layer and the in-tree Holographic provider.
+
+### honcho
+- **Source:** https://github.com/plastic-labs/honcho
+- **Reviewed commit:** `29ff4653e5feadbd129b2fe342d3349e91453bc0`
+- **Review date:** 2026-04-03
+- **Note:** Open-source memory library + managed service with peers/workspaces/sessions, semantic search, peer cards, and dialectic Q&A. Reviewed via the Hermes provider integration; not promoted.
+
+### mem0
+- **Source:** https://github.com/mem0ai/mem0
+- **Reviewed commit:** `33d2bc495dba34e671a978bb2ae7e8078e0828fb`
+- **Review date:** 2026-04-03
+- **Note:** Platform/SDK/CLI memory product. Hermes uses the hosted `MemoryClient` API path only (prefetch/search, background add sync, profile reads). Existing standalone paper analysis was updated rather than creating a new deep dive.
+
+### openviking
+- **Source:** https://github.com/volcengine/OpenViking
+- **Reviewed commit:** `3d2037aaea6a00c1bc29fe60abfe636078ad2b02`
+- **Review date:** 2026-04-03
+- **Note:** AGPL context database with filesystem-style hierarchy, L0/L1/L2 context loading, automatic session extraction, and resource ingestion. Not promoted yet, but a plausible candidate for deeper analysis.
+
+### hindsight
+- **Source:** https://github.com/vectorize-io/hindsight
+- **Reviewed commit:** `906b740dd795aae63cfc2d5e0b78362cd661c622`
+- **Review date:** 2026-04-03
+- **Note:** Open-source cloud/local/embedded memory system with `retain` / `recall` / `reflect` APIs and knowledge-graph-style retrieval. Existing standalone paper analysis was updated rather than creating a new deep dive.
+
+### byterover-cli
+- **Source:** https://github.com/campfirein/byterover-cli
+- **Reviewed commit:** `be9c3e7897977e3739a430be97164ee84b72e952`
+- **Review date:** 2026-04-03
+- **Note:** Local-first coding-agent memory CLI with context tree, cloud sync, MCP, and self-reported benchmark results. Hermes integration shells out to `brv`; not promoted yet, but a plausible candidate for deeper analysis.

@@ -4,3 +4,21 @@
 [submodule "vendor/widemem-ai"]
 	path = vendor/widemem-ai
 	url = https://github.com/remete618/widemem-ai.git
+[submodule "vendor/hermes-agent"]
+	path = vendor/hermes-agent
+	url = https://github.com/NousResearch/hermes-agent.git
+[submodule "vendor/honcho"]
+	path = vendor/honcho
+	url = https://github.com/plastic-labs/honcho.git
+[submodule "vendor/mem0"]
+	path = vendor/mem0
+	url = https://github.com/mem0ai/mem0.git
+[submodule "vendor/openviking"]
+	path = vendor/openviking
+	url = https://github.com/volcengine/OpenViking.git
+[submodule "vendor/hindsight"]
+	path = vendor/hindsight
+	url = https://github.com/vectorize-io/hindsight.git
+[submodule "vendor/byterover-cli"]
+	path = vendor/byterover-cli
+	url = https://github.com/campfirein/byterover-cli.git

@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-04-02
+last_updated: 2026-04-04
 type: triage
 related:
   - ANALYSIS.md
@@ -16,16 +16,248 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-03 | Hermes Agent memory providers (Nous Research) | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | **Re-reviewed.** Hermes is now a pluggable memory orchestration layer with a `MemoryProvider` interface, async prefetch/sync/mirror hooks, and 7 external providers. Built-in `MEMORY.md` / `USER.md` remains tiny and frozen-snapshot. Not promoted as a standalone memory system; the provider architecture is the interesting part. |
+| 2026-04-03 | Honcho (plastic-labs) | [plastic-labs/honcho](https://github.com/plastic-labs/honcho) | **Not promoted.** Open-source memory library + managed service built around peers/sessions/workspaces, semantic search, peer cards, and dialectic Q&A. Interesting AI/user peer model, but service-centric and with limited visible correction/version semantics from the reviewed OSS surface. |
+| 2026-04-04 | OpenViking (volcengine) | [volcengine/OpenViking](https://github.com/volcengine/OpenViking) | **PROMOTED to standalone analysis.** Open-source context database with filesystem paradigm (`viking://`), L0/L1/L2 tiered loading, unified memory/resources/skills, and automatic session extraction. See `ANALYSIS-openviking.md`. |
+| 2026-04-03 | Mem0 OSS repo + Hermes provider | [mem0ai/mem0](https://github.com/mem0ai/mem0) | **Existing standalone analysis updated.** Public repo remains platform/SDK-centric; Hermes integrates only the hosted API path (`add` / `search` / `get_all`) with async prefetch/sync and a circuit breaker. See updated `ANALYSIS-arxiv-2504.19413-mem0.md`. |
+| 2026-04-03 | Hindsight OSS repo + Hermes provider | [vectorize-io/hindsight](https://github.com/vectorize-io/hindsight) | **Existing standalone analysis updated.** Public repo now clearly ships cloud, Docker, and embedded local modes; Hermes exposes `retain` / `recall` / `reflect` with budgeted recall. See updated `ANALYSIS-arxiv-2512.12818-hindsight.md`. |
+| 2026-04-03 | Holographic memory provider (Hermes in-tree) | Source: `vendor/hermes-agent/plugins/memory/holographic/` | **Not promoted.** Local SQLite+FTS5 fact store with entity tables, trust scoring, and optional HRR-based compositional retrieval (`probe` / `reason` / `contradict`). Clever local plugin, but shallow write path and limited lifecycle/maintenance semantics. |
+| 2026-04-03 | RetainDB (cloud API + Hermes plugin) | [retaindb.com](https://www.retaindb.com) | **Not promoted.** Hermes adapter exposes hybrid search/profile/context/write/delete, but the engine remains largely closed; public GitHub presence is mostly starters/templates, so claims like 7 memory types and delta compression are not independently auditable from code. |
+| 2026-04-04 | ByteRover CLI (campfirein) | [campfirein/byterover-cli](https://github.com/campfirein/byterover-cli) | **PROMOTED to standalone analysis.** Local-first CLI memory layer / coding agent with context tree, cloud sync, MCP, and strong self-reported LoCoMo / LongMemEval-S benchmarks. See `ANALYSIS-byterover-cli.md`. |
 | 2026-04-02 | widemem-ai (remete618) | [remete618/widemem-ai](https://github.com/remete618/widemem-ai) | **Not promoted.** Clean library-style memory SDK (~3.5K LOC Python) with importance+decay scoring, hierarchical tiers (fact→summary→theme), YMYL domain protection, batch conflict resolution, self-supervised extraction data collection, MCP server, and uncertainty-aware retrieval. Well-engineered but convergent — no novel mechanisms beyond what ANALYSIS.md already covers. See detailed notes below. |
 | 2026-03-28 | Supermemory (supermemoryai) | [supermemoryai/supermemory](https://github.com/supermemoryai/supermemory) | **PROMOTED to ANALYSIS.md + standalone.** Industry (startup) memory-as-a-service. Version chains, typed relationships (updates/extends/derives), static/dynamic profiles, temporal forgetting. Core engine proprietary — open-source is SDK/UI client only. Self-reported #1 on LongMemEval/LoCoMo/ConvoMem (no paper). See `ANALYSIS-supermemory.md`. |
 | 2026-03-31 | Codex memory subsystem (OpenAI) | [openai/codex](https://github.com/openai/codex) | **Promoted to ANALYSIS.md.** Two-phase async pipeline (gpt-5.1-codex-mini → gpt-5.3-codex) with SQLite-backed job coordination, progressive disclosure memory layout, skills as procedural memory, usage-based retention via citation tracking, thread-diff-based incremental forgetting, ~1,400 lines of extraction/consolidation prompts. Standalone analysis exists. |
 | 2026-03-31 | Claude Code memory subsystem (Anthropic) | Source: `/home/lhl/Downloads/claude-code/src` | **Promoted to ANALYSIS.md.** First-party production-scale memory: flat-file MEMORY.md + typed topic files + background extraction via forked agent + LLM-based relevance selection + team memory sync + auto dream consolidation + eval-validated prompts. Standalone analysis exists. |
 | 2026-03-30 | MIRA-OSS v1 rev 2 (refresh) | [taylorsatula/mira-OSS](https://github.com/taylorsatula/mira-OSS) | **Standalone analysis refreshed.** Substantive update: background forage agent (sub-agent collaboration), user model synthesis pipeline with critic validation, portrait synthesis, 3-axis linking (adds TF-IDF), extraction pipeline restructure, verbose refinement ablated, 16 tools (up from 11), account tier system, context overflow remediation, immutable domain models. See ANALYSIS-mira-OSS.md. |
 | 2026-03-07 | Always-On Memory Agent (Google) | [GoogleCloudPlatform/generative-ai](https://github.com/GoogleCloudPlatform/generative-ai/tree/main/gemini/agents/always-on-memory-agent) | **PoC / tutorial only.** No retrieval (recency LIMIT 50), no decay, no dedup, no versioning. Standalone analysis exists. Not in ANALYSIS.md. |
-| 2026-03-07 | Hermes Agent memory | [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) | **Minimal MEMORY.md baseline.** Clean security hygiene but no retrieval sophistication, no consolidation, no graph, no decay. Not worth a standalone analysis. |
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-04-03 — Hermes Agent memory providers (Nous Research) — RE-REVIEWED
+
+**Source:** https://github.com/NousResearch/hermes-agent (reviewed at `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e`)
+
+**What changed since the 2026-03-07 review:** Hermes is no longer just the tiny built-in `MEMORY.md` + `USER.md` baseline. As of the current docs and vendored repo, it now ships a proper `MemoryProvider` abstraction and seven external provider plugins: Honcho, OpenViking, Mem0, Hindsight, Holographic, RetainDB, and ByteRover.
+
+**Architecture:**
+
+- **Provider lifecycle hooks**: each provider can contribute a `system_prompt_block()`, `queue_prefetch()` / `prefetch()`, `sync_turn()`, `on_session_end()`, `on_memory_write()`, and provider-specific tool schemas.
+- **Additive model**: the external provider runs alongside the built-in memory files; Hermes mirrors built-in memory writes outward rather than replacing them.
+- **Background flow**: provider recall is prefetched before the next turn, sync is non-blocking after each response, and some providers run extra extraction on session end.
+- **Profile-scoped configuration**: providers write config under `$HERMES_HOME/` (`honcho.json`, `mem0.json`, `hindsight/config.json`, `byterover/`, `config.yaml`, etc.), so data and credentials stay profile-isolated.
+
+**What’s interesting:**
+
+- Hermes has become a **memory orchestration layer** rather than just a flat-file memory toy.
+- The adapter surface is reasonably clean and portable: it is easy to see how a provider plugs into the runner.
+- One provider, **Holographic**, is fully in-tree and local, so Hermes now includes at least one inspectable retrieval implementation rather than only SaaS wrappers.
+
+**What’s still limited:**
+
+- The built-in Hermes memory is still the same small frozen-snapshot `MEMORY.md` / `USER.md` baseline.
+- Only **one** external provider can be active at a time.
+- Most of the actual memory sophistication lives in the providers; Hermes itself does not add correction history, graph semantics, or consolidation logic.
+
+**Verdict:** **Not promoted.** Hermes is now a meaningful memory-provider host and adapter layer, but not itself a top-tier standalone memory architecture. The interesting review target is the provider ecosystem around it, not the built-in store.
+
+---
+
+## 2026-04-03 — Honcho (plastic-labs)
+
+**Source:** https://github.com/plastic-labs/honcho  
+**Hermes integration:** `vendor/hermes-agent/plugins/memory/honcho/`  
+**Reviewed commits:** `29ff4653e5feadbd129b2fe342d3349e91453bc0` (Honcho), `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e` (Hermes)
+
+**What it is:** An open-source memory library with a managed cloud service for stateful agents. The core conceptual model is **workspaces + peers + sessions**. Honcho stores messages, builds peer representations, supports semantic search, and exposes a dialectic `chat` interface for synthesized answers about a person/peer.
+
+**What Hermes adds on top:**
+
+- `honcho_profile`, `honcho_search`, `honcho_context`, and `honcho_conclude` tools
+- async prefetch instead of blocking every-turn calls
+- cost-aware cadence knobs
+- AI peer identity / SOUL.md integration
+- local-vs-Honcho memory-mode controls in the integration spec
+
+**What’s interesting:**
+
+- **Peer model**: distinct user peer and AI peer is more explicit than most memory layers.
+- **Dialectic QA**: the `peer.chat()` / context APIs are closer to “reason over a profile” than raw vector retrieval.
+- **Session-first structure**: representations, peer cards, and continual learning make it clearly optimized for personalization / relationship memory.
+
+**What’s missing vs stronger systems:**
+
+- From the reviewed OSS surface, correction/version semantics are not clearly first-class.
+- The strongest benchmark/eval claims are still self-published rather than independently inspectable from the repo itself.
+- It is fairly service-centric: the managed platform is the main intended path.
+
+**Verdict:** **Not promoted.** Honcho is a real system, not a toy, and the peer-centric design is distinctive. But from the reviewed code/docs surface it is still more productized user-modeling infrastructure than a memory architecture we need to promote into synthesis work.
+
+---
+
+## 2026-04-04 — OpenViking (volcengine) — PROMOTED
+
+**Source:** https://github.com/volcengine/OpenViking  
+**Hermes integration:** `vendor/hermes-agent/plugins/memory/openviking/`  
+**Reviewed commits:** `3d2037aaea6a00c1bc29fe60abfe636078ad2b02` (OpenViking), `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e` (Hermes)
+
+**What it is:** An AGPL open-source **context database** for agents that unifies memories, resources, and skills under a filesystem-style model. The key abstraction is hierarchical storage with `viking://` URIs plus tiered loading (`abstract` / `overview` / `full`).
+
+**What Hermes exposes:**
+
+- `viking_search`
+- `viking_read`
+- `viking_browse`
+- `viking_remember`
+- `viking_add_resource`
+
+**What’s interesting:**
+
+- **Filesystem paradigm** instead of “just vector search”
+- **L0/L1/L2 loading** as a first-class API concept
+- **Unified context types**: memories, resources, and skills are in the same navigable substrate
+- **Automatic session extraction** into categories like profile/preferences/entities/events/cases/patterns
+- **Browsable retrieval**: the agent can navigate the memory structure, not just call a blind search endpoint
+
+**What’s missing / why not promoted yet:**
+
+- We have not done a deep enough code audit yet to validate the claimed retrieval/maintenance quality.
+- It is a broader “agent context database” than a narrowly-scoped memory engine, so promotion should come after a more deliberate comparison pass.
+- The operational stack is heavier than most reviewed systems (Python + Go + C++ pieces, dedicated server).
+
+**Verdict:** **Promoted to standalone analysis.** OpenViking contributes a distinct architectural pattern to the repo: filesystem-native context management across memories/resources/skills, hierarchical L0/L1/L2 layering, and session-commit extraction into typed user/agent memory directories. Standalone analysis: `ANALYSIS-openviking.md`.
+
+---
+
+## 2026-04-03 — Mem0 OSS repo + Hermes provider — EXISTING ANALYSIS UPDATED
+
+**Source:** https://github.com/mem0ai/mem0  
+**Hermes integration:** `vendor/hermes-agent/plugins/memory/mem0/`  
+**Reviewed commits:** `33d2bc495dba34e671a978bb2ae7e8078e0828fb` (Mem0), `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e` (Hermes)
+
+**What changed from the prior paper-only view:** The public repo is now clearly a **platform/SDK/CLI** product surface. Hermes uses the hosted API path only: `MemoryClient.search()` for prefetch, `MemoryClient.add()` for background turn sync, `get_all()` for profile reads, and an explicit `infer=False` path for `mem0_conclude`. The Hermes adapter also adds a simple circuit breaker after repeated failures.
+
+**Assessment:** This does not overturn the existing standalone analysis. If anything, it confirms the prior read:
+
+- Mem0 remains a clean explicit-memory product surface.
+- Hermes exercises the **hosted semantic memory API**, not graph-mode internals or correction-history semantics.
+- The existing paper analysis remains the right synthesis entrypoint.
+
+**Verdict:** **Existing standalone analysis updated.** No new standalone needed; `ANALYSIS-arxiv-2504.19413-mem0.md` is the right place to carry the re-review date and repo/adapter notes.
+
+---
+
+## 2026-04-03 — Hindsight OSS repo + Hermes provider — EXISTING ANALYSIS UPDATED
+
+**Source:** https://github.com/vectorize-io/hindsight  
+**Hermes integration:** `vendor/hermes-agent/plugins/memory/hindsight/`  
+**Reviewed commits:** `906b740dd795aae63cfc2d5e0b78362cd661c622` (Hindsight), `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e` (Hermes)
+
+**What changed from the prior paper-only view:** The public repo is now concrete and productized. It ships:
+
+- cloud client mode
+- Docker local server mode
+- embedded Python mode (`HindsightEmbedded`)
+- explicit `retain`, `recall`, and `reflect` APIs
+
+Hermes exposes the same three operations and threads through a `budget` knob (`low` / `mid` / `high`) plus cloud/local configuration.
+
+**Assessment:** The prior standalone analysis still stands and is strengthened:
+
+- the “code availability claim” is now directly auditable
+- the retain/recall/reflect surface is not just a paper abstraction
+- Hermes demonstrates that Hindsight is usable as a drop-in agent memory backend, not only as a research prototype
+
+**Verdict:** **Existing standalone analysis updated.** `ANALYSIS-arxiv-2512.12818-hindsight.md` remains the right synthesis artifact.
+
+---
+
+## 2026-04-03 — Holographic memory provider (Hermes in-tree)
+
+**Source:** `vendor/hermes-agent/plugins/memory/holographic/` at `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e`
+
+**What it is:** A fully local, in-tree Hermes memory provider built on SQLite. It stores explicit facts, extracts/link entities, indexes facts with FTS5, tracks trust, and optionally uses **Holographic Reduced Representations (HRR)** for compositional retrieval.
+
+**Architecture:**
+
+- `facts`, `entities`, `fact_entities`, and `memory_banks` tables in SQLite
+- FTS5 virtual table + triggers for keyword retrieval
+- trust scoring with asymmetric feedback (`+0.05` helpful, `-0.10` unhelpful)
+- `fact_store` tool with `add/search/probe/related/reason/contradict/update/remove/list`
+- `fact_feedback` tool for post-use reinforcement
+- optional session-end auto-extraction and built-in memory mirroring
+
+**What’s interesting:**
+
+- This is the most inspectable **local-only** provider in the Hermes set.
+- `probe` / `related` / `reason` are more ambitious than generic top-k vector search.
+- Trust feedback is simple but operationally clear.
+
+**What’s missing:**
+
+- The write path is shallow: explicit facts plus optional simple auto-extraction, not a rich extraction/consolidation pipeline.
+- No version chains, supersedes semantics, or serious maintenance jobs.
+- Entity extraction is lightweight/pattern-based rather than robust.
+
+**Verdict:** **Not promoted.** Clever local plugin with unusual retrieval ideas, but too shallow to justify synthesis promotion.
+
+---
+
+## 2026-04-03 — RetainDB (cloud API + Hermes plugin)
+
+**Source:** https://www.retaindb.com  
+**Hermes integration:** `vendor/hermes-agent/plugins/memory/retaindb/` at `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e`
+
+**What it is:** A cloud memory API surfaced in Hermes via simple HTTP calls. The plugin exposes profile/context/search plus explicit remember/forget operations and background turn ingestion.
+
+**What’s visible from the reviewed surface:**
+
+- hybrid search claims (vector + BM25 + reranking)
+- profile endpoint
+- task-context endpoint
+- explicit memory writes with `memory_type` + `importance`
+- profile-scoped project naming in the Hermes adapter
+
+**Why it is hard to evaluate seriously:**
+
+- The public GitHub org is mostly **starters/templates**, not an inspectable open core engine.
+- Claims like **7 memory types** and **delta compression** are not independently verifiable from the reviewed public code.
+- Hermes is effectively a thin adapter over a closed API.
+
+**Verdict:** **Not promoted.** Too closed to compare rigorously with the stronger open systems in this repo.
+
+---
+
+## 2026-04-04 — ByteRover CLI (campfirein) — PROMOTED
+
+**Source:** https://github.com/campfirein/byterover-cli  
+**Hermes integration:** `vendor/hermes-agent/plugins/memory/byterover/`  
+**Reviewed commits:** `be9c3e7897977e3739a430be97164ee84b72e952` (ByteRover CLI), `cc54818d2671f2e19c31305ef3f7cbc8d0d3294e` (Hermes)
+
+**What it is:** A local-first coding-agent memory layer packaged as a CLI (`brv`). It manages a context tree, supports cloud sync, exposes MCP, and positions itself as a portable shared memory substrate across many coding agents.
+
+**What Hermes does with it:**
+
+- shells out to `brv query`
+- shells out to `brv curate`
+- shells out to `brv status`
+- keeps provider data profile-scoped under `$HERMES_HOME/byterover/`
+
+**What’s interesting:**
+
+- It is explicitly aimed at **coding agents**, not generic chatbots.
+- The repo claims benchmark results from the production codebase: **96.1% LoCoMo** and **92.8% LongMemEval-S**.
+- The local-first + optional cloud-sync model is pragmatic for developer workflows.
+
+**What’s missing / why not promoted yet:**
+
+- The benchmark claims are self-reported and not yet audited here.
+- The Hermes adapter is just a CLI bridge; it does not expose ByteRover’s deeper internals.
+- We have not yet read the full paper / implementation in enough depth for synthesis promotion.
+
+**Verdict:** **Promoted to standalone analysis.** ByteRover contributes an agent-native memory/runtime design with a file-based context tree, explicit lifecycle metadata, 5-tier progressive retrieval, and a real product codebase paired with a benchmark paper. Standalone analysis: `ANALYSIS-byterover-cli.md`.
 
 ---
 
@@ -296,54 +528,6 @@ Together they implement a clean working-memory/episodic-log split with good ergo
 - No versioning/correction semantics (event store is audit trail, not corrections; memories are active or archived, not versioned)
 - No knowledge graph retrieval (graph-build.js generates co-occurrence graphs for export, not used in recall path)
 - No true decay/TTL (recency weighting in scoring, but no scheduled eviction)
-
----
-
-## 2026-03-07 — Hermes Agent (Nous Research)
-
-**Source:** https://hermes-agent.nousresearch.com/docs/user-guide/features/memory
-
-**What it is:** Hermes Agent is a multi-platform AI agent (CLI + Telegram/Discord/Slack/WhatsApp gateway) built by Nous Research. The memory subsystem is one feature among many (tools, skills, MCP, container isolation, etc.).
-
-**Memory architecture:**
-
-Two-file structured memory with hard capacity limits:
-- **MEMORY.md** (~800 tokens, 2,200 char limit): agent's personal notes — environment facts, project conventions, workarounds, task logs, learned techniques.
-- **USER.md** (~500 tokens, 1,375 char limit): user profile — identity, preferences, workflow habits, timezone, skill level.
-
-Both live in `~/.hermes/memories/` and are injected into the system prompt as a **frozen snapshot at session start** (no mid-session updates). A `memory` tool supports `add`, `replace` (substring matching), and `remove` actions. Changes persist to disk immediately but don't affect the current session's system prompt.
-
-**Session history:** SQLite (`~/.hermes/state.db`) with FTS5 full-text search. A `session_search` tool lets the agent query past conversations. JSON logs are also kept in `~/.hermes/sessions/` as human-readable backups.
-
-**Skills as procedural memory:** Skills stored in `~/.hermes/skills/` as SKILL.md files with YAML frontmatter. Progressive disclosure: Level 0 (list, ~3k tokens) -> Level 1 (full content) -> Level 2 (specific reference files). Created when agent encounters complex workflows (5+ tool calls, error recovery, user corrections). Hub-installed skills get security scanning.
-
-**Context compression:** `context_compressor.py` summarizes when approaching token limits, using a separate auxiliary LLM instance.
-
-**Security (memory-relevant):** Memory writes are scanned for injection patterns (prompt injection, credential exfiltration, SSH backdoors, invisible Unicode). Context files (AGENTS.md, SOUL.md) are also scanned. This is more write-gating than most folk systems.
-
-**Optional:** Honcho (Plastic Labs) integration for AI-generated cross-session user modeling.
-
-**Assessment relative to ANALYSIS.md systems:**
-
-What it covers well:
-- The MEMORY.md pattern (convergent across folk systems) with explicit capacity budgets and forced consolidation at 80%
-- Skills as procedural memory with progressive disclosure — maps to the procedural tier that ENGRAM/ReMe formalize
-- Injection scanning on memory writes — more write-gating than MIRA-OSS
-- FTS5 session search for basic episodic retrieval
-
-What's missing vs the serious systems:
-- **No semantic/vector retrieval** — FTS5 only, no embeddings, no hybrid search
-- **No decay/importance scoring** — memories are static until manually edited; no access tracking, no recency weighting
-- **No consolidation pipeline** — the 80% capacity wall forces the agent to consolidate on the fly, but there's no background job, no temporal hierarchy
-- **No knowledge graph or entity linking**
-- **No versioning or correction semantics** — `replace` does substring substitution; no history, no supersedes chains
-- **No typed memory beyond the two files** — no episodic objects, no structured facts, no constraints tier
-- **Frozen snapshot injection** — memory loads once at session start; multi-step tasks can't benefit from earlier writes in the same session
-- **Tiny capacity** — 2,200 + 1,375 chars total is closer to Claude's CLAUDE.md pattern than to a real memory system
-
-**Verdict:** Roughly at the "joelclaw before ADR-0077" level — a working MEMORY.md + session history baseline with good security hygiene, but no retrieval sophistication, no consolidation, no graph, no decay. Does not add new mechanisms to the design space beyond what's already covered in ANALYSIS.md. The injection scanning on memory writes is a practical detail worth noting.
-
----
 
 ## 2026-03-07 — Always-On Memory Agent (Google)
 

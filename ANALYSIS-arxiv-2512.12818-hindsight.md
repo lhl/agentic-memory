@@ -1,6 +1,6 @@
 ---
 title: "Analysis — Hindsight (Latimer et al., 2025)"
-date: 2026-02-22
+date: 2026-04-03
 type: analysis
 paper_id: "arxiv:2512.12818"
 paper_title: "Hindsight is 20/20: Building Agent Memory that Retains, Recalls, and Reflects"
@@ -200,6 +200,7 @@ What shisad should add beyond Hindsight:
 
 ## Notes / Corrections & Updates
 
-- Capture date: 2026-02-22
+- Capture date: 2026-04-03
 - Paper version reviewed: arXiv v1 (2025-12-14)
-
+- Re-reviewed on 2026-04-03 against the public repo at `vendor/hindsight/` (`906b740dd795aae63cfc2d5e0b78362cd661c622`) and the Hermes provider adapter at `vendor/hermes-agent/plugins/memory/hindsight/__init__.py` (`cc54818d2671f2e19c31305ef3f7cbc8d0d3294e`).
+- The public repo now makes the paper’s productization story directly auditable: cloud client mode, Docker local server mode, embedded local mode, and explicit `retain` / `recall` / `reflect` APIs. Hermes exposes the same three operations plus a `low` / `mid` / `high` recall budget, which is directionally consistent with the paper-level analysis.

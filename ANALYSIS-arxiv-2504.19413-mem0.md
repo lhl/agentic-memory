@@ -1,6 +1,6 @@
 ---
 title: "Analysis — Mem0 (Chhikara et al., 2025)"
-date: 2026-02-22
+date: 2026-04-03
 type: analysis
 paper_id: "arxiv:2504.19413"
 paper_title: "Mem0: Building Production-Ready AI Agents with Scalable Long-Term Memory"
@@ -144,5 +144,7 @@ Suggested roadmap placement:
 
 ## Notes / Corrections & Updates
 
-- Capture date: 2026-02-22.
+- Capture date: 2026-04-03.
 - Paper version reviewed: arXiv v1 (2025-04-28).
+- Re-reviewed on 2026-04-03 against the public repo at `vendor/mem0/` (`33d2bc495dba34e671a978bb2ae7e8078e0828fb`) and the Hermes provider adapter at `vendor/hermes-agent/plugins/memory/mem0/__init__.py` (`cc54818d2671f2e19c31305ef3f7cbc8d0d3294e`).
+- The repo/adapter check reinforces the earlier conclusion: Mem0 is a platform/SDK-centric explicit-memory product, and the Hermes integration exercises only the hosted semantic memory API (`search`, `add`, `get_all`, explicit `infer=False` conclude), not graph-mode or correction-history internals.
