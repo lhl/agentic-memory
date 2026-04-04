@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2511.20857.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md
+  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
 ---
 
 # Analysis — Evo-Memory (Wei et al., 2025)

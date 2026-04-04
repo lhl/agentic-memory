@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2512.12818.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md
+  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
 ---
 
 # Analysis — Hindsight (Latimer et al., 2025)

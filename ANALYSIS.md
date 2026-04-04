@@ -40,7 +40,7 @@ external_comparisons:
 
 # Synthesis — Agentic Memory Systems (Comparison + Design Space)
 
-This document is a **full synthesis and comparison** across the memory systems in this repo, plus a few baselines and “traditional” approaches (Letta/MemGPT, Mem0, generic RAG). It is designed to support the next step: **cross-system synthesis** and **choosing what to implement** (e.g., in `~/github/shisa-ai/shisad/docs`).
+This document is a **full synthesis and comparison** across the memory systems in this repo, plus a few baselines and “traditional” approaches (Letta/MemGPT, Mem0, generic RAG). It is designed to support the next step: **cross-system synthesis** and **choosing what to implement** (with `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md` treated as the current `shisad` architecture baseline).
 
 These systems are often designed ad-hoc and explained via “folk theories” (OS metaphors, cognitive analogies, vibes). That does **not** imply they’re wrong. It does mean we should:
 
@@ -72,8 +72,8 @@ True episodic retrieval (events as first-class entities with structured fields +
 - external review surfaces (Todoist in joelclaw)
 But tasks are often **sidecar tooling**, not integrated into retrieval/ranking and not tied to evidence/provenance.
 
-5) Among sources here, **OpenClaw memory architecture** is the most synthesis-ready on the *engineering* axis (explicit layering + benchmark harness + drift tracking).  
-**shisad** is the most synthesis-ready on the *safety* axis (taint-aware, capability-scoped retrieval; gated memory writes; instruction/data boundary).
+5) Among sources here, **OpenClaw memory architecture** is the most synthesis-ready on the *engineering* axis for already-built open systems (explicit layering + benchmark harness + drift tracking).  
+**shisad’s current plan** is the most synthesis-ready on the *safety and governance* axis: capability-aware retrieval, MemoryPack compilation, append-only correction chains, quarantined retrieval, and audit-first write semantics.
 
 6) Two newer systems widen the design space in useful ways:
 - **OpenViking** treats memory as one namespace inside a broader typed context filesystem / control plane.
@@ -106,9 +106,9 @@ But tasks are often **sidecar tooling**, not integrated into retrieval/ranking a
   Sources: `https://github.com/supermemoryai/supermemory` and `https://supermemory.ai/docs`.
 
 ### Implementation target (for mapping)
-- **shisad plans (security-first long-term memory):**
+- **shisad current architecture baseline (security-first long-term memory):**
   - Memory invariants + MemoryManager: `~/github/shisa-ai/shisad/docs/PLAN-security.md`
-  - End-to-end long-term memory plan: `~/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md`
+  - End-to-end long-term memory plan: `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md`
   - v0.3 conversation memory summarizer + retrieval wiring: `~/github/shisa-ai/shisad/docs/v0.3/PLAN-v0.3.3.md`
 
 ## 1) A practical taxonomy (what “memory” actually means)
@@ -159,7 +159,7 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 | Supermemory | ✅ (static profile) | ⚠️ (dynamic profile) | ⚠️ (documents) | ⚠️ (documents as source) | ✅ (MemoryEntry with versioning) | ❌ | ❌ | ✅ (updates/extends/derives ontology) | ⚠️ (forgetAfter TTL; no visible maintenance) | ⚠️ (MemoryBench framework; self-reported claims) |
 | OpenViking | ⚠️ | ✅ | ✅ (sessions) | ✅ (session commit + promotion) | ✅ (typed memory categories) | ✅ (skills/resources as first-class context) | ✅ (projects/sessions/resources) | ⚠️ (hierarchical namespace, not graph-first) | ✅ (L0/L1/L2 promotion + async extraction) | ⚠️ (limited plugin-level evaluation) |
 | ByteRover CLI | ⚠️ | ✅ | ⚠️ (curated carryover, not transcript-first) | ⚠️ (experience compressed into context tree) | ✅ (Context Tree nodes) | ✅ (coding guidance/workflow memory) | ✅ (repo/project context) | ⚠️ (tree relationships, not full graph) | ✅ (lifecycle/decay + structured curation) | ✅ (vendor-authored benchmark paper) |
-| shisad (planned/partially implemented) | ✅ | ✅ | ✅ | ✅ (summaries + events planned) | ✅ (gated MemoryEntry) | ✅ (policy invariants) | ✅ (todos planned) | ✅ (knowledge graph planned) | ✅ (consolidation planned) | ✅ (security + adversarial tests) |
+| shisad (current plan baseline) | ✅ (user model + preferences) | ✅ (working summary + MemoryPack) | ✅ (append-only transcripts + retrieval corpus) | ✅ (episodes/events/decisions in typed stores) | ✅ (typed entries + version chains) | ✅ (policy invariants + process/doc memory) | ✅ (task-centric filing + todos) | ✅ (derived KG + evidence pointers) | ✅ (consolidation + archive tier + score recompute) | ✅ (benchmark + adversarial tracks) |
 
 Notes:
 - Several systems “have episodic memory” only in the sense that they keep daily logs; that’s **episodic storage**, not necessarily **episodic retrieval**.
@@ -178,23 +178,23 @@ Common patterns:
 - **Provenance pointers** (resource_id, source metadata, audit trail).
 - **Gating/triage**:
   - human-in-the-loop promotion (joelclaw, ClawVault workflows)
-  - deterministic gates (regex/YARA-style) (Marvy; also shisad’s ContentFirewall + MemoryManager invariants)
+  - deterministic gates (regex/YARA-style) (Marvy; also shisad’s Content Firewall + MemoryManager + quarantine/confirmation rules)
   - similarity-based dedup merges (jumperz/joelclaw planned)
 
 Main disagreement: *how much to trust LLM extraction*
 - jumperz-style: LLM extraction is the system (high leverage, high risk).
 - OpenClaw-style: structure-first (facts/db/files), extraction is more controlled and tied to artifacts.
-- shisad-style: extraction exists, but writes are **privileged** (taint-aware, confirmation, “no instructions” rule).
+- shisad-style: extraction exists, but writes are **privileged, versioned, and provenance-bearing** (taint-aware, confirmation, “no instructions” rule).
 
 ### 3.2 Retrieval-side mechanisms (context construction)
 
 Recurring retrieval moves:
 - **Tiered retrieval**: small summaries first, deep search later (jumperz; OpenClaw layering; many vault index patterns).
-- **Hybrid retrieval**: lexical (BM25/FTS) + semantic embeddings + graph/entity resolution (OpenClaw explicitly; shisad planned).
+- **Hybrid retrieval**: lexical (BM25/FTS) + semantic embeddings + graph/entity resolution (OpenClaw explicitly; shisad current plan).
 - **Query rewriting**: LLM rewrites a better search query (jumperz; joelclaw planned).
 - **Decay/recency weighting**: recency as a prior (jumperz; joelclaw planned; OpenClaw uses activation/importance).
 - **Injection caps**: bound the number of injected memories per turn (jumperz; joelclaw planned; shisad top-K).
-- **Trust tags**: stale/uncertain/conflict flags (jumperz “trust pass”; shisad taint + capability-scoped retrieval; OpenClaw “main session only” rules).
+- **Trust tags**: stale/uncertain/conflict flags (jumperz “trust pass”; shisad taint + capability-scoped retrieval + MemoryPack caveats; OpenClaw “main session only” rules).
 - **Typed hierarchical retrieval**: navigate namespaces and recurse through object trees, not just rank chunks (OpenViking).
 - **Progressive local retrieval**: exact/fuzzy/index hits first, then model-heavy retrieval only when cheaper paths fail (ByteRover CLI).
 
@@ -241,7 +241,7 @@ Checkpointing/replay is an “ops primitive” but shows up in most stacks:
 - jumperz: checkpoint + replay endpoints (Phase 2)
 - ClawVault: checkpoint/recover + hook automation
 - OpenClaw: checkpoints directory
-- shisad: CheckpointStore + TranscriptStore + restore-on-restart
+- shisad: CheckpointStore + TranscriptStore + retrieval corpus + restore-on-restart
 
 Treat this as **observability and recoverability**, not “memory retrieval”.
 
@@ -253,13 +253,13 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 
 | Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | OpenViking | ByteRover CLI | shisad |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF + intent-aware weighting) | ⚠️ (FTS + weighted Jaccard, no embeddings) | ⚠️ (LLM-based Sonnet selector, no embeddings) | ❌ (keyword grep only) | ✅ (claimed: vector + metadata + rerank) | ✅ | ✅ | ⚠️ (structured find + semantic search, not classic hybrid RAG) | ⚠️ (exact/fuzzy/index + LLM tiers, not embedding-first) | ✅ |
-| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm + 3-axis linking) | ✅ (person service + coreference) | ❌ | ❌ | ⚠️ (relationship graph, not explicit NER) | ❌ | ⚠️ | ❌ | ❌ | 🧪 |
-| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal + TF-IDF orphan recovery) | ❌ (graph export only) | ❌ | ❌ | ✅ (claimed: relationship expansion in search) | ❌ | ⚠️ | ⚠️ (hierarchy traversal rather than graph traversal) | ❌ | 🧪 |
-| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path + background forage agent) | ✅ (class budgets: core/situational/decisions) | ✅ (Sonnet selector → memory content → staleness) | ✅ (memory_summary → MEMORY.md → rollout_summaries → skills) | ✅ (profile static/dynamic + search results) | ⚠️ | ⚠️ | ✅ (L0/L1/L2) | ✅ (five tiers) | ✅ (trust tiers planned) |
-| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion, replaces original query) | ⚠️ (entity coreference + query sanitization) | ❌ | ❌ | ✅ (rewriteQuery flag, +400ms) | ⚠️ | ⚠️ | ❌ | ⚠️ (LLM tiers can reformulate implicitly) | ⚠️ |
-| Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ✅ (multi-factor sigmoid, activity-day) | ✅ (stepped recency: 1d/7d/30d/90d/365d) | ⚠️ (mtime-based staleness display only) | ✅ (usage-based: usage_count + last_usage drive selection + pruning) | ✅ (forgetAfter TTL + recency in ranking) | ⚠️ | ✅ (paper claims) | ⚠️ (tier promotion and session locality more than explicit decay) | ✅ (AKL/lifecycle decay) | ✅ (TTL/decay planned) |
-| Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ (~15 pinned + ~5 fresh) | ✅ (topK=8 + class budgets + token cap) | ✅ (max 5 via Sonnet selector) | ⚠️ (memory_summary token cap 5K; MEMORY.md unbounded grep) | ✅ (limit 1–100 per search) | ✅ | ✅ | ⚠️ | ✅ | ✅ |
+| Hybrid lexical+semantic retrieval | ❌ | 🧪 | ✅ (Qdrant) | ✅ | ✅ (QMD hybrid) | ✅ (qmd) | ✅ (BM25+pgvector RRF + intent-aware weighting) | ⚠️ (FTS + weighted Jaccard, no embeddings) | ⚠️ (LLM-based Sonnet selector, no embeddings) | ❌ (keyword grep only) | ✅ (claimed: vector + metadata + rerank) | ✅ | ✅ | ⚠️ (structured find + semantic search, not classic hybrid RAG) | ⚠️ (exact/fuzzy/index + LLM tiers, not embedding-first) | ✅ (BM25/FTS + embeddings + trust prior) |
+| Entity/alias resolution | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ (graph index) | ✅ (spaCy NER + pg_trgm + 3-axis linking) | ✅ (person service + coreference) | ❌ | ❌ | ⚠️ (relationship graph, not explicit NER) | ❌ | ⚠️ | ❌ | ❌ | ✅ (stable IDs + canonicalization path) |
+| Knowledge graph traversal | ❌ | 🧪 | ❌ | ✅ | ❌ | ✅ | ✅ (hub discovery + link traversal + TF-IDF orphan recovery) | ❌ (graph export only) | ❌ | ❌ | ✅ (claimed: relationship expansion in search) | ❌ | ⚠️ | ⚠️ (hierarchy traversal rather than graph traversal) | ❌ | ✅ (derived KG with evidence-backed queries) |
+| Tiered retrieval (summary → deep) | ❌ | ✅ | 🧪 | ✅ (layering) | ✅ (vault index) | ✅ (profiles/routing) | ✅ (subcortical → dual-path + background forage agent) | ✅ (class budgets: core/situational/decisions) | ✅ (Sonnet selector → memory content → staleness) | ✅ (memory_summary → MEMORY.md → rollout_summaries → skills) | ✅ (profile static/dynamic + search results) | ⚠️ | ⚠️ | ✅ (L0/L1/L2) | ✅ (five tiers) | ✅ (MemoryPack + archive widening) |
+| Query rewriting | ❌ | ✅ | 🧪 | ⚠️ (QMD expansion) | ❌ | ⚠️ (optional LLM inject) | ✅ (subcortical expansion, replaces original query) | ⚠️ (entity coreference + query sanitization) | ❌ | ❌ | ✅ (rewriteQuery flag, +400ms) | ⚠️ | ⚠️ | ❌ | ⚠️ (LLM tiers can reformulate implicitly) | ❌ |
+| Recency/decay weighting | ❌ | ✅ | 🧪 | ✅ (activation/importance) | ⚠️ | ⚠️ | ✅ (multi-factor sigmoid, activity-day) | ✅ (stepped recency: 1d/7d/30d/90d/365d) | ⚠️ (mtime-based staleness display only) | ✅ (usage-based: usage_count + last_usage drive selection + pruning) | ✅ (forgetAfter TTL + recency in ranking) | ⚠️ | ✅ (paper claims) | ⚠️ (tier promotion and session locality more than explicit decay) | ✅ (AKL/lifecycle decay) | ✅ (decay_score + citation + verification recency) |
+| Hard top-K injection cap | ⚠️ | ✅ | ✅ (planned) | ✅ | ✅ | ✅ | ✅ (~15 pinned + ~5 fresh) | ✅ (topK=8 + class budgets + token cap) | ✅ (max 5 via Sonnet selector) | ⚠️ (memory_summary token cap 5K; MEMORY.md unbounded grep) | ✅ (limit 1–100 per search) | ✅ | ✅ | ⚠️ | ✅ | ✅ (MemoryPack budgets + per-type caps) |
 | Capability-scoped retrieval | ❌ | ❌ | ❌ | ⚠️ (channel/security conventions) | ❌ | ❌ | ❌ (forage agent code-constrained, not arch-constrained) | ⚠️ (scope: shared vs profile, private vs group) | ❌ | ❌ | ✅ (containerTag isolation + RBAC) | ❌ | ❌ | ⚠️ (type-scoped and namespace-scoped, not security-capability scoped) | ❌ | ✅ |
 | Taint/trust labels carried through | ❌ | 🧪 (trust pass) | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
 
@@ -267,21 +267,21 @@ Legend: ✅ first-class, ⚠️ partial/implicit, ❌ absent, 🧪 proposed only
 
 | Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | OpenViking | ByteRover CLI | shisad |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id + batch tracking) | ✅ (event-sourced: append-only memory_events + per-memory timeline) | ✅ (JSONL transcripts) | ✅ (stage1_outputs DB table + rollout_summaries/ files + raw_memories.md) | ⚠️ (MemoryDocumentSource join; version chains preserve history) | ✅ (recall) | ⚠️ | ✅ (session commits as source artifacts) | ❌ | ✅ |
+| Append-only provenance log | ❌ | ✅ (Resources) | ✅ (logs/Qdrant metadata) | ✅ (logs) | ✅ (logs) | ✅ (ledger) | ✅ (Continuum segments + source_segment_id + batch tracking) | ✅ (event-sourced: append-only memory_events + per-memory timeline) | ✅ (JSONL transcripts) | ✅ (stage1_outputs DB table + rollout_summaries/ files + raw_memories.md) | ⚠️ (MemoryDocumentSource join; version chains preserve history) | ✅ (recall) | ⚠️ | ✅ (session commits as source artifacts) | ❌ | ✅ (event trail + source lineage) |
 | Structured fact extraction | ⚠️ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ (batch LLM extraction + entity linking + 3-axis relationship discovery) | ✅ (7 typed memories via XML tag protocol) | ✅ (4-type taxonomy: user/feedback/project/reference) | ✅ (task groups with prefs/knowledge/failures + rollout summaries with task outcome triage) | ✅ (MemoryEntry extraction from documents; static/dynamic classification) | ⚠️ | ✅ | ✅ | ✅ | ✅ |
 | Write gating (reject instructions / confirm) | ❌ | ✅ | ⚠️ (auto-triage) | ❌ | ⚠️ (rules focus on output) | ⚠️ (sanitization + path safety) | ❌ (auto-extract at collapse; 0.85 fuzzy + 0.7 vector dedup only) | ✅ (junk filter + dedup + plausibility + review queue) | ⚠️ (exclusion list + prompt-enforced "ask what was surprising") | ⚠️ (minimum signal gate in Phase 1 prompt; no code-level gate) | ❌ (no visible write gating) | ❌ | ⚠️ | ⚠️ | ⚠️ | ✅ |
-| Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ⚠️ (memory_tool for manual create) | ✅ (review queue for borderline captures + audit shadow/apply) | ⚠️ (/remember skill for review + promotion) | ❌ | ⚠️ (MCP forget action; no promotion workflow) | ❌ | ❌ | ⚠️ (explicit commit boundary, but not review-queue driven) | ❌ | ✅ (confirmation paths) |
-| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.85 fuzzy + 0.7 vector + connected-component consolidation clusters) | ✅ (exact + weighted Jaccard with type-aware thresholds) | ⚠️ (prompt: "don't duplicate"; no code-level check) | ⚠️ (Phase 2 consolidation merges; no code-level similarity check) | ⚠️ (claimed; not visible in open-source) | ⚠️ | ✅ (paper claims) | ⚠️ | ✅ | ✅ (planned) |
-| Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes links + scoring penalty) | ⚠️ (event log preserves history but no versioned corrections) | ❌ (overwrite model) | ⚠️ (thread-diff forgetting preserves evidence during transition but no correction chains) | ✅ (version chains + `updates` relationship; old versions preserved with isLatest=false) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (provenance + user verification) |
+| Human-in-the-loop promotion | ⚠️ | ❌ | ✅ | ⚠️ (curation habits) | ❌ | ✅ | ⚠️ (memory_tool for manual create) | ✅ (review queue for borderline captures + audit shadow/apply) | ⚠️ (/remember skill for review + promotion) | ❌ | ⚠️ (MCP forget action; no promotion workflow) | ❌ | ❌ | ⚠️ (explicit commit boundary, but not review-queue driven) | ❌ | ✅ (confirmation + quarantine review) |
+| Similarity dedup / merge | ❌ | ✅ | 🧪 | ✅ (maintenance + schema) | ❌ | ✅ (rebuild/refresh) | ✅ (0.85 fuzzy + 0.7 vector + connected-component consolidation clusters) | ✅ (exact + weighted Jaccard with type-aware thresholds) | ⚠️ (prompt: "don't duplicate"; no code-level check) | ⚠️ (Phase 2 consolidation merges; no code-level similarity check) | ⚠️ (claimed; not visible in open-source) | ⚠️ | ✅ (paper claims) | ⚠️ | ✅ | ✅ (background dedup + merge jobs) |
+| Conflict handling beyond overwrite | ❌ | ⚠️ (single active truth) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes links + scoring penalty) | ⚠️ (event log preserves history but no versioned corrections) | ❌ (overwrite model) | ⚠️ (thread-diff forgetting preserves evidence during transition but no correction chains) | ✅ (version chains + `updates` relationship; old versions preserved with isLatest=false) | ⚠️ | ⚠️ | ⚠️ | ⚠️ | ✅ (supersedes + validity intervals + conflict surfacing) |
 
 **Maintenance / evaluation**
 
 | Technique | Minimal `MEMORY.md` agent | @jumperz spec | joelclaw ADR-0077 | OpenClaw arch | drag88/Marvy | ClawVault | MIRA-OSS | Gigabrain | Claude Code | Codex | Supermemory | Letta/MemGPT | Mem0 | OpenViking | ByteRover CLI | shisad |
 |---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
-| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC + use-day scheduling) | ✅ (nightly pipeline: snapshot → sync → sweep → dedup → audit → archive → vacuum → metrics) | ✅ (auto dream: time+session+lock gates) | ✅ (startup pipeline: prune → Phase 1 → Phase 2; watermark-based dirty tracking) | ⚠️ (forgetAfter implies scheduler; not visible) | ⚠️ | ✅ | ✅ | ✅ | ✅ |
-| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout + extraction retry 6h) | ⚠️ (CLI-triggered `gigabrainctl nightly`; no daemon/scheduler) | ⚠️ (time gate + scan throttle prevents over-consolidation) | ✅ (SQLite leases: expired leases auto-release; retry backoff prevents hot-loops) | ❌ (not visible) | ❌ | ❌ | ❌ | ❌ | ✅ (daemon) |
-| Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ⚠️ (internal tuning tests) | ✅ (harness-lab-run.js with A/B comparison, bilingual eval cases) | ✅ (internal evals with case IDs; no user-facing harness) | ❌ | ✅ (MemoryBench: cross-system benchmark framework with MemScore composite metric) | ❌ | ✅ (paper) | ⚠️ (plugin-level evals, not a public harness) | ✅ (paper) | ✅ (tests + planned harness) |
-| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking + forage traces) | ✅ (event-sourced: every capture/reject/dedup/audit logged with reason_codes, similarity scores, JSON payloads) | ✅ (extraction/dream telemetry + memory shape analytics) | ✅ (per-phase metrics: job counts, e2e latency, token usage histograms, memory usage tracking by file type) | ✅ (analytics dashboard: usage/errors/latency/token savings) | ⚠️ | ✅ (service analytics) | ⚠️ | ⚠️ | ✅ |
+| Scheduled consolidation jobs | ❌ | ✅ | 🧪 | ✅ | ✅ | ✅ | ✅ (event-driven + entity GC + use-day scheduling) | ✅ (nightly pipeline: snapshot → sync → sweep → dedup → audit → archive → vacuum → metrics) | ✅ (auto dream: time+session+lock gates) | ✅ (startup pipeline: prune → Phase 1 → Phase 2; watermark-based dirty tracking) | ⚠️ (forgetAfter implies scheduler; not visible) | ⚠️ | ✅ | ✅ | ✅ | ✅ (multi-timescale consolidation + score recompute) |
+| Cron fallback / missed-job detection | ❌ | ✅ | ⚠️ (Inngest) | ⚠️ | ✅ (cron mindset) | ⚠️ | ✅ (APScheduler + segment timeout + extraction retry 6h) | ⚠️ (CLI-triggered `gigabrainctl nightly`; no daemon/scheduler) | ⚠️ (time gate + scan throttle prevents over-consolidation) | ✅ (SQLite leases: expired leases auto-release; retry backoff prevents hot-loops) | ❌ (not visible) | ❌ | ❌ | ❌ | ❌ | ⚠️ (jobs specified; scheduler details still open) |
+| Benchmark harness for retrieval | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ | ⚠️ (internal tuning tests) | ✅ (harness-lab-run.js with A/B comparison, bilingual eval cases) | ✅ (internal evals with case IDs; no user-facing harness) | ❌ | ✅ (MemoryBench: cross-system benchmark framework with MemScore composite metric) | ❌ | ✅ (paper) | ⚠️ (plugin-level evals, not a public harness) | ✅ (paper) | ✅ (benchmark suite + adversarial track) |
+| Telemetry / audit logs | ❌ | 🧪 | ⚠️ | ✅ | ⚠️ | ✅ | ✅ (structured logging + batch tracking + forage traces) | ✅ (event-sourced: every capture/reject/dedup/audit logged with reason_codes, similarity scores, JSON payloads) | ✅ (extraction/dream telemetry + memory shape analytics) | ✅ (per-phase metrics: job counts, e2e latency, token usage histograms, memory usage tracking by file type) | ✅ (analytics dashboard: usage/errors/latency/token savings) | ⚠️ | ✅ (service analytics) | ⚠️ | ⚠️ | ✅ (tamper-evident audit + event trail) |
 
 ## 4) Deep comparisons by “hard problems”
 
@@ -300,7 +300,7 @@ How systems handle it:
 - **MIRA-OSS (v1r2):** continuous Continuum → segment collapse (active/paused/collapsed states) → first-person LLM summaries (with narrative continuity from previous 5 summaries). Memories extracted from segments carry `source_segment_id` provenance. No separate "episode object" type; episodes are implicitly the segments. Session reconstruction assembles: collapse marker → summaries → behavioral primer → continuity → active messages.
 - **OpenViking:** session objects are first-class and can be committed, extracted, and promoted across L0/L1/L2 storage. It is stronger on session-to-memory promotion than on standalone event objects.
 - **ByteRover CLI:** weaker on raw episodic replay than transcript-first systems; stronger on compressing prior coding work into maintained context nodes that survive across tasks and repositories.
-- **shisad:** transcript store + compaction summary prefix + summarizer extraction; event-centric KG planned.
+- **shisad:** append-only transcripts + retrieval corpus + typed episodes/decisions/tasks + derived event-centric KG, compiled into a bounded MemoryPack.
 
 Synthesis take:
 - The most robust pattern is **append-only logs + structured extraction into event entities** (with evidence pointers).
@@ -313,7 +313,7 @@ Tasks are where memory meets action. Approaches:
 - **OpenClaw:** `project-{slug}.md` as institutional memory; task tracking is not central, but project state is.
 - **joelclaw:** Todoist as review surface; tasks as human workflow, not an internal memory type.
 - **MIRA-OSS (v1r2):** reminders via `reminder_tool` (time-based); punchclock for time tracking; no full task/project model. DomainDocs serve as stable project context but aren’t task primitives. The forage agent can speculatively gather context for tasks but doesn’t manage task state.
-- **shisad:** explicit “todo” nodes and task-centric filing are requirements in `PLAN-longterm-memory.md`.
+- **shisad:** task-centric filing is explicit in the current plan: todos/action items plus meetings/decisions and evidence-linked project state.
 - **jumperz:** “Forward triggers” (temporal preload) gestures at tasks/reminders, but it’s not a full task model.
 
 Synthesis take:
@@ -331,7 +331,7 @@ More robust approaches seen/planned:
 - OpenClaw: activation/importance + aliases; less about conflict resolution, more about retrieval scaffolding.
 - MIRA-OSS: `supersedes` link type with scoring penalty (soft demotion, not hard deletion). Old memory still exists and is retrievable at lower priority. Closer to append-only correction than overwrite, but lacks explicit validity intervals for point-in-time queries.
 - Supermemory: linked-list version chains via `updates` relationship. Old versions preserved with `isLatest: false`. Simpler than MIRA-OSS or Zep (no scoring penalty, no bi-temporal intervals), but cleanly supports “current vs historical” queries.
-- shisad: typed entries + TTL/decay + provenance + user verification; allows “wrong-but-attributed” to exist without being treated as authoritative.
+- shisad: bi-temporal typed entries + supersedes chains + provenance + user verification + conflict markers; allows “wrong-but-attributed” to exist without being treated as authoritative.
 
 Synthesis take:
 - You want **provenance + validity intervals + user-verified flags**, not a single overwriting “truth row”.
@@ -340,39 +340,40 @@ Synthesis take:
 
 Most “internet stack” docs under-specify this.
 
-shisad treats it as central:
+shisad’s current plan treats it as central:
 - memory entries cannot store instructions
 - external-origin writes require confirmation by default
 - quarantines exist
 - retrieval is capability-scoped
 - retrieved memory stays in untrusted prompt regions (Spotlighting-like)
+- retrieval returns a bounded MemoryPack with taint, provenance, staleness, and conflict annotations
 
 Synthesis take:
 - If your agent can take side-effectful actions, a memory store is an attacker’s best persistence surface.
 - “Write gating” is not optional; it’s the difference between “helpful long-term memory” and “durable prompt injection”.
 
-## 5) Mapping to shisad (what we already cover vs what these systems add)
+## 5) Mapping to shisad (current plan baseline vs what these systems add)
 
-shisad’s memory work (as of v0.3.3 + long-term plan) already matches or exceeds many “rando stack” primitives, but with stronger security semantics.
+Treat `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md` as the current architecture baseline for `shisad`, even before the full implementation lands. On paper, it already matches or exceeds many “rando stack” primitives, with unusually explicit security and governance semantics.
 
-### 5.1 Where shisad already aligns strongly
-- **Append-only transcripts + blobs** (source of truth).
-- **Checkpoint/restore** as a reliability primitive.
-- **MemoryManager** with gating, TTL, provenance, and “no instructions”.
-- **Agentic summarizer** that proposes memory writes and routes through gates.
-- **Capability-aware retrieval** + taint propagation + untrusted prompt placement.
+### 5.1 Where the current shisad plan is already strong
+- **Four-tier storage model**: transcript/recall, retrieval corpus, typed long-term entries, and a derived knowledge graph instead of a single undifferentiated “memory store”.
+- **MemoryPack read path**: retrieval is not “dump top-k chunks into prompt”, but compile a bounded typed package with provenance, taint, staleness, and conflict surfacing.
+- **Append-only correction semantics**: `supersedes`, bi-temporal validity, tombstones, archive partitioning, and an audit event trail are all specified.
+- **Capability-aware safety model**: write gates, instruction/data boundary, quarantine, confirmation, and untrusted prompt placement are architecture-level rules rather than afterthoughts.
+- **Operational lifecycle**: multi-timescale consolidation, score recomputation, usage-aware retention, and two-phase extraction are part of the baseline design.
+- **Evaluation discipline**: benchmark adapters and an adversarial poisoning track are in the architecture, not deferred to “later maybe”.
 
-This is exactly where many ad-hoc stacks are weakest: semantics + governance.
+This is exactly where many ad-hoc stacks are weakest: semantics, lifecycle management, and governance.
 
-### 5.2 Where the internet stacks suggest additions
+### 5.2 Where other systems still add useful pressure
 
-High-leverage additions (if not already planned):
-- **Benchmark harness** for retrieval quality changes (OpenClaw’s file-hit harness is a good starting point; extend to “answer correctness”).
-- **Entity/alias layer** as a first-class primitive (graph retrieval for structured questions).
-- **Operator ergonomics**: a human-readable view/edit surface (ClawVault/Obsidian-style) for memory inspection and correction.
-- **Maintenance jobs**: dedup/decay/conflict detection with explicit invariants (already planned in shisad M4).
+High-leverage additions beyond the current plan baseline:
+- **Operator ergonomics**: a human-readable view/edit surface (ClawVault/Obsidian-style) for inspection, correction, quarantine review, and archive search.
 - **Typed namespaces + recursive retrieval** for sessions/projects/resources/skills, without collapsing everything into flat notes (OpenViking direction).
-- **Progressive local retrieval tiers + structured curation verbs** so cheap retrieval and explicit merge/delete/update policies happen before expensive agentic search (ByteRover direction).
+- **Progressive local retrieval tiers** so cheap exact/fuzzy/index hits are exhausted before expensive model-mediated search (ByteRover direction).
+- **Alias/entity implementation detail**: the plan says stable IDs and evidence-backed KG, but OpenClaw/MIRA/Gigabrain provide more concrete retrieval-time entity resolution patterns.
+- **Empirical ranking discipline**: the plan already includes evaluation, but OpenClaw/Gigabrain still set the standard for small, repeatable retrieval-harness tuning loops.
 
 Lower-confidence additions (need careful evaluation):
 - **Echo/fizzle** (usefulness feedback) — only if we can attribute causality without gaming.

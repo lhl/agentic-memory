@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2507.03724.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md
+  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
 ---
 
 # Analysis — MemOS (Li et al., 2025)

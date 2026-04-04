@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2508.03341.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md
+  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
 ---
 
 # Analysis — Nemori (Nan et al., 2025)

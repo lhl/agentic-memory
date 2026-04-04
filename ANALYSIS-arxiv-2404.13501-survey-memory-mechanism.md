@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2404.13501.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md
+  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
 ---
 
 # Analysis — Survey on Memory Mechanisms for LLM Agents (Zhang et al., 2024)
@@ -81,7 +81,7 @@ So: this survey is best used as a **coverage checklist**, not as a “how to imp
 
 ## Stage 3 — Mapping to shisad
 
-Practical mapping to `/home/lhl/github/shisa-ai/shisad/docs/PLAN-longterm-memory.md`:
+Practical mapping to `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md`:
 
 1. **Keep explicit memory operations**
    - write/manage/read should be first-class APIs/jobs with logs.
