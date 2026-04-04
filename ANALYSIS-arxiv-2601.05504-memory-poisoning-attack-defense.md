@@ -10,7 +10,7 @@ source:
 related:
   - ANALYSIS-academic-industry.md
   - ANALYSIS-arxiv-2503.03704-minja.md
-  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
+  - shisad internal long-term memory plan (private)
 ---
 
 # Analysis — Memory Poisoning Attack & Defense (Sunil et al., 2026)

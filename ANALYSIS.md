@@ -33,14 +33,14 @@ related:
   - vendor/byterover-cli
   - vendor/supermemory
 external_comparisons:
-  - shisad docs: /home/lhl/github/shisa-ai/shisad/docs
+  - shisad docs: shisad internal docs (private)
   - Letta (formerly MemGPT): https://github.com/letta-ai/letta
   - Mem0: https://github.com/mem0ai/mem0
 ---
 
 # Synthesis — Agentic Memory Systems (Comparison + Design Space)
 
-This document is a **full synthesis and comparison** across the memory systems in this repo, plus a few baselines and “traditional” approaches (Letta/MemGPT, Mem0, generic RAG). It is designed to support the next step: **cross-system synthesis** and **choosing what to implement** (with `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md` treated as the current `shisad` architecture baseline).
+This document is a **full synthesis and comparison** across the memory systems in this repo, plus a few baselines and “traditional” approaches (Letta/MemGPT, Mem0, generic RAG). It is designed to support the next step: **cross-system synthesis** and **choosing what to implement** (with `shisad internal long-term memory plan (private)` treated as the current `shisad` architecture baseline).
 
 These systems are often designed ad-hoc and explained via “folk theories” (OS metaphors, cognitive analogies, vibes). That does **not** imply they’re wrong. It does mean we should:
 
@@ -99,7 +99,7 @@ But tasks are often **sidecar tooling**, not integrated into retrieval/ranking a
 ### Comparison baselines (external)
 - **Minimal “MEMORY.md-only” agent setups:** common pattern in prompt-engineered agents.
 - **Letta (formerly MemGPT):** stateful agents with explicit memory blocks + archival/recall memories.
-  Sources: `https://github.com/letta-ai/letta`, plus local notes in `~/github/shisa-ai/shisad/docs/research/RESEARCH-memgpt-letta.md`.
+  Sources: `https://github.com/letta-ai/letta`, plus local notes in `internal shisad MemGPT/Letta research notes (private)`.
 - **Mem0:** memory layer that extracts/stores/retrieves user/session/agent memories; paper + SDKs.
   Sources: `https://github.com/mem0ai/mem0` and the cited arXiv paper (`arXiv:2504.19413`).
 - **Supermemory:** memory-as-a-service API with version chains, typed relationships, profile synthesis; startup with self-reported benchmark leadership.
@@ -107,9 +107,9 @@ But tasks are often **sidecar tooling**, not integrated into retrieval/ranking a
 
 ### Implementation target (for mapping)
 - **shisad current architecture baseline (security-first long-term memory):**
-  - Memory invariants + MemoryManager: `~/github/shisa-ai/shisad/docs/PLAN-security.md`
-  - End-to-end long-term memory plan: `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md`
-  - v0.3 conversation memory summarizer + retrieval wiring: `~/github/shisa-ai/shisad/docs/v0.3/PLAN-v0.3.3.md`
+  - Memory invariants + MemoryManager: `shisad internal security plan (private)`
+  - End-to-end long-term memory plan: `shisad internal long-term memory plan (private)`
+  - v0.3 conversation memory summarizer + retrieval wiring: `shisad internal v0.3 memory plan (private)`
 
 ## 1) A practical taxonomy (what “memory” actually means)
 
@@ -354,7 +354,7 @@ Synthesis take:
 
 ## 5) Mapping to shisad (current plan baseline vs what these systems add)
 
-Treat `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md` as the current architecture baseline for `shisad`, even before the full implementation lands. On paper, it already matches or exceeds many “rando stack” primitives, with unusually explicit security and governance semantics.
+Treat `shisad internal long-term memory plan (private)` as the current architecture baseline for `shisad`, even before the full implementation lands. On paper, it already matches or exceeds many “rando stack” primitives, with unusually explicit security and governance semantics.
 
 ### 5.1 Where the current shisad plan is already strong
 - **Four-tier storage model**: transcript/recall, retrieval corpus, typed long-term entries, and a derived knowledge graph instead of a single undifferentiated “memory store”.

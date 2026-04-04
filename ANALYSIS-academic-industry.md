@@ -5,12 +5,12 @@ type: analysis
 related:
   - ANALYSIS.md
   - PUNCHLIST-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
+  - shisad internal long-term memory plan (private)
 ---
 
 # Analysis — Academic/Industry Agent Memory Systems (Synthesis)
 
-This document is a synthesis/comparison of **academic + industry** work on long‑term memory for LLM agents (benchmarks, architectures, attacks, and surveys), intended to drive design decisions for `shisad` (implementation reference: `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md`).
+This document is a synthesis/comparison of **academic + industry** work on long‑term memory for LLM agents (benchmarks, architectures, attacks, and surveys), intended to drive design decisions for `shisad` (implementation reference: `shisad internal long-term memory plan (private)`).
 
 Scope notes:
 - This is **not** a review of the “folk” ad‑hoc memory projects; those are in `ANALYSIS.md` and the non‑paper `ANALYSIS-*.md` deep dives.
@@ -262,7 +262,7 @@ Practical builder implications (also aligned with the shisad plan):
 
 ## 7) Mapping to shisad (what’s already planned vs what to add)
 
-`shisad`’s `/home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md` already aligns strongly with the best “2026‑shaped” ideas:
+`shisad`’s `shisad internal long-term memory plan (private)` already aligns strongly with the best “2026‑shaped” ideas:
 - explicit memory tiers (transcripts/recall vs retrievable corpus vs typed LTM entries vs KG),
 - append‑only supersedes semantics + provenance,
 - capability‑aware retrieval, quarantine, and instruction/data boundary rules,

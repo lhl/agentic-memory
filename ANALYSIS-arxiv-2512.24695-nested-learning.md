@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2512.24695.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
+  - shisad internal long-term memory plan (private)
 ---
 
 # Analysis — Nested Learning (Behrouz et al., 2025)

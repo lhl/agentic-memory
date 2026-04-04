@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2508.03341.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
+  - shisad internal long-term memory plan (private)
 ---
 
 # Analysis — Nemori (Nan et al., 2025)

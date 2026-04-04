@@ -9,7 +9,7 @@ source:
   - references/papers/arxiv-2310.08560.pdf
 related:
   - ANALYSIS-academic-industry.md
-  - /home/lhl/github/shisa-ai/shisad-dev/planning/PLAN-longterm-memory.md
+  - shisad internal long-term memory plan (private)
 ---
 
 # Analysis — MemGPT (Packer et al., 2024)
