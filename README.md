@@ -149,6 +149,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | @drag88 article | https://x.com/drag88/status/2022551759491862974 |
 | supermemory docs | https://supermemory.ai/docs |
 | supermemory repo | https://github.com/supermemoryai/supermemory |
+| mempalace repo | https://github.com/milla-jovovich/mempalace |
 
 ## File Tree
 
@@ -167,6 +168,7 @@ agentic-memory/
 ├── ANALYSIS-codex-memory.md
 ├── ANALYSIS-google-always-on-memory-agent.md
 ├── ANALYSIS-supermemory.md
+├── ANALYSIS-mempalace.md           ← not in ANALYSIS.md (claims-vs-code issues); see REVIEWED.md
 ├── REVIEWED.md                        ← triage log (examined but not promoted to ANALYSIS)
 ├── PUNCHLIST-academic-industry.md     ← tracking checklist for paper deep dives
 ├── templates/                         ← templates for paper analyses/summaries

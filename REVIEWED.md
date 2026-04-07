@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-04-04
+last_updated: 2026-04-07
 type: triage
 related:
   - ANALYSIS.md
@@ -16,6 +16,7 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-07 | MemPalace (milla-jovovich) | [milla-jovovich/mempalace](https://github.com/milla-jovovich/mempalace) | **Not promoted.** Method-of-loci spatial metaphor (Wings/Rooms/Halls/Tunnels) over ChromaDB + SQLite KG, 4-layer progressive loading (~170 token wake-up), rule-based AAAK compression, 20-tool MCP server. Spatial metaphor is genuinely novel and worth tracking. **However, multiple README claims are false**: "contradiction detection" is not implemented, "zero information loss" compression drops 12.4pp on LongMemEval, headline 96.6% is just ChromaDB vector search. 2 days old, 7 commits. Standalone deep dive: `ANALYSIS-mempalace.md`. Re-examine if claims-vs-code gap closes. |
 | 2026-04-03 | Hermes Agent memory providers (Nous Research) | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | **Re-reviewed.** Hermes is now a pluggable memory orchestration layer with a `MemoryProvider` interface, async prefetch/sync/mirror hooks, and 7 external providers. Built-in `MEMORY.md` / `USER.md` remains tiny and frozen-snapshot. Not promoted as a standalone memory system; the provider architecture is the interesting part. |
 | 2026-04-03 | Honcho (plastic-labs) | [plastic-labs/honcho](https://github.com/plastic-labs/honcho) | **Not promoted.** Open-source memory library + managed service built around peers/sessions/workspaces, semantic search, peer cards, and dialectic Q&A. Interesting AI/user peer model, but service-centric and with limited visible correction/version semantics from the reviewed OSS surface. |
 | 2026-04-04 | OpenViking (volcengine) | [volcengine/OpenViking](https://github.com/volcengine/OpenViking) | **PROMOTED to standalone analysis.** Open-source context database with filesystem paradigm (`viking://`), L0/L1/L2 tiered loading, unified memory/resources/skills, and automatic session extraction. See `ANALYSIS-openviking.md`. |
@@ -545,3 +546,58 @@ Together they implement a clean working-memory/episodic-log split with good ergo
 - SQLite with no WAL mode, no connection pooling, no indexes beyond PKs
 
 **Verdict:** Tutorial/PoC only. Useful as a Google ADK orchestration reference and for the multimodal ingestion pattern, but the memory system itself is not functional beyond ~50 memories. Does not contribute mechanisms worth comparing to the systems in ANALYSIS.md. Vendored in `vendor/always-on-memory-agent/`.
+
+---
+
+## 2026-04-07 — MemPalace (milla-jovovich)
+
+**Source:** https://github.com/milla-jovovich/mempalace
+**Reviewed at:** 988 stars, v3.0.0, 7 commits (repo created 2026-04-05)
+
+**What it is:** A Python memory system (21 modules, 2 runtime deps: `chromadb` + `pyyaml`) organized around the **method of loci** — memories are placed in Wings (projects/people) → Rooms (topics) → Halls (categories) → Drawers (individual items). Everything lives in a single ChromaDB collection (`mempalace_drawers`) with metadata filtering for spatial navigation. Includes a SQLite temporal knowledge graph, a deterministic "AAAK" compression dialect, a 20-tool MCP server, and a CLI for mining existing projects/conversations.
+
+**What's genuinely novel (and worth tracking):**
+
+- **Spatial metaphor as organizing principle**: no other system in this survey uses navigable "rooms." The Wing/Room/Hall structure provides human-legible organization, progressive retrieval scoping (all → wing → wing+room), and automatic cross-domain links ("tunnels" where the same room name appears in multiple wings). The metaphor is appealing for onboarding and explainability even though the underlying mechanism is ChromaDB metadata filtering.
+- **Very low wake-up cost**: 4-layer progressive loading (L0 identity ~100tok, L1 top-15 drawers ~500-800tok, L2 topic-scoped on-demand, L3 full search). ~170 tokens at boot is among the lowest in this survey — better than Claude Code (loads full MEMORY.md + topic files), OpenViking (recursive L0 abstracts), ByteRover (tiered context tree).
+- **Zero-LLM write path**: all extraction, classification, and compression is deterministic (regex + keyword scoring). Fully offline, zero API cost. Trade-off: no semantic understanding during extraction.
+- **Agent diary**: per-agent wings with timestamped diary entries in the same ChromaDB collection. Simple but functional per-agent persistent memory.
+- **Mining pipeline**: walks existing project files (20 extensions) and conversations into drawers, with room detection via folder path → filename → keyword scoring → fallback.
+
+**What's concerning (and why not promoted):**
+
+Multiple README claims do not match the code:
+
+| Claim | Code reality |
+|-------|-------------|
+| "30x compression, zero information loss" | AAAK is lossy abbreviation (regex + keyword dicts + templates); `decode()` is just string splitting, no text reconstruction; token counting uses `len(text)//3` heuristic; **LongMemEval drops from 96.6% to 84.2% in AAAK mode** |
+| "Contradiction detection" | `knowledge_graph.py` has no contradiction detection — dedup only blocks identical open triples with same subject/predicate/object |
+| 96.6% LongMemEval R@5 (headline) | Real score, but in "raw mode" — uncompressed text stored in ChromaDB, standard nearest-neighbor retrieval. The palace structure is not involved. This measures ChromaDB's default embedding model, not MemPalace. |
+| "+34% retrieval boost from palace structure" | Metadata filtering (narrowing search to wing+room). Standard technique, not a novel retrieval mechanism. |
+| "100% with Haiku rerank" | Not in the benchmark scripts. Method unverifiable. |
+
+**Architecture details:**
+
+- **Storage**: one ChromaDB persistent collection, metadata per drawer: wing, room, hall, source_file, chunk_index, importance, emotional_weight, filed_at. Drawer IDs: `drawer_{wing}_{room}_{md5[:16]}`.
+- **Chunking**: 800 chars, 100 overlap, paragraph-then-line splitting, min 50 chars.
+- **Search**: `col.query()` with optional `where` filters. Distance→similarity: `1-dist`. No re-ranking, no BM25, no hybrid retrieval.
+- **Knowledge graph**: SQLite with `entities` and `triples` tables, temporal validity via `valid_from`/`valid_to` string dates. Inspired by Zep/Graphiti but much simpler (no community detection, no entity resolution beyond naive slug, no multi-hop traversal). Row parsing uses hardcoded column indices — fragile.
+- **Palace graph**: not stored; computed on-demand by scanning all ChromaDB metadata in 1000-item batches and building set intersections. Rooms are connected if they share a wing (BFS). Tunnels are rooms appearing in 2+ wings. Lightweight but purely structural.
+- **AAAK**: 5-step deterministic pipeline — entity detection (name→3-char code), topic extraction (word frequency), key sentence selection (decision-keyword scoring, truncated at 55 chars), emotion detection (keyword→code), flag detection (keyword→label).
+- **General extractor**: regex classification into 5 categories (decisions/preferences/milestones/problems/emotional) with confidence scoring and sentiment-based disambiguation.
+- **MCP server**: 20 tools, all implemented (no stubs), manual JSON-RPC 2.0 over stdin/stdout. Embeds `PALACE_PROTOCOL` in status output instructing the AI to verify before guessing — good prompt-engineering pattern.
+- **Tests**: 4 test files for 21 modules.
+
+**Benchmarks:**
+
+- LongMemEval 96.6% R@5 (raw) / 84.2% (AAAK) / 89.4% (room-boosted) — retrieval only, no end-to-end QA
+- LoCoMo 60.3% (session, top-10) / 77.8% (top-50) — mediocre vs field (HiMem ~83-89%, Hindsight similar)
+- ConvoMem 92.9% average recall — but only 50 items per category (300 total)
+- No baseline comparisons, no statistical significance, no end-to-end eval
+- Benchmark scripts provided and appear runnable — reproducibility is a genuine strength
+
+**What's missing vs. the field:** no decay/forgetting, no LLM-based extraction, no write gating, no content-level dedup, no provenance/audit trail, no hybrid search (BM25/FTS), no multi-hop graph retrieval, no feedback loops (echo/fizzle), no entity resolution.
+
+**Standalone deep dive:** [ANALYSIS-mempalace.md](ANALYSIS-mempalace.md) (full architecture + benchmark + claims analysis; claims table at top).
+
+**Verdict:** **Not promoted.** The spatial metaphor is the most novel contribution — genuinely interesting as an organizing principle that could layer on top of more sophisticated backends, and the 4-layer progressive loading with ~170 token wake-up is well-designed. However, the gap between README claims and code reality is the largest we've seen in this survey (features that don't exist, benchmark framing that credits the system for ChromaDB's performance, "lossless" compression that is measurably lossy). The repo is also extremely new (2 days, 7 commits). Worth re-examining if the claims are corrected and the implementation matures — particularly if the spatial structure develops semantic connections beyond metadata filtering.
