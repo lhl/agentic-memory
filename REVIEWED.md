@@ -16,6 +16,7 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-07 | KMS-Agent (haih-net) | [haih-net/agent](https://github.com/haih-net/agent) | **Not promoted.** Full-stack agent platform (Next.js + n8n + Prisma/Supabase) with an epistemic belief-graph KB (10 tables: concepts, n-ary facts with confidence/status/temporal validity, first-class contradictions, knowledge spaces with per-space projections, identity merge/split), typed MindLogs (12 types, append-only), and a biological reflex/reaction experience system with pre-turn reflection. Architecturally interesting schema design, but all memory intelligence is delegated to LLM tool calls — no vector search, no automated extraction, no graph traversal, no retrieval optimization. In-memory AgentWorld tree not persisted. Effectiveness loop for reflexes incomplete. |
 | 2026-04-07 | MemPalace (milla-jovovich) | [milla-jovovich/mempalace](https://github.com/milla-jovovich/mempalace) | **Not promoted.** Method-of-loci spatial metaphor (Wings/Rooms/Halls/Tunnels) over ChromaDB + SQLite KG, 4-layer progressive loading (~170 token wake-up), rule-based AAAK compression, 20-tool MCP server. Spatial metaphor is genuinely novel and worth tracking. **However, multiple README claims are false**: "contradiction detection" is not implemented, "zero information loss" compression drops 12.4pp on LongMemEval, headline 96.6% is just ChromaDB vector search. 2 days old, 7 commits. Standalone deep dive: `ANALYSIS-mempalace.md`. Re-examine if claims-vs-code gap closes. |
 | 2026-04-03 | Hermes Agent memory providers (Nous Research) | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | **Re-reviewed.** Hermes is now a pluggable memory orchestration layer with a `MemoryProvider` interface, async prefetch/sync/mirror hooks, and 7 external providers. Built-in `MEMORY.md` / `USER.md` remains tiny and frozen-snapshot. Not promoted as a standalone memory system; the provider architecture is the interesting part. |
 | 2026-04-03 | Honcho (plastic-labs) | [plastic-labs/honcho](https://github.com/plastic-labs/honcho) | **Not promoted.** Open-source memory library + managed service built around peers/sessions/workspaces, semantic search, peer cards, and dialectic Q&A. Interesting AI/user peer model, but service-centric and with limited visible correction/version semantics from the reviewed OSS surface. |
@@ -34,6 +35,101 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-04-07 — KMS-Agent (haih-net)
+
+**Source:** https://github.com/haih-net/agent
+**Stats:** 4 stars, 824 files, TypeScript (Next.js + n8n), no license, created 2026-01-19, last pushed 2026-04-01
+**Stack:** Next.js frontend + custom n8n server (workflow orchestration) + Prisma/PostgreSQL (Supabase) + OpenRouter LLM gateway + Docker/Traefik
+
+**What it is:** A full-stack "Knowledge Management System with Cognitive Evolution" — a personal agent platform where the agent learns through interaction. It combines a chat interface, knowledge base, task management, mind logs, a biological reflex/reaction system, and a 3D spatial world. The README pitches it as "a living knowledge system that develops" — clone it, talk to it, watch it evolve.
+
+**Data model (Prisma, ~860 lines, ~550 memory-relevant):**
+
+Three distinct memory subsystems, all scoped per-user (the agent is itself a User row):
+
+1. **MindLog** — flat append-only log with 12 typed entries:
+   - Interaction lifecycle: `Stimulus`, `Reaction`, `Action`, `Error`, `Result`, `Conclusion`, `Evaluation`, `Correction`
+   - Persistent memory: `Knowledge`, `Identity`, `Context`, `Relationship`
+   - Fields: `type`, `data` (text blob), `quality` (float), `createdById`, `relatedToUserId`
+   - No embedding column. No vector index.
+
+2. **Knowledge Base (KB)** — an epistemic belief graph with 10 tables:
+   - `KBConcept` — named entity nodes with type, name, description, content
+   - `KBLabel` — multilingual names per concept (primary/synonym/alias/abbreviation, with language code)
+   - `KBFact` — n-ary statements with `confidence` (0–1), `status` (unverified/tentative/verified/disputed/deprecated), `importance`, temporal validity (`validFrom`/`validTo`), `factType` (raw/derived)
+   - `KBFactParticipation` — joins concepts to facts with `role`, `impact`, `value`, `localImportance`
+   - `KBConstraint` — invariant rules for consistency checking
+   - `KBConflict` / `KBConflictFact` — first-class contradiction records (open/resolved/dismissed)
+   - `KBIdentityOperation` — merge/split operations on concepts
+   - `KBProposal` — testable hypotheses (untested/tested/confirmed/rejected)
+   - `KBDecision` — recorded choices with context, outcome, supersession chain
+   - `KBKnowledgeSpace` / `KBFactProjection` — contextual views of facts with per-space trust/importance/visibility
+
+3. **Experience System (EX)** — behavioral learning:
+   - `EXReflex` — stored behavioral rules: `stimulus` (trigger pattern), `response` (action), `type` (unconditional/conditional), `effectiveness` and `executionRate` (floats)
+   - `EXReaction` — instances of reflex firing with triple scoring (`scoreAgent`, `scoreTarget`, `scoreMentor`), token/duration metrics, feedback text
+
+4. **AgentWorld** — in-memory tree (WorldsStore singleton). Rooted hierarchy of `WorldNode` objects with attention mechanics (frequently-read nodes auto-expand depth). **Not persisted** — lost on restart.
+
+**Write path:**
+
+All memory writes are **LLM-initiated via tool calls** during conversations. The n8n workflow wires CRUD tools for each subsystem (MindLog, KB concepts/facts/participations/projections/spaces, EX reflexes/reactions, AgentWorld nodes, Tasks). Each tool delegates to a GraphQL API. Feature-gated via env vars (`N8N_HAS_KNOWLEDGES_BASE_NODES`, `N8N_MINDLOGS_NODES`, `HAS_EX_NODES`).
+
+No bulk import. No automated extraction pipeline. No background indexing. No document ingestion. The LLM decides what to remember and when.
+
+**Read path:**
+
+- **MindLogs**: Up to 100 entries of types KNOWLEDGE/IDENTITY/CONTEXT loaded via GraphQL before every turn and injected as system messages. **Load-everything** — no ranking, no filtering beyond type.
+- **KB**: Via tool calls during conversation. The system prompt instructs "read concepts first." No vector search. No graph traversal engine. The LLM decides what to query.
+- **AgentWorld**: Tree read with configurable `maxDepth` (default 2). Attention mechanic: nodes with `readCount > 5` auto-increase depth. Depth control only, not relevance ranking.
+- **Memory Recall**: Separate lightweight agent (gemini-2.5-flash-lite default) searches an in-memory `ToolCallsMemory` store — records of every tool call the agent has made. Keyword/LLM-interpreted search, not vector.
+
+**Cognitive loop (per interaction):**
+
+1. Webhook trigger
+2. Auth + session resolution
+3. Parallel fetch: agent profile + MindLogs (100 recent)
+4. **Reflection**: fetches all `EXReflex` records, sends them + user message to a fast LLM (gemini-2.5-flash-lite), which returns matching reflexes or `NO_MATCH`. Injected as internal instructions.
+5. Decompositor + UsefulInfo sub-agents pre-analyze the user message
+6. Main Agent (AgentOrchestrator) — custom n8n node using OpenAI SDK via OpenRouter, iterative tool-call loop (10–20 max iterations), access to all subsystem tools
+7. Save conversation + return response
+
+On `NO_MATCH` from reflection, the instructions tell the main agent to **create a new reflex** before acting. This is the learning loop.
+
+**What's architecturally interesting:**
+
+- **Epistemic KB design**: The belief-graph model with first-class contradictions (`KBConflict`), confidence levels, temporal validity, knowledge spaces with per-space fact projections, and identity merge/split operations is the most philosophically grounded KB schema in our survey. The comment "Fact != truth, fact = statement + trust context" is a deliberate stance that no other system implements this explicitly.
+- **Reflex/Reaction system**: The biological-reflex metaphor — pre-turn reflection pass that matches stored reflexes against stimuli, triple-scoring feedback, and automatic reflex creation on novel stimuli — is distinctive. No other system in our survey has this behavioral-adaptation pattern.
+- **N-ary facts**: `KBFactParticipation` joins multiple concepts to a single fact with typed roles and per-participation importance. This is richer than binary triples (most KG systems) or flat facts (most memory systems).
+
+**What's missing / why not promoted:**
+
+- **No vector search anywhere** — MindLogs, KB, AgentWorld all lack embeddings. Retrieval is either "load all 100" or "LLM decides what to query via tools." Will break at scale.
+- **No automated extraction** — all KB writes depend entirely on the LLM choosing to call tools during conversation. No document ingestion, no background processing, no extraction pipeline.
+- **No graph traversal** — KB facts use n-ary participation but there is no graph query engine, no path finding, no inference. It's a relational store with graph-shaped data, not a graph database.
+- **Conflict detection is schema-only** — `KBConstraint` and `KBConflict` tables exist but no automated constraint-checking code is visible. Conflicts must be created manually via tool calls.
+- **Reflex effectiveness loop is incomplete** — schema has `effectiveness` and `executionRate` on reflexes, but the workflow code does not show how these aggregate scores are updated from reaction scores.
+- **AgentWorld not persisted** — the in-memory tree is lost on process restart.
+- **No consolidation, decay, dedup, or maintenance** — no background jobs, no nightly sweeps, no forgetting.
+- **No benchmarks or evals** — no performance claims to verify.
+- **System prompt partially in Russian** — the agent-chat main system message is bilingual, suggesting a single-developer project.
+
+**Comparison to existing ANALYSIS.md systems:**
+
+| Mechanism | KMS-Agent | Closest existing system |
+|-----------|-----------|------------------------|
+| Epistemic KB schema | 10-table belief graph with confidence, contradiction, temporal validity, knowledge spaces | None this explicit — Gigabrain has event sourcing, but not epistemic modeling |
+| Write path | LLM tool calls only | Same as MemGPT/Letta (tool-gated archival writes) |
+| Read path | Load-all MindLogs + LLM-directed tool queries | Weaker than all promoted systems (no search) |
+| Reflex/Reaction | Pre-turn pattern matching + triple scoring + auto-creation | Unique in survey |
+| Orchestration | n8n workflow engine | Unique infrastructure choice; not a memory mechanism |
+| Graph traversal | None (relational store, no query engine) | OpenViking, Gigabrain both have traversal |
+| Consolidation/decay | None | Every promoted system has at least one |
+
+**Verdict:** **Not promoted.** The epistemic KB schema is the most architecturally interesting part — first-class contradictions, knowledge spaces with per-space projections, and n-ary facts with confidence/temporal validity are genuinely thoughtful design. The reflex/reaction system is a distinctive behavioral-adaptation pattern not seen elsewhere. However, the gap between schema design and operational intelligence is large: there is no retrieval optimization (no embeddings, no vector search, no graph traversal), no automated extraction, no consolidation or maintenance pipeline, and several schema features (constraints, conflicts, effectiveness tracking) exist as tables but lack implementing code. The system is more of a full-stack agent platform with an ambitious but unrealized knowledge architecture than a memory system that contributes testable mechanisms. Worth re-examining if retrieval and the KB operational layer mature.
 
 ---
 
