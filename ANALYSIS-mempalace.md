@@ -20,6 +20,8 @@ The project is very new (created 2026-04-05, ~988 stars in 2 days, 7 commits) an
 
 > **Status: NOT PROMOTED to ANALYSIS.md.** This is the only system we've reviewed with multiple outright false claims in the README — features described that don't exist in code, and "lossless" compression that is measurably lossy. The spatial metaphor is worth tracking but the claims gap disqualifies it from the main comparison. See `REVIEWED.md` for the triage entry.
 
+> **UPDATE:** @milla-jovovich has graciously [acknowledged our findings](https://github.com/milla-jovovich/mempalace/issues/27#issuecomment-4201242972) and has been [actively remediating](https://github.com/milla-jovovich/mempalace/issues/27#issuecomment-4215691219) known issues. It's great to see that!
+
 ## Claims vs. code reality — READ THIS FIRST
 
 This section is placed first because the gap between README claims and actual implementation is unusually large and affects how every other section should be read.
