@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-04-07
+last_updated: 2026-04-09
 type: triage
 related:
   - ANALYSIS.md
@@ -16,6 +16,7 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-09 | Karta (rohithzr) | [rohithzr/karta](https://github.com/rohithzr/karta) | **PROMOTED to standalone analysis.** Rust (~10.4K LOC) agentic memory library with Zettelkasten-inspired knowledge graph, 7-type dream engine (deduction, induction, abduction, consolidation, contradiction, episode digest, cross-episode digest), embedding-based query classification (6 modes), retroactive context evolution with drift protection, cross-encoder reranking with abstention, multi-hop BFS traversal, atomic fact decomposition, episode digests with structured metadata, foresight signals with TTL. BEAM 100K: 57.7% (vs 63% Honcho). 42 commits, MIT, single developer, v0.1.0. Most architecturally sophisticated single-developer memory system in the survey. See `ANALYSIS-karta.md`. |
 | 2026-04-07 | KMS-Agent (haih-net) | [haih-net/agent](https://github.com/haih-net/agent) | **Not promoted.** Full-stack agent platform (Next.js + n8n + Prisma/Supabase) with an epistemic belief-graph KB (10 tables: concepts, n-ary facts with confidence/status/temporal validity, first-class contradictions, knowledge spaces with per-space projections, identity merge/split), typed MindLogs (12 types, append-only), and a biological reflex/reaction experience system with pre-turn reflection. Architecturally interesting schema design, but all memory intelligence is delegated to LLM tool calls — no vector search, no automated extraction, no graph traversal, no retrieval optimization. In-memory AgentWorld tree not persisted. Effectiveness loop for reflexes incomplete. |
 | 2026-04-07 | MemPalace (milla-jovovich) | [milla-jovovich/mempalace](https://github.com/milla-jovovich/mempalace) | **Not promoted.** Method-of-loci spatial metaphor (Wings/Rooms/Halls/Tunnels) over ChromaDB + SQLite KG, 4-layer progressive loading (~170 token wake-up), rule-based AAAK compression, 20-tool MCP server. Spatial metaphor is genuinely novel and worth tracking. **However, multiple README claims are false**: "contradiction detection" is not implemented, "zero information loss" compression drops 12.4pp on LongMemEval, headline 96.6% is just ChromaDB vector search. 2 days old, 7 commits. Standalone deep dive: `ANALYSIS-mempalace.md`. Re-examine if claims-vs-code gap closes. |
 | 2026-04-03 | Hermes Agent memory providers (Nous Research) | [NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent) | **Re-reviewed.** Hermes is now a pluggable memory orchestration layer with a `MemoryProvider` interface, async prefetch/sync/mirror hooks, and 7 external providers. Built-in `MEMORY.md` / `USER.md` remains tiny and frozen-snapshot. Not promoted as a standalone memory system; the provider architecture is the interesting part. |
@@ -35,6 +36,171 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-04-09 — Karta (rohithzr) — PROMOTED
+
+**Source:** https://github.com/rohithzr/karta
+**Stats:** 42 commits, Rust (2024 edition), MIT license, v0.1.0, single developer
+**Stack:** Rust + LanceDB (embedded vector) + SQLite (WAL mode, graph/state) + async-openai (any OpenAI-compatible endpoint) + Jina AI reranker + tokio
+**LOC:** 10,423 total (6,666 core, 3,754 tests)
+
+**What it is:** An agentic memory system built as a Rust library (`cargo add karta`) that combines a Zettelkasten-inspired knowledge graph with active background reasoning. Three-path architecture: write (index + link + evolve), read (search + traverse + rerank + synthesize), dream (cluster + infer + persist). The tagline — "thinks, not just stores" — is accurate: the dream engine performs genuine inference operations that create new knowledge from existing notes.
+
+**Data model:**
+
+- **MemoryNote**: Core unit. Content, LLM-generated context, keywords, tags, embedding (1536d), bidirectional links, evolution history, provenance (6-variant enum), confidence score, lifecycle status (Active/Deprecated/Superseded/Archived), turn_index, source_timestamp, last_accessed_at.
+- **Provenance enum**: `Observed` | `Dream { dream_type, source_note_ids, confidence }` | `Profile { entity_id }` | `Episode { episode_id }` | `Fact { source_note_id }` | `Digest { episode_id }`. Every derived note traces to its sources.
+- **AtomicFact**: Fine-grained retrieval unit. Content, subject, embedding, stored in separate LanceDB table. 1–5 extracted per note during ingestion.
+- **ForesightSignal**: Forward-looking prediction with validity window (`valid_from`, `valid_until`), extracted during ingestion or generated by abduction dreams.
+- **Episode**: Thematic session group. Narrative, topic tags, note IDs, optional narrative note stored in vector index.
+- **EpisodeDigest**: Structured metadata — entities (name, type, count, latest_value), date range, aggregation entries (label, count, items list), topic sequence, digest text.
+- **NoteStatus**: `Active` | `Deprecated { by }` | `Superseded { by }` | `Archived`.
+
+**Write path (write.rs, 607 lines):**
+
+1. Parallel: LLM attribute generation (context, keywords, tags, foresight signals, atomic facts) + raw content embedding
+2. ANN candidate search using raw embedding (fast path)
+3. Compute enriched embedding (content + context + keywords) for storage
+4. LLM link decisions on candidates above similarity threshold
+5. Retroactive evolution: for each linked note, LLM updates its context to reflect implications of the new connection. **Drift-protected**: `max_evolutions_per_note` gate (default 5) — over-evolved notes skip evolution and need consolidation instead.
+6. Store note in LanceDB with enriched embedding
+7. Store bidirectional links in SQLite
+8. Store foresight signals with parsed or default TTL (90 days)
+9. Embed and store atomic facts in dedicated LanceDB table
+
+With episodes enabled: boundary detection (hard time gap threshold + LLM-based thematic shift assessment), narrative synthesis, episode narrative stored as searchable note.
+
+**Read path (read.rs, 1,153 lines) — the most complex in the survey:**
+
+1. **Query classification**: Embed query → cosine similarity to 6 mode centroids (Temporal, Recency, Breadth, Computation, Existence, Standard) built from prototype examples. Keyword fallback if embedding fails. Lazy-initialized with 60s timeout.
+2. **Parallel retrieval**: ANN search on notes + ANN search on atomic facts (if enabled). Mode-specific fetch_k multipliers.
+3. **Entity profile auto-include**: Match query terms against known entity profiles, inject with graph bonus.
+4. **Two-level episode retrieval**: ANN results partitioned into episode narratives vs. flat notes. Episode narratives above threshold trigger drilldown → fetch constituent notes, filter active, sort chronologically (turn_index → source_timestamp → created_at).
+5. **Scoring**: Blended similarity + exponential recency decay (configurable half-life). Mode-specific recency weight (Recency mode: 0.60). Graph-aware PageRank-lite bonus (`ln(1 + link_count) * graph_weight`). Foresight boost for notes with active signals.
+6. **Fact-to-note expansion**: High-scoring atomic facts → fetch parent notes → boost into results.
+7. **Episode link traversal**: Follow cross-episode links to find related episode digests.
+8. **Structured digest query**: For Computation/Breadth/Recency modes, search episode digest entities and aggregations via keyword matching. Enables "how many X" answers from pre-computed counts.
+9. **Merge**: profiles → structurally matched digests → linked digests → episode-drilled notes → fact-expanded notes → flat ANN hits. Truncate to top_k.
+10. **Reranker**: Cross-encoder (Jina recommended) or LLM fallback. Raw Jina scores preserved (not normalized) for meaningful abstention threshold. **Abstention gate**: if best relevance < threshold, system says "I don't know" rather than hallucinating. Computation mode skips reorder (preserving ANN order for completeness over precision).
+11. **Contradiction force-retrieval**: Scan results for contradiction dream notes → fetch both source notes → inject as `[CONTRADICTION SOURCE]` with instructions to present both sides. Also checks if retrieved notes are linked to contradiction dreams via graph.
+12. **Chronological ordering**: All notes sorted by turn_index → source_timestamp → created_at before synthesis. "LLMs perform better when notes arrive in chronological sequence, not relevance order."
+13. **Synthesis**: Structured output with chain-of-thought reasoning, provenance markers (FACT/INFERRED/PROFILE/EPISODE/DIGEST), age display, contradiction flagging, abstention signal.
+14. **Insufficient-info retry**: For Computation/Temporal modes, if answer admits insufficient info ("can't determine", "not mentioned"), retry with 3x wider retrieval and no reranker.
+
+**Dream engine (dream/engine.rs, 952 lines):**
+
+7 dream types, all fully implemented:
+
+1. **Deduction** (per-cluster, ≥2 notes): Chain-of-thought reasoning to derive logically necessary conclusions from linked facts. Confidence-gated writing.
+2. **Induction** (cross-cluster, ≥4 notes, sliding windows): Identify repeated patterns across multiple notes, generalize into principles. Reports supporting note count.
+3. **Abduction** (cross-cluster, ≥3 notes, sliding windows): Identify conspicuous gaps in knowledge, hypothesize explanations. Emits foresight signals from hypotheses.
+4. **Consolidation** (per-cluster, ≥3 notes): Build "peer cards" — entity profiles consolidating everything known about a person/project/topic. Creates or incrementally merges profile notes via LLM. Profiles linked to source notes and auto-included during retrieval.
+5. **Contradiction** (per-cluster, ≥2 notes): Detect mutually exclusive facts or tensions. Severity levels (critical/tension/none). Contradiction notes linked to sources for force-retrieval during reads.
+6. **Episode digest** (per-episode): Extract structured metadata — entities with types and counts, date ranges, aggregation summaries, topic sequences. Store as both structured SQLite data and searchable vector note.
+7. **Cross-episode digest** (across ≥3 digests): Track entity timelines across episodes, identify value changes, create inter-episode links (entity_continuity, value_update).
+
+Infrastructure:
+- **Incremental processing**: Cursor-based. Only processes notes created/updated since last dream run, plus their linked neighbors.
+- **Deduplication**: Embeds dream content, checks similarity against existing dream notes of same type. >0.85 similarity = duplicate, skip.
+- **Cluster building**: Union-find over link graph. Only clusters with 2+ notes are dreamed about.
+- **Foresight expiry**: Stale signals expired at start of each dream pass.
+
+**Reranker (rerank.rs, 307 lines):**
+
+Three implementations behind a trait:
+- **JinaReranker**: Jina AI cross-encoder API (`jina-reranker-v3`). True cross-attention scoring. Raw scores preserved (not normalized) — this is deliberate: "Normalizing would destroy the abstention signal."
+- **LlmReranker**: Batched 0-10 scoring prompt. Cheap fallback.
+- **NoopReranker**: Pass-through for testing/cost saving.
+
+**Storage (trait-based, 143 lines of traits):**
+
+VectorStore trait: upsert, find_similar, get, get_many, get_all, delete, count, upsert_fact, find_similar_facts.
+GraphStore trait: links (bidirectional), evolution history, dream state (cursor, runs), foresight signals, episodes, profiles, episode digests, atomic fact metadata, episode links, lifecycle.
+
+Default implementations: LanceDB (lance.rs, 575 lines) for vector + SQLite (sqlite.rs, 730 lines) for graph. SQLite uses WAL mode. Production options (pgvector, Qdrant, Postgres, Dolt) mentioned in README but not implemented.
+
+**Configuration (config.rs, 237 lines):**
+
+Fully configuration-driven with sensible defaults:
+- Per-operation LLM model overrides (write.attributes, dream.abduction, etc.)
+- ReadConfig: recency_weight, recency_half_life_days, graph_weight, hop_depth/decay, abstention_threshold, episode settings, fact retrieval settings
+- WriteConfig: top_k_candidates, similarity_threshold, evolve toggle, max_evolutions_per_note, foresight TTL, atomic facts toggle
+- DreamConfig: write_threshold (confidence gate), max_notes_per_prompt, enabled dream types
+- ForgetConfig: enabled (default false), decay_half_life_days, archive_threshold, sweep_on_dream
+
+**Benchmarks (BEAM 100K, 400 questions, 10 abilities):**
+
+| Ability | Day 2 (51.3%) | Best (57.7%) | Phase Next (53.0%) |
+|---------|---------------|--------------|---------------------|
+| preference_following | 80% | 78% | 70% |
+| abstention | 60% | 68% | 68% |
+| contradiction_resolution | 52% | 67% | 50% |
+| multi_session_reasoning | 53% | 66% | 66% |
+| instruction_following | 54% | 64% | 56% |
+| summarization | 64% | 61% | 64% |
+| information_extraction | 50% | 63% | 58% |
+| temporal_reasoning | 40% | 53% | 39% |
+| knowledge_update | 45% | 40% | 33% |
+| event_ordering | 31% | 36% | 36% |
+
+Reference: Honcho 63.0%. Active development targeting 90%+.
+
+11 benchmark runs tracked with per-ability breakdowns. 243 failures catalogued by root cause: INCOMPLETE_RETRIEVAL 40.7%, FALSE_ABSTENTION 18.1%, WRONG_ORDER 17.3%, CONTRADICTION_MISS 10.7%, JUDGE_NOISE 5.8%, WRONG_COMPUTATION 3.3%, HALLUCINATION 2.9%, FORMAT_MISS 1.2%.
+
+The developer's understanding of failure modes is unusually detailed — failure sub-patterns include "old value returned" (ANN prefers established notes over updates), "specific detail missed" (top_k too narrow), "cross-note computation failed" (both facts not retrieved together).
+
+**Testing (3,754 lines):**
+
+- **eval.rs**: 10 integration scenarios covering linking, evolution, knowledge graphs, temporal reasoning, contradictions. Real LanceDB + SQLite (not mocked).
+- **beam_100k.rs**: Full BEAM 100K harness (798 lines).
+- **bench_beam.rs**: Detailed benchmark runner with per-ability scoring (1,112 lines).
+- **real_eval.rs**: Real LLM evaluation (requires API keys, `#[ignore]`).
+- **MockLlmProvider**: Deterministic responses for offline testing (403 lines).
+
+**What's novel (contributes mechanisms not in any other surveyed system):**
+
+1. **Dream engine with 7 inference types**: No other system performs background deduction, induction, abduction, or contradiction detection. Consolidation exists elsewhere (Codex, Claude Code), but the full inference pipeline is unique. Dreams feed back into retrieval (contradiction force-injection, profile auto-include, foresight boosting).
+2. **Embedding-based query classification**: Learned classifier using prototype centroids rather than regex/keywords. Lazy-initialized, timeout-protected with fallback. No other system classifies queries this way.
+3. **Retroactive evolution with drift protection**: Notes' contexts evolve when new related information arrives, gated by max_evolutions to prevent unbounded growth. The gate signals "needs consolidation" — a clean interaction between write path and dream engine.
+4. **Foresight signals**: Forward-looking predictions with validity windows, extracted during ingestion, emitted by abduction dreams, boosted during retrieval, expired during dream passes. No other system models predictions as first-class objects.
+5. **Atomic facts with per-fact embeddings**: Fine-grained retrieval alongside coarse note retrieval. Parallel ANN search on both tables, fact hits expanded to parent notes with boost. No other system does dual-granularity vector search.
+6. **Episode digests with structured metadata**: Pre-computed entities (typed, counted, with latest values), date ranges, aggregation entries (label + count + items), topic sequences. Enables structured matching for Computation/Breadth queries — answers "how many X" from pre-computed counts rather than re-counting from notes.
+7. **Cross-episode entity timelines**: Dream engine tracks entity value changes across episodes, creates typed inter-episode links (entity_continuity, value_update). No other system in the survey builds cross-session entity evolution graphs.
+8. **Insufficient-info retry**: For Computation/Temporal modes where missing specific facts is the failure mode, detects "I don't know" in the answer and retries with 3x wider retrieval. Pragmatic self-healing.
+
+**What's missing / limitations:**
+
+- **No MCP server, no agent integration**: Pure library. karta-cli exists as a stub (`fn main() {}`). No Claude Code plugin, no MCP, no HTTP API.
+- **Forgetting not wired**: ForgetConfig + decay math exist. `last_accessed_at` updated on retrieval. But no sweep function is called — ForgetConfig.enabled defaults to false and no code path invokes archival.
+- **No write gating**: No junk filter, no content quality checks, no semantic dedup on the write path. Evolution gating is the only write-side protection.
+- **No team/shared memory**: Single-user, single-machine.
+- **No correction/versioning semantics**: Evolution updates context in-place. NoteStatus lifecycle exists (Deprecated { by }, Superseded { by }) but no code automates status transitions. No append-only correction chains.
+- **No security hardening**: No injection scanning, no secret detection, no auth.
+- **Production storage not implemented**: VectorStore/GraphStore traits exist for pgvector/Qdrant/Postgres/Dolt but only LanceDB/SQLite are built.
+- **Phase Next regression**: Atomic facts + episode digests caused a 4.7pp drop (57.7% → 53.0%) — dream/digest/fact notes polluting direct ANN results. Partially fixed by filtering, but still below pre-Phase-Next best.
+- **Single developer, v0.1.0**: Early stage. Active development but no community, no CI/CD.
+
+**Comparison to existing ANALYSIS.md systems:**
+
+| Mechanism | Karta | Closest existing system |
+|-----------|-------|------------------------|
+| Dream engine (7 types) | Unique — deduction, induction, abduction, contradiction, consolidation, episode digest, cross-episode digest | No equivalent. Codex/Claude Code consolidate; Gigabrain does nightly quality sweeps; neither infers new knowledge |
+| Retroactive evolution | Context evolve with drift gate | OpenViking updates L1 on write; Codex Phase 2 consolidation |
+| Query classification | Embedding centroids (6 modes) | ByteRover tiered retrieval; Claude Code LLM routing; none use embedding-based classification |
+| Cross-encoder reranking | Jina + LLM + noop (trait-based) | widemem-ai mentions reranking; no one else implements cross-encoder integration |
+| Provenance tracking | 6-variant enum with source IDs | Gigabrain event-sourcing; Codex citation tracking |
+| Foresight signals | Predictions with TTL, boosted in retrieval | Unique in survey |
+| Atomic fact retrieval | Per-fact embeddings, parallel search, parent expansion | Codex per-rollout memories; no dual-granularity search |
+| Episode digests | Structured metadata (entities, aggregations, topic sequences) | obra/episodic-memory summaries (less structured) |
+| Multi-hop graph traversal | BFS with depth + decay | Gigabrain co-occurrence graph; OpenViking filesystem traversal |
+| Knowledge graph | Bidirectional links with reasons, union-find clustering | KMS-Agent (richer schema but no traversal); Gigabrain (co-occurrence, not semantic) |
+| Write path sophistication | Parallel embed + ANN + LLM link + evolution + facts | Gigabrain multi-gate; Codex two-phase batch |
+| Forgetting | Defined (config + decay math) but not wired | MIRA-OSS activity-day decay; Codex usage-based retention |
+| Benchmark rigor | BEAM 100K (400q, 10 abilities, 11 runs, 243 failure catalog) | Codex/Claude Code have internal evals; MemPalace has scripts but inflated claims; Karta's is the most transparent self-assessment |
+
+**Verdict:** **Promoted to standalone analysis.** Karta contributes multiple genuinely novel mechanisms to the survey — the 7-type dream engine with inference feedback into retrieval, embedding-based query classification, retroactive evolution with drift protection, foresight signals, dual-granularity fact retrieval, structured episode digests, and cross-episode entity timelines. The code quality is high (proper Rust, trait-based architecture, real tests against real storage), the developer's self-assessment is unusually rigorous (243 failures catalogued by root cause), and the benchmark results are honest rather than inflated. At 57.7% BEAM vs 63% Honcho, it's not yet top-performing, but the architectural mechanisms are the most interesting in the folk-system space and several are not present in any other surveyed system including the first-party ones. Standalone analysis: `ANALYSIS-karta.md`.
 
 ---
 

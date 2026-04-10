@@ -46,6 +46,13 @@ noted below.
 - **License:** Apache 2.0
 - **Note:** Python memory SDK (~3.5K LOC) with importance+decay scoring, hierarchical fact→summary→theme tiers, YMYL domain protection, batch conflict resolution, self-supervised extraction data collection, MCP server, and uncertainty-aware retrieval. Added as submodule. Reviewed but not promoted — convergent patterns, no novel architectural mechanisms vs existing ANALYSIS.md coverage.
 
+### karta
+- **Source:** https://github.com/rohithzr/karta
+- **Reviewed commit:** `c203059425717e0c0844acf8f34242682756e0c1`
+- **Review date:** 2026-04-09
+- **License:** MIT
+- **Note:** Rust (~10.4K LOC) agentic memory library with Zettelkasten-inspired knowledge graph, 7-type dream engine (deduction, induction, abduction, consolidation, contradiction, episode digest, cross-episode digest), embedding-based query classification (6 modes), retroactive context evolution, cross-encoder reranking, multi-hop BFS traversal, atomic fact decomposition, foresight signals. BEAM 100K: 57.7%. Added as submodule. Promoted to standalone analysis.
+
 ### openclaw-memory-architecture
 - **Source:** https://github.com/coolmanns/openclaw-memory-architecture
 - **Commit:** `5a7cb84969e3e34242b3e0e32949882d18ac2966`

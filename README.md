@@ -95,6 +95,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | [ANALYSIS-codex-memory](ANALYSIS-codex-memory.md) | [openai/codex](https://github.com/openai/codex) | **Codex memory subsystem (OpenAI)**: first-party open-source coding agent; two-phase async pipeline (gpt-5.1-codex-mini extraction → gpt-5.3-codex consolidation) + SQLite-backed job coordination (leases/heartbeats/watermarks) + progressive disclosure layout (memory_summary → MEMORY.md → rollout_summaries → skills) + skills as procedural memory + usage-based citation-driven retention + thread-diff incremental forgetting + ~1,400 lines extraction/consolidation prompts; no vector search, no team memory, no real-time extraction |
 | [ANALYSIS-google-always-on-memory-agent](ANALYSIS-google-always-on-memory-agent.md) | `vendor/always-on-memory-agent/` | Official Google ADK sample: always-on daemon with multimodal ingestion (27 file types via Gemini 3.1 Flash-Lite), periodic LLM consolidation, SQLite storage, HTTP API + Streamlit dashboard; no retrieval/search (recency scan LIMIT 50), no decay/dedup/versioning; useful as ADK orchestration reference and multimodal ingestion pattern |
 | [ANALYSIS-supermemory](ANALYSIS-supermemory.md) | `references/supermemory.md` + `vendor/supermemory/` | Memory-as-a-service startup: memory versioning (linked-list chains via parentMemoryId/rootMemoryId/isLatest), typed relationship ontology (updates/extends/derives), static/dynamic profile synthesis API, time-based forgetting with audit trail, multi-model embedding columns, MemoryBench framework; **open-source repo is SDK/frontend only — core engine logic is proprietary hosted backend** |
+| [ANALYSIS-karta](ANALYSIS-karta.md) | `vendor/karta/` | **Karta (rohithzr)**: Rust (~10.4K LOC) agentic memory library with Zettelkasten-inspired knowledge graph, 7-type dream engine (deduction/induction/abduction/consolidation/contradiction/episode digest/cross-episode digest) with inference feedback into retrieval, embedding-based query classification (6 modes), retroactive context evolution with drift protection, cross-encoder reranking with abstention, multi-hop BFS traversal, atomic fact decomposition with per-fact embeddings, foresight signals with TTL, structured episode digests; BEAM 100K: 57.7% with 243-failure root cause catalog |
 
 ## Paper Deep Dive Analyses (Academic / Industry)
 
@@ -150,6 +151,7 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | supermemory docs | https://supermemory.ai/docs |
 | supermemory repo | https://github.com/supermemoryai/supermemory |
 | mempalace repo | https://github.com/milla-jovovich/mempalace |
+| karta repo | https://github.com/rohithzr/karta |
 
 ## File Tree
 
@@ -168,6 +170,7 @@ agentic-memory/
 ├── ANALYSIS-codex-memory.md
 ├── ANALYSIS-google-always-on-memory-agent.md
 ├── ANALYSIS-supermemory.md
+├── ANALYSIS-karta.md               ← Karta: Rust agentic memory library with dream engine
 ├── ANALYSIS-mempalace.md           ← not in ANALYSIS.md (claims-vs-code issues); see REVIEWED.md
 ├── REVIEWED.md                        ← triage log (examined but not promoted to ANALYSIS)
 ├── PUNCHLIST-academic-industry.md     ← tracking checklist for paper deep dives
@@ -231,6 +234,22 @@ agentic-memory/
     │   ├── scripts/                   ← init, seed, search, ingest, decay, benchmark, telemetry
     │   ├── templates/                 ← starter files (active-context, gating-policies, etc.)
     │   └── plugin-graph-memory/       ← OpenClaw plugin (JS)
+    │
+    ├── karta/                         ← github.com/rohithzr/karta (submodule, MIT)
+    │   ├── Cargo.toml                ← workspace: karta-core + karta-cli
+    │   ├── crates/
+    │   │   └── karta-core/           ← Core engine (~6.7K LOC Rust)
+    │   │       ├── src/
+    │   │       │   ├── note.rs       ← MemoryNote, Provenance, NoteStatus, AtomicFact, Episode, EpisodeDigest
+    │   │       │   ├── write.rs      ← Write path: index, link, evolve, foresight, facts
+    │   │       │   ├── read.rs       ← Read path: classify, search, traverse, rerank, synthesize
+    │   │       │   ├── rerank.rs     ← Jina/LLM/noop rerankers
+    │   │       │   ├── dream/        ← Dream engine: 7 inference types
+    │   │       │   ├── store/        ← LanceDB + SQLite implementations
+    │   │       │   └── llm/          ← Provider trait + OpenAI + mock + prompts
+    │   │       └── tests/            ← eval, beam_100k, bench_beam (~3.8K LOC)
+    │   ├── findings.md               ← BEAM 100K detailed failure analysis
+    │   └── plan.md                   ← Experiment plan targeting 90%+
     │
     ├── always-on-memory-agent/        ← GoogleCloudPlatform/generative-ai (official ADK sample)
     │   ├── agent.py                  ← ADK multi-agent daemon (ingest/consolidate/query)

@@ -22,3 +22,6 @@
 [submodule "vendor/byterover-cli"]
 	path = vendor/byterover-cli
 	url = https://github.com/campfirein/byterover-cli.git
+[submodule "vendor/karta"]
+	path = vendor/karta
+	url = https://github.com/rohithzr/karta.git
