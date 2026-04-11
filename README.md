@@ -79,6 +79,8 @@ Root-level critical analyses intended for synthesis work. These reference the su
 |----------|----------|-------|
 | [ANALYSIS](ANALYSIS.md) | `ANALYSIS-*.md` + shisad docs + Mem0/Letta baselines | Cross-system comparison (techniques + memory types), plus mapping to shisad and “traditional” RAG-ish memory |
 | [ANALYSIS-academic-industry](ANALYSIS-academic-industry.md) | paper `ANALYSIS-arxiv-*.md` + shisad plan | Academic/industry synthesis: benchmarks vs systems vs attacks, with “what’s missing in shisad” framing |
+| [Benchmarks best practices](benchmarks/README.md) | Public disputes, audits, our analysis | Known pitfalls, metric confusion, dataset quality issues, per-benchmark limitations |
+| [MELT benchmark design](https://github.com/shisa-ai/MELT) | ANALYSIS.md systems + Reality Check epistemic docs | **Memory Evaluation for Lifecycle Testing** — session-replay benchmark testing full memory lifecycle (decay, consolidation, contradiction, core stability, inference) at 6 scale tiers over simulated time. Separate repo; draft. |
 
 | Analysis | Based on | Focus |
 |----------|----------|-------|

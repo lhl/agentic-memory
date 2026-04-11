@@ -4,6 +4,8 @@ Best practices, known pitfalls, and lessons learned from benchmarking AI agent m
 
 **TL;DR:** The agentic memory benchmarking space is immature and riddled with methodological problems. Headline numbers are frequently incomparable across systems due to metric confusion, dataset quality issues, and non-reproducible methodology. Read benchmark *code*, not just headline numbers.
 
+**See also: [MELT — Memory Evaluation for Lifecycle Testing](https://github.com/shisa-ai/MELT)** — our design for a benchmark that actually tests memory lifecycle mechanics (decay, consolidation, contradiction resolution, core memory stability) rather than static retrieval. Separate repo; draft status.
+
 ## Table of Contents
 
 - [The Core Problem](#the-core-problem)
