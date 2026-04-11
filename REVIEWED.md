@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-04-09
+last_updated: 2026-04-11
 type: triage
 related:
   - ANALYSIS.md
@@ -16,6 +16,7 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-11 | GBrain (garrytan) | [garrytan/gbrain](https://github.com/garrytan/gbrain) | **Not promoted.** Personal knowledge brain CLI/MCP/library (TypeScript, ~6.8K LOC, Bun) — Postgres+pgvector retrieval layer for markdown wikis. Contract-first 30-operation API, 3-tier chunking (recursive/semantic/LLM-guided), RRF hybrid search (keyword+vector+multi-query expansion), 4-layer dedup, typed links with recursive CTE graph traversal, version history, 3-backend file migration, RLS. Well-engineered retrieval infrastructure, but **not a memory system** — no extraction pipeline, no consolidation engine, no decay/forgetting, no knowledge graph intelligence in code. The "dream cycle," entity detection, and enrichment are prompt instructions in fat markdown skill files for an external agent to execute, not implemented functionality. 1 squash commit, v0.5.0, MIT. |
 | 2026-04-09 | Karta (rohithzr) | [rohithzr/karta](https://github.com/rohithzr/karta) | **PROMOTED to standalone analysis.** Rust (~10.4K LOC) agentic memory library with Zettelkasten-inspired knowledge graph, 7-type dream engine (deduction, induction, abduction, consolidation, contradiction, episode digest, cross-episode digest), embedding-based query classification (6 modes), retroactive context evolution with drift protection, cross-encoder reranking with abstention, multi-hop BFS traversal, atomic fact decomposition, episode digests with structured metadata, foresight signals with TTL. BEAM 100K: 57.7% (vs 63% Honcho). 42 commits, MIT, single developer, v0.1.0. Most architecturally sophisticated single-developer memory system in the survey. See `ANALYSIS-karta.md`. |
 | 2026-04-07 | KMS-Agent (haih-net) | [haih-net/agent](https://github.com/haih-net/agent) | **Not promoted.** Full-stack agent platform (Next.js + n8n + Prisma/Supabase) with an epistemic belief-graph KB (10 tables: concepts, n-ary facts with confidence/status/temporal validity, first-class contradictions, knowledge spaces with per-space projections, identity merge/split), typed MindLogs (12 types, append-only), and a biological reflex/reaction experience system with pre-turn reflection. Architecturally interesting schema design, but all memory intelligence is delegated to LLM tool calls — no vector search, no automated extraction, no graph traversal, no retrieval optimization. In-memory AgentWorld tree not persisted. Effectiveness loop for reflexes incomplete. |
 | 2026-04-07 | MemPalace (milla-jovovich) | [milla-jovovich/mempalace](https://github.com/milla-jovovich/mempalace) | **Not promoted.** Method-of-loci spatial metaphor (Wings/Rooms/Halls/Tunnels) over ChromaDB + SQLite KG, 4-layer progressive loading (~170 token wake-up), rule-based AAAK compression, 20-tool MCP server. Spatial metaphor is genuinely novel and worth tracking. **However, multiple README claims are false**: "contradiction detection" is not implemented, "zero information loss" compression drops 12.4pp on LongMemEval, headline 96.6% is just ChromaDB vector search. 2 days old, 7 commits. Standalone deep dive: `ANALYSIS-mempalace.md`. Re-examine if claims-vs-code gap closes. |
@@ -36,6 +37,131 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-04-11 — GBrain (garrytan)
+
+**Source:** https://github.com/garrytan/gbrain
+**Stats:** 1 squash commit, TypeScript (Bun), MIT license, v0.5.0, created by Garry Tan (Y Combinator CEO)
+**Stack:** Bun + Postgres + pgvector + pg_trgm + OpenAI (embeddings) + Anthropic (query expansion) + MCP SDK + S3/Supabase Storage
+**LOC:** ~6,808 src + ~4,303 test + ~781 skills + ~3,934 docs
+
+**What it is:** A personal knowledge brain — a CLI, MCP server, and TypeScript library for indexing, searching, and managing a markdown knowledge base at scale. Designed around the "compiled truth + append-only timeline" pattern: above the `---` separator is the current best understanding (rewritten as evidence changes), below is the evidence trail (never edited). GBrain is the retrieval/indexing layer; an external AI agent (OpenClaw, Hermes, or any MCP client) provides the intelligence for entity detection, enrichment, and maintenance.
+
+Garry Tan reports using it with 10,000+ markdown files, 3,000+ people dossiers, 13 years of calendar data, and 5,800+ Apple Notes — a real deployment at genuine scale.
+
+**Data model (Postgres, 12 tables):**
+
+- **pages**: slug (unique, lowercased), type (9 types: person/company/deal/yc/civic/project/concept/source/media), title, compiled_truth, timeline, frontmatter (JSONB), content_hash (SHA-256 idempotency), search_vector (trigger-based tsvector with A/B/C weighting: title/compiled_truth/timeline+timeline_entries)
+- **content_chunks**: page_id FK, chunk_text, chunk_source (compiled_truth | timeline), embedding (vector 1536d), model, token_count. HNSW index on embeddings (cosine).
+- **links**: from_page_id/to_page_id with link_type (knows/invested_in/works_at/founded/references) and context. Bidirectional query support.
+- **tags**: many-to-many, page_id + tag
+- **timeline_entries**: structured events (date, source, summary, detail). Trigger-updates parent page's search_vector on change.
+- **page_versions**: snapshot history (compiled_truth + frontmatter + timestamp). Auto-snapshotted before updates.
+- **raw_data**: sidecar JSONB from external APIs (page_id + source, upsert semantics)
+- **files**: binary attachments with storage_path, content_hash, mime_type. FK to pages.slug with ON UPDATE CASCADE.
+- **ingest_log**: audit trail of import operations
+- **config**: brain-level settings (embedding model, chunk strategy)
+- **access_tokens**: bearer tokens for remote MCP (UUID, token_hash, scopes, revocation)
+- **mcp_request_log**: usage logging for remote MCP requests
+
+**Contract-first operations (operations.ts, 666 lines):**
+
+Single source of truth for CLI, MCP, and tools-json. 30 operations: page CRUD (get/put/delete/list with fuzzy slug resolution via pg_trgm), keyword search (tsvector), hybrid query (vector+keyword+RRF+expansion), tags, links (add/remove/backlinks/graph traverse), timeline (add/get), stats/health, versions (history/revert), sync, raw data, slug resolution, chunks, ingest log, file ops (list/upload/url). All operations share a typed `OperationContext` with engine, config, logger, dryRun.
+
+**Write path (import-file.ts, 125 lines):**
+
+1. Parse markdown (frontmatter + compiled_truth/timeline split at `---` separator)
+2. SHA-256 hash of all fields → skip if unchanged (idempotent)
+3. Chunk compiled_truth + timeline via recursive chunker (default)
+4. Optionally embed chunks via OpenAI text-embedding-3-large (1536d, batch 100, retry with exponential backoff)
+5. Transaction: version snapshot → putPage (upsert) → tag reconciliation (remove stale, add new) → upsert chunks (batch multi-row INSERT ON CONFLICT, preserves existing embeddings via COALESCE)
+
+**Read path — hybrid search (hybrid.ts, 86 lines):**
+
+1. Multi-query expansion via Claude Haiku (tool_use, 2 alternative phrasings, skip queries <3 words, non-fatal failure)
+2. Parallel: keyword search (websearch_to_tsquery, ts_rank, search_vector) + embed all query variants
+3. Vector search for each embedding (HNSW cosine, 1-distance as score)
+4. RRF fusion: `score = sum(1/(60 + rank))` across all result lists
+5. 4-layer dedup:
+   - Layer 1: Top 3 chunks per page
+   - Layer 2: Jaccard word-set similarity >0.85 removal (proxy for cosine — no actual embeddings at dedup time)
+   - Layer 3: Type diversity cap (60% max per type)
+   - Layer 4: Per-page chunk cap (2)
+6. Stale alerts: flag pages where `updated_at < max(timeline_entries.created_at)`
+
+**Chunking (3 strategies, ~714 lines total):**
+
+- **Recursive** (default for import): 5-level delimiter hierarchy (paragraphs → lines → sentences → clauses → words), 300-word chunks, 50-word sentence-aware overlap, greedy merge to 1.5× target. Lossless reassembly invariant.
+- **Semantic**: Split sentences → embed each → adjacent cosine similarities → Savitzky-Golay smoothing (window=5, poly=3) → local minima as topic boundaries → group → recursively split oversized groups. Full Gauss-Jordan matrix inversion for the SG filter coefficients. Falls back to recursive on any failure.
+- **LLM-guided**: Pre-split into 128-word candidates → sliding window of 5 → Claude Haiku identifies topic shifts → merge at split points. 3 retries per window. Most expensive, best results.
+
+**Graph traversal (postgres-engine.ts):**
+
+Recursive CTE with configurable depth (default 5). Follows outgoing links, collects slug/title/type/depth + per-node links as JSONB aggregate. DISTINCT to avoid cycles.
+
+**File migration lifecycle (files.ts, 485 lines):**
+
+3-stage: mirror (copy to cloud, local untouched) → redirect (local replaced with YAML breadcrumbs) → clean (breadcrumbs removed). Reversible via restore until clean. File resolver: local → .redirect breadcrumb → .supabase marker → cloud URL. Backends: S3-compatible, Supabase Storage, local filesystem.
+
+**MCP server (server.ts, 91 lines):**
+
+Auto-generated from operations — ListTools maps operation params to JSON Schema, CallTool dispatches to operation handlers. Stdio transport. Also deployed as Supabase Edge Function for remote access (with bearer token auth).
+
+**Skills (781 lines across 7 markdown files):**
+
+Fat markdown instruction files that tell an AI agent HOW to use gbrain: ingest (meeting transcripts → entity detection → brain page updates), query (3-layer search with synthesis), maintain (find contradictions, stale pages, orphans), enrich (external API data), briefing (daily meeting prep), migrate (Obsidian/Notion/Logseq/Roam), setup (auto-provision + import).
+
+The "dream cycle" is described in the skillpack as a cron job pattern: entity sweep → enrich thin spots → fix broken citations → consolidate memory. In OpenClaw it ships as DREAMS.md; for Hermes it's a cron command. **No dream logic exists in gbrain's codebase** — it's an instruction for an external agent.
+
+**What's well-engineered:**
+
+- **Contract-first design**: Single `operations.ts` generates CLI, MCP, and tools-json — structural parity enforced by tests. Clean separation of concerns.
+- **Hybrid search with RRF**: Genuine two-path retrieval (keyword + vector) with principled fusion. Multi-query expansion via Haiku is a nice touch. Stale-page alerting in search results.
+- **3-tier chunking**: The semantic chunker with Savitzky-Golay smoothing is real signal processing, not a toy. LLM-guided chunking for high-value content is pragmatic tiering.
+- **Idempotent everything**: Content-hash-based skip on import, upsert semantics everywhere, COALESCE to preserve existing embeddings on re-import without re-embedding.
+- **Security**: RLS on all tables (conditional on BYPASSRLS privilege), bearer token auth for remote MCP, content-hash dedup, path traversal protection on slugs.
+- **Test coverage**: 20 unit test files + 4 E2E test files, parity tests for CLI/MCP/tools-json structural identity. Docker-based E2E against real Postgres+pgvector.
+
+**Why not promoted — it's not a memory system:**
+
+GBrain is a **retrieval/indexing layer for human-curated markdown**, not an agentic memory system in the sense this survey covers. The critical distinction:
+
+1. **No extraction pipeline**: There is no code that reads conversations, documents, or sessions and extracts facts, entities, or memories. Import reads markdown files verbatim. The `importFromContent` pipeline is: parse frontmatter → hash → chunk → embed → store. No LLM extraction, no fact decomposition, no entity recognition.
+
+2. **No consolidation engine**: No code merges, summarizes, or reorganizes memories over time. The "dream cycle" and "compiled truth rewriting" are described only as skill prompts — instructions for an external agent. Gbrain's own code never rewrites compiled truth, never consolidates timeline entries, never resolves contradictions.
+
+3. **No decay or forgetting**: No importance scoring, no access-frequency tracking, no TTL, no archival. All pages are equally weighted forever. The `page_versions` table stores snapshots but there's no pruning, no retention policy, no usage-based selection.
+
+4. **No knowledge graph intelligence in code**: Links exist (typed, bidirectional, with graph traversal), but no code creates links automatically, no entity resolution, no co-occurrence detection, no link inference. Link creation is manual (via CLI/MCP tool call or agent skill prompt).
+
+5. **No write gating**: No junk filter, no quality heuristics, no semantic dedup on the write path. Content-hash dedup (exact match) only.
+
+6. **All "intelligence" is in skill prompts**: Entity detection, enrichment, dream cycles, compiled truth maintenance, contradiction detection, citation hygiene — all described in `skills/*.md` and `docs/GBRAIN_SKILLPACK.md` as instructions for an external AI agent. This is the same architecture as giving Claude Code a detailed CLAUDE.md file — valuable in practice, but the intelligence is in the LLM, not in the system.
+
+**Comparison to existing ANALYSIS.md systems:**
+
+| Mechanism | GBrain | Closest existing system |
+|-----------|--------|------------------------|
+| Hybrid search (keyword + vector + RRF) | Implemented, with multi-query expansion | Standard across most promoted systems |
+| 4-layer dedup | Type diversity + per-page cap + text similarity | Gigabrain (type-aware thresholds), Claude Code (LLM routing) |
+| 3-tier chunking | recursive/semantic (SG smoothing)/LLM-guided | Unique chunking sophistication, but chunking is a retrieval concern, not memory |
+| Version history | Snapshot before every update | Codex (thread-diff), Supermemory (version chains) |
+| Graph traversal | Recursive CTE, configurable depth | Karta (BFS + dream-aware), Gigabrain (co-occurrence) |
+| Extraction pipeline | None in code (skill prompts only) | Every promoted system has automated extraction |
+| Consolidation | None in code (skill prompts only) | Codex (Phase 2), Claude Code (auto dream), Gigabrain (nightly sweep) |
+| Decay/forgetting | None | MIRA-OSS, Codex, memv all implement decay |
+| Write gating | Content-hash dedup only | Gigabrain (30+ junk patterns + semantic dedup), widemem-ai (YMYL + conflict resolution) |
+
+**What's interesting for our survey (even though not promoted):**
+
+- The **compiled truth + timeline** knowledge model is a clean articulation of the "living summary + evidence trail" pattern. Most memory systems implement this implicitly; GBrain names it explicitly and builds the schema around it.
+- The **contract-first operation design** (one definition generates CLI + MCP + JSON schema) is good infrastructure engineering worth noting for any system that needs multiple interfaces.
+- The **skillpack** (docs/GBRAIN_SKILLPACK.md) is the most detailed published playbook for how a production AI agent should interact with a knowledge base — brain-agent loop, entity detection protocol, enrichment pipeline, dream cycle, cron schedule. As a *pattern document*, it's more valuable than the code.
+- **Real-world scale validation**: 10K+ files, 3K+ people, 13 years of data. This is one of very few systems in our survey with evidence of sustained personal use at scale.
+
+**Verdict:** **Not promoted.** GBrain is well-engineered retrieval infrastructure for markdown knowledge bases — the hybrid search, chunking pipeline, and contract-first API design are solid. But it contributes no novel memory mechanisms to the survey. The system delegates all memory intelligence (extraction, consolidation, entity detection, dream cycles) to external AI agents via prompt instructions. In our taxonomy, it's a **storage + retrieval backend** that an agentic memory system could build on top of, not an agentic memory system itself. The skillpack is worth reading as a production agent-memory playbook, but the code doesn't implement the patterns it describes. Analogous to Supabase being good infrastructure without being a memory system.
 
 ---
 
