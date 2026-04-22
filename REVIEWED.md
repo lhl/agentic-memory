@@ -1,6 +1,6 @@
 ---
 title: "Reviewed — Triage Log for Examined Systems"
-last_updated: 2026-04-11
+last_updated: 2026-04-22
 type: triage
 related:
   - ANALYSIS.md
@@ -16,6 +16,7 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 
 | Date | System | Source | Verdict |
 |------|--------|--------|---------|
+| 2026-04-22 | Memtrace (syncable-dev) | [syncable-dev/memtrace-public](https://github.com/syncable-dev/memtrace-public) | **Not promoted.** Proprietary Rust-binary MCP server marketed as "memory layer for coding agents." Bi-temporal AST code knowledge graph over ArcadeDB (graph+doc+vector, Bolt), Tree-sitter parsers (~17 langs), Tantivy BM25 + vector + RRF, Louvain/PageRank/betweenness in-DB. Nodes = functions/classes/interfaces/types/API endpoints; edges = CALLS/IMPLEMENTS/IMPORTS/EXPORTS/CONTAINS. Six scoring modes (compound, impact `in_deg^0.7·(1+out_deg)^0.3`, novel, recent, directional, overview) + cross-service HTTP API topology. Ships 16 MCP skills + binary via `npm install -g memtrace`. Custom code-retrieval benchmarks (mempalace, django, scratch_fixture) vs ChromaDB/GitNexus/CodeGraphContext: Acc@1 96.7% exact-symbol, 42.5ms p95 incremental, loses −8.2pp to ChromaDB on NL intent retrieval (honestly disclosed). **Not an agentic memory system** — it's a code intelligence graph competing with GitNexus/CGC; "temporal" = git code-history not interaction memory; no extraction/consolidation/decay/user-modeling; core engine closed; no LongMemEval/LoCoMo/BEAM. Public repo ships only skills + benchmark harness + proprietary EULA. 47 stars, 11 days old. |
 | 2026-04-11 | GBrain (garrytan) | [garrytan/gbrain](https://github.com/garrytan/gbrain) | **Not promoted.** Personal knowledge brain CLI/MCP/library (TypeScript, ~6.8K LOC, Bun) — Postgres+pgvector retrieval layer for markdown wikis. Contract-first 30-operation API, 3-tier chunking (recursive/semantic/LLM-guided), RRF hybrid search (keyword+vector+multi-query expansion), 4-layer dedup, typed links with recursive CTE graph traversal, version history, 3-backend file migration, RLS. Well-engineered retrieval infrastructure, but **not a memory system** — no extraction pipeline, no consolidation engine, no decay/forgetting, no knowledge graph intelligence in code. The "dream cycle," entity detection, and enrichment are prompt instructions in fat markdown skill files for an external agent to execute, not implemented functionality. 1 squash commit, v0.5.0, MIT. |
 | 2026-04-09 | Karta (rohithzr) | [rohithzr/karta](https://github.com/rohithzr/karta) | **PROMOTED to standalone analysis.** Rust (~10.4K LOC) agentic memory library with Zettelkasten-inspired knowledge graph, 7-type dream engine (deduction, induction, abduction, consolidation, contradiction, episode digest, cross-episode digest), embedding-based query classification (6 modes), retroactive context evolution with drift protection, cross-encoder reranking with abstention, multi-hop BFS traversal, atomic fact decomposition, episode digests with structured metadata, foresight signals with TTL. BEAM 100K: 57.7% (vs 63% Honcho). 42 commits, MIT, single developer, v0.1.0. Most architecturally sophisticated single-developer memory system in the survey. See `ANALYSIS-karta.md`. |
 | 2026-04-07 | KMS-Agent (haih-net) | [haih-net/agent](https://github.com/haih-net/agent) | **Not promoted.** Full-stack agent platform (Next.js + n8n + Prisma/Supabase) with an epistemic belief-graph KB (10 tables: concepts, n-ary facts with confidence/status/temporal validity, first-class contradictions, knowledge spaces with per-space projections, identity merge/split), typed MindLogs (12 types, append-only), and a biological reflex/reaction experience system with pre-turn reflection. Architecturally interesting schema design, but all memory intelligence is delegated to LLM tool calls — no vector search, no automated extraction, no graph traversal, no retrieval optimization. In-memory AgentWorld tree not persisted. Effectiveness loop for reflexes incomplete. |
@@ -37,6 +38,95 @@ If a system later matures or becomes relevant, it can be promoted — but the tr
 | 2026-03-07 | Gigabrain | [legendaryvibecoder/gigabrain](https://github.com/legendaryvibecoder/gigabrain) | **Promoted to ANALYSIS.md.** Event-sourced storage, multi-gate write pipeline, type-aware semantic dedup, class-budgeted recall. See detailed notes below and ANALYSIS.md. |
 | 2026-03-07 | Malaiac/claude (short-term-memory + diary) | [Malaiac/claude](https://github.com/Malaiac/claude) | **Convergent MEMORY.md pattern.** Working-memory skill (`current-context.md`) + append-only monthly journal. Nice ergonomics but no code, no retrieval, no storage beyond flat files. |
 | 2026-03-07 | episodic-memory (obra) | [obra/episodic-memory](https://github.com/obra/episodic-memory) | **Well-built episodic retrieval layer.** Claude Code plugin: sync conversations → local embeddings (Transformers.js) → SQLite + sqlite-vec → semantic search via MCP. Hierarchical summarization, search subagent. No fact extraction, no consolidation, no decay. |
+
+---
+
+## 2026-04-22 — Memtrace (syncable-dev)
+
+**Source:** https://github.com/syncable-dev/memtrace-public
+**Homepage:** https://memtrace.io
+**Stats:** 47 stars, 3 forks, created 2026-04-11, pushed 2026-04-22. Proprietary EULA (not open source). Primary language in the public repo = Python (benchmark harness); the actual engine is a closed Rust binary distributed via npm.
+**Distribution:** `npm install -g memtrace` ships binary + 12–16 skills + MCP server; auto-registers with Claude Code / Claude Desktop / Cursor v2.4+. ArcadeDB auto-managed via Docker.
+**Public repo contents:** README + LICENSE (EULA) + `.claude-plugin/marketplace.json` + `plugins/memtrace-skills/` (16 skill dirs with `SKILL.md` only) + `benchmarks/` (Python harness, adapters, corpora pointers, results JSON). No engine source.
+
+**What it is:** A **code intelligence MCP server** marketed as "the missing memory layer for coding agents." Builds a bi-temporal AST knowledge graph over the user's codebase(s); exposes symbol lookup, callers/callees, blast-radius impact, temporal evolution, and cross-service HTTP API topology to coding agents (Claude Code, Cursor). Positioned directly against GitNexus and CodeGraphContext (CGC), not against conversational memory systems.
+
+**Stack:**
+
+- **Core runtime:** Rust (closed binary)
+- **Graph DB:** ArcadeDB (multi-model — graph + document + vector), accessed via Bolt. Pinned by image digest in benchmark `versions.toml`.
+- **Full-text:** Tantivy BM25 with Levenshtein fuzzy matching
+- **AST:** Tree-sitter grammars — Rust, Go, TypeScript, JavaScript, Python, Java, C, C++, C#, Swift, Kotlin, Ruby, PHP, Dart, Scala, Perl, plus others
+- **Graph algorithms:** PageRank, betweenness centrality, Louvain communities — all run as in-database procedures
+- **Protocol:** MCP (stdio); skills delivered as Claude/Cursor plugin
+- **Deterministic ingest:** no LLM calls on the write path; README claims ~1,500 files in 1.2–1.8s for $0
+
+**Data model (from README + skills, not source):**
+
+- **Nodes:** functions, classes, interfaces, types, API endpoints
+- **Edges:** `CALLS`, `IMPLEMENTS`, `IMPORTS`, `EXPORTS`, `CONTAINS`
+- **Bi-temporal:** every symbol carries full version history (valid time + transaction time implied by "bi-temporal" label — README doesn't fully unpack the pair)
+- **Cross-repo:** HTTP call graph between repos, detecting which services call which endpoints
+
+**Six temporal scoring modes** (surfaces different "what changed / mattered" questions to agents):
+
+| Mode | Formula / purpose |
+|------|-------------------|
+| `compound` | General-purpose weighted blend |
+| `impact` | Blast radius: `in_degree^0.7 × (1 + out_degree)^0.3` |
+| `novel` | Anomaly / surprise scoring |
+| `recent` | Exponential time decay |
+| `directional` | Asymmetric added vs. removed |
+| `overview` | Module-level summary |
+
+Uses "Structural Significance Budgeting" to surface changes covering ≥80% of total significance.
+
+**Bundled MCP skills (16):** `memtrace-first`, `memtrace-index`, `memtrace-search`, `memtrace-graph`, `memtrace-relationships`, `memtrace-impact`, `memtrace-evolution`, `memtrace-cochange`, `memtrace-api-topology`, `memtrace-codebase-exploration`, `memtrace-episode-replay`, `memtrace-incident-investigation`, `memtrace-change-impact-analysis`, `memtrace-refactoring-guide`, `memtrace-quality`, `memtrace-session-continuity`. `memtrace-first` enforces "IF THE REPO IS INDEXED IN MEMTRACE → USE MEMTRACE TOOLS FIRST. NEVER reach for Grep/Glob/Read."
+
+**Benchmarks (custom, code-retrieval — not interaction memory):**
+
+Against ChromaDB, GitNexus, CodeGraphContext on three corpora (mempalace ~250 Python files, django/django ~3,300 files, 21-file scratch fixture). Ground truth from Python stdlib `ast.parse`, pyright LSP `callHierarchy/{incoming,outgoing}Calls`, and deterministic edit scripts — independent of any tool's index. `versions.toml` pins every adapter (`chromadb==1.5.7`, `gitnexus@1.6.2`, `codegraphcontext==0.4.2`) and service (ArcadeDB by digest).
+
+| Bench | Primary metric | Memtrace | Runner-up |
+|-------|---------------|----------|-----------|
+| #0 Exact-symbol lookup (1,000 q, mempalace) | Acc@1 | **96.7%** | ChromaDB 62.3% |
+| #0 | Latency avg | **9.16ms** | ChromaDB 58.5ms |
+| #1 Token economy | Acc@1 per 1k tokens | **495.52** | GitNexus 126.90 |
+| #2 Intent retrieval (100 NL Django PR titles) | Recall@10 | 58.6% ❌ | ChromaDB 66.8% (−8.2pp) |
+| #3 Graph callers (mempalace) | Recall | **0.851** | CGC 0.584 |
+| #3 Graph callers (Django) | Recall | **0.816** | GitNexus 0.053 |
+| #4 Incremental freshness (50 edits) | p95 latency | **42.5ms** | CGC 613.7ms |
+
+**Methodology honesty:**
+
+- Authors *state* Memtrace loses Bench #2 and "we don't claim it as a win"
+- Classical baselines (`ctags`, `ripgrep`) actually **beat** Memtrace on exact-symbol Acc@1 (96.6% / 96.4% vs 95.5%) in an internal branch; disclosed but not shipped in the public harness
+- Bench #4 discloses 40% staleness on renames (pre-rename CodeNode retained in graph under `incremental=true, clear_existing=false`)
+- Bench #3 writeup calls out a Cypher anchor bug (`relationships.rs:108-110`) that took callers-recall from 0.000 → 0.851 after fix, plus extractor bugs corrected in GitNexus/CGC adapters
+- Bench #5 (agent-level) gated behind `RUN_AGENT_BENCH=1` "to prevent accidental API-credit burn" — not actually run
+- Indexing headline time "does NOT include async embedding"
+- **No LongMemEval / LoCoMo / BEAM / LIFE-Bench** — entirely custom code-retrieval tasks
+
+**Why not promoted — it's a code intelligence tool, not an agentic memory system:**
+
+The "memory layer for coding agents" framing is marketing. In the taxonomy this survey uses, Memtrace sits firmly in the **code intelligence / code knowledge graph** bucket (peers: GitNexus, CodeGraphContext, tree-sitter/LSP-based indexers, Sourcegraph). It has none of the mechanisms that define agentic memory systems in our ANALYSIS.md set:
+
+1. **No extraction pipeline from interactions.** The graph is built from source code via deterministic AST parsing. There is no reading of conversations, agent sessions, tool-call traces, or user messages.
+2. **No consolidation / dream engine.** No code merges, summarizes, or reorganizes memories over sessions. Git history is a byproduct of VCS, not a consolidation mechanism.
+3. **No decay / forgetting grounded in usage.** Recency scoring is "time since file mtime," not access-frequency or importance-weighted forgetting over agent experience.
+4. **No user / speaker modeling, no episodic narrative of agent activity.** Episodes in `memtrace-episode-replay` appear to mean code-change episodes (commit clusters), not conversational episodes.
+5. **"Bi-temporal" means code's version history**, not the valid-time/transaction-time pair over agent knowledge. It's closer to `git log --follow` with graph joins than to Zep/Graphiti's bi-temporal fact store.
+6. **"Memory" is the codebase graph, not learned agent state.** The agent's session memory (what it concluded, what the user said, what it tried) lives elsewhere; Memtrace only answers "what's in the code right now, and what changed."
+
+**What's worth noting as reference points (even though not promoted):**
+
+- **Cross-service HTTP API topology** over multi-repo graphs is a genuinely useful axis that few tools cover — relevant as a *capability* any coding-agent memory system eventually needs.
+- The **six scoring modes** are a cleanly enumerated way to surface different "what matters" questions to an agent — `impact` with `in_deg^0.7 · (1+out_deg)^0.3` is a specific degree-asymmetry formula worth remembering.
+- The **benchmark methodology** (pyright LSP for graph ground truth, `ast.parse` for symbol ground truth, pinned-version `versions.toml`, disclosed adapter bugs, honest Bench #2 loss, classical `ctags`/`ripgrep` baselines that beat everyone) is well-executed even though the benches themselves are out of scope. Any code-retrieval claim in this space should be held to this bar.
+- **Deterministic AST ingest with zero LLM calls** ($0, ~1s for 1.5K files) is the *right* answer for the code-indexing substrate any agentic memory system would want underneath it — c.f. ANALYSIS.md systems that still pay OpenAI/Anthropic per file to build entity graphs.
+- **Proprietary EULA + closed Rust binary** makes this un-auditable beyond the README + benchmark harness. Any architectural claims here are author-stated, not reproduced.
+
+**Verdict:** **Not promoted.** Competent code-graph MCP server with honest benchmarks — but it's in a different category from the conversational/agentic memory systems this survey covers. No mechanism overlap with our taxonomy; closed engine; custom benchmarks with no standard-memory-benchmark signal. Re-examine only if Memtrace (a) ships interaction-derived memory on top of the code graph, or (b) runs LongMemEval/LoCoMo/BEAM with results that are comparable to our promoted systems.
 
 ---
 
