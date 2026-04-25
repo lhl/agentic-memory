@@ -61,6 +61,7 @@ If you want a “SOTA‑shaped” memory system in 2026, the literature is conve
 - **SimpleMem ([arXiv:2601.02553](https://arxiv.org/abs/2601.02553))**: write‑time structured compression + online synthesis + intent‑aware retrieval planning + multi‑view (dense/sparse/symbolic) union/dedup.
 - **MemInsight ([arXiv:2503.21760](https://arxiv.org/abs/2503.21760))**: autonomous attribute mining/annotation to make memory searchable via stable fields, not just embeddings.
 - **A‑Mem ([arXiv:2502.12110](https://arxiv.org/abs/2502.12110))**: Zettelkasten‑like note network with LLM link generation and “memory evolution” (rewrites).
+- **StructMem ([arXiv:2604.21748](https://arxiv.org/abs/2604.21748), ACL 2026)**: graph-free structured memory. Dual-perspective extraction (paired factual + relational entries) stored as `⟨text, embedding, timestamp⟩`; event reconstruction at read time via timestamp grouping; periodic cross-event consolidation with seed-based LLM synthesis. LoCoMo overall 76.82 (best-in-table temporal 81.62) at ~18× lower build-token cost than Mem0g. **Explicit gap**: no conflict resolution / versioning / decay / confidence — paper flags this. Code: `zjunlp/LightMem`. See `ANALYSIS-arxiv-2604.21748-structmem.md`.
 - **Hindsight ([arXiv:2512.12818](https://arxiv.org/abs/2512.12818))**: separates **evidence vs beliefs vs derived summaries**; multi‑channel retrieval + fusion/rerank + belief/confidence updates (“retain/recall/reflect”).
 - **GAM ([arXiv:2511.18423](https://arxiv.org/abs/2511.18423))**: JIT “deep research over your own history”: universal page‑store + lightweight memos + researcher that compiles optimized context at runtime (high latency).
 - **Recursive Language Models ([arXiv:2512.24601](https://arxiv.org/abs/2512.24601))**: programmable/recursive “reading engine” over arbitrarily long evidence stores via sandboxed code + subcalls (not persistent memory per se).
@@ -202,6 +203,7 @@ If you operate for weeks/months, consolidation is the only way out:
 - **Episode→scene→profile**: EverMemOS MemCells→MemScenes; HiMem episodes→notes; Mnemosyne core summary; Zep communities.
 - **Reconsolidation**: HiMem updates notes based on episodes; A‑Mem “evolves” notes; Live‑Evo updates experience weights and meta‑guidelines; ReMe prunes stale experiences.
 - **Continuum lens**: Nested Learning’s CMS suggests thinking in **update frequencies**: some memory should change hourly, some weekly, some only with explicit review.
+- **Deferred structure via periodic batch synthesis**: StructMem replaces eager KG construction with a periodic (≥1h buffer) cross-event consolidation pass — aggregate buffer → seed-retrieval (K=15) → LLM synthesis → write `C_cons` back as a new entry class feeding a dual-circuit read path. Shifts cost from write time to background time while preserving a "graph-like" read experience via timestamp joins instead of entity edges. Demonstrated ~18× build-token savings vs Mem0g on LoCoMo.
 
 ## 4) Corrections and historical memory (“don’t forget you used to think X”)
 
