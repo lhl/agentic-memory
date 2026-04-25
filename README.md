@@ -159,6 +159,14 @@ Root-level critical analyses intended for synthesis work. These reference the su
 | mempalace repo | https://github.com/milla-jovovich/mempalace |
 | karta repo | https://github.com/rohithzr/karta |
 
+### Other catalogs (for cross-referencing)
+
+| Catalog | URL | Notes |
+|---------|-----|-------|
+| TsinghuaC3I / Awesome-Memory-for-Agents | https://github.com/TsinghuaC3I/Awesome-Memory-for-Agents | ~150 papers grouped by Personalization / Learning-from-Experience / Long-Horizon / Surveys / Benchmarks |
+| AgentMemoryWorld / Awesome-Agent-Memory | https://github.com/AgentMemoryWorld/Awesome-Agent-Memory | Backs the "Rethinking Memory Mechanisms of Foundation Agents" survey ([arXiv:2602.06052](https://arxiv.org/abs/2602.06052)); broadest scope — open/closed-source products, surveys, benchmarks, nonparametric + parametric memory, agent evolution, context engineering, cognitive science |
+| TeleAI-UAGI / Awesome-Agent-Memory | https://github.com/TeleAI-UAGI/Awesome-Agent-Memory | Companion list to TeleMem ([arXiv:2601.06037](https://arxiv.org/abs/2601.06037)) |
+
 ## File Tree
 
 ```
