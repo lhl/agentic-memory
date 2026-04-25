@@ -53,6 +53,27 @@ noted below.
 - **License:** MIT
 - **Note:** Rust (~10.4K LOC) agentic memory library with Zettelkasten-inspired knowledge graph, 7-type dream engine (deduction, induction, abduction, consolidation, contradiction, episode digest, cross-episode digest), embedding-based query classification (6 modes), retroactive context evolution, cross-encoder reranking, multi-hop BFS traversal, atomic fact decomposition, foresight signals. BEAM 100K: 57.7%. Added as submodule. Promoted to standalone analysis.
 
+### memobase
+- **Source:** https://github.com/memodb-io/memobase
+- **Reviewed commit:** `358c16bbc6d687937d79bc2f984a11c3be8da901`
+- **Review date:** 2026-04-25
+- **License:** Apache-2.0
+- **Note:** User-profile-based memory system (FastAPI + Postgres + Redis + pgvector). Typed user-profile ontology (8 topics / ~40 sub-slots, customizable per project), cold-path batch architecture (buffer until token_size > 1024, then fixed 3-call extraction/merge pipeline — "YOLO merge"), dual profile/event channels (consolidated user profiles + append-only event timeline with pgvector gists). Reproducible LoCoMo artifacts in `docs/experiments/locomo-benchmark/`: overall 75.78, temporal 85.05 (best-in-table, beats Zep 67.71 and Mem0 55.51). Python/TS/Go SDKs + MCP. Added as submodule. **Promoted** to standalone analysis and main ANALYSIS.md matrix.
+
+### cognee
+- **Source:** https://github.com/topoteretes/cognee
+- **Reviewed commit:** `f4964c31db04bb3f33e79592ee4a27d260667074` (v1.0.3)
+- **Review date:** 2026-04-25
+- **License:** Apache-2.0
+- **Note:** Knowledge-graph-backed memory engine (~138k LOC Python). Multi-backend: Kuzu (default), Neo4j, Neptune for graph; LanceDB (default), Chroma/pgvector/Qdrant/Weaviate/Milvus for vectors; SQLite/Postgres for relational. `remember`/`recall`/`forget`/`improve` verb API. Central novelty: **bidirectional session-graph sync with feedback-weighted consolidation** via `improve()` (apply feedback weights → cognify session Q&A into graph → triplet embeddings → sync graph back to session cache). 13+ search types with rule-based router. `@agent_memory` decorator for agent-runtime integration. Multi-tenant RBAC with shared-dataset permissions. No LoCoMo/LongMemEval; HotpotQA-only evals vs Mem0/Graphiti/LightRAG. Associated paper arXiv:2505.24478 covers only the KG-LLM interface optimization piece. Added as submodule. **Promoted** to standalone analysis and main ANALYSIS.md matrix.
+
+### second-me
+- **Source:** https://github.com/mindverse/Second-Me
+- **Reviewed commit:** `d0e40251d9de61b3340b8d0d7d83150669f1885a`
+- **Review date:** 2026-04-25
+- **License:** Apache-2.0
+- **Note:** Personal LLM fine-tuning pipeline (~13.8K LOC across L0/L1/L2). **Scope-mismatched** — "memory" lives in LoRA adapter weights, not in a queryable store; updates require 30–60 min re-training. Pipeline: L0 extracts document insights → L1 clusters/synthesizes biography + "shades" → L2 generates synthetic QA training data → LoRA SFT + optional DPO → GGUF → llama.cpp inference. "Hierarchical Memory Modeling" is the training-data pipeline, not a retrieval hierarchy. "Me-Alignment Algorithm" is standard LoRA + DPO (TRL's SFTTrainer/DPOTrainer, r=64 α=16). Only L0 has runtime retrieval (ChromaDB for document-chunk RAG). No agent loop, no tool use, no benchmarks. Associated paper arXiv:2503.08102 "AI-native Memory 2.0". Added as submodule. **Not promoted** — personal-LLM-fine-tuning, not runtime agentic memory. Standalone analysis kept for triage-hygiene.
+
 ### openclaw-memory-architecture
 - **Source:** https://github.com/coolmanns/openclaw-memory-architecture
 - **Commit:** `5a7cb84969e3e34242b3e0e32949882d18ac2966`

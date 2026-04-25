@@ -25,3 +25,12 @@
 [submodule "vendor/karta"]
 	path = vendor/karta
 	url = https://github.com/rohithzr/karta.git
+[submodule "vendor/memobase"]
+	path = vendor/memobase
+	url = https://github.com/memodb-io/memobase.git
+[submodule "vendor/cognee"]
+	path = vendor/cognee
+	url = https://github.com/topoteretes/cognee.git
+[submodule "vendor/second-me"]
+	path = vendor/second-me
+	url = https://github.com/mindverse/Second-Me.git
